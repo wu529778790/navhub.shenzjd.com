@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767171047913,
+  "lastModified": 1767175816455,
   "categories": [
     {
       "id": "default",
@@ -16,12 +16,6 @@
         },
         {
           "id": "1767171011532",
-          "title": "",
-          "favicon": "https://duckduckgo.com/favicon.ico?domain=github.com",
-          "url": "https://github.com/wu529778790/"
-        },
-        {
-          "id": "1767171047913",
           "title": "",
           "favicon": "https://duckduckgo.com/favicon.ico?domain=github.com",
           "url": "https://github.com/wu529778790/"
