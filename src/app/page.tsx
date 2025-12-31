@@ -47,10 +47,13 @@ export default function Home() {
     error,
     refreshSites,
     isOnline,
+    addCategory,
   } = useSites();
   const [session, setSession] = useState<any>(null);
   const [activeCategory, setActiveCategory] = useState<string>("default");
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   // 检查认证状态和处理 OAuth 回调
   useEffect(() => {
@@ -111,6 +114,25 @@ export default function Home() {
     clearAuth();
     setSession(null);
     window.location.reload();
+  };
+
+  // 处理添加分类
+  const handleAddCategory = () => {
+    if (!newCategoryName.trim()) {
+      alert("请输入分类名称");
+      return;
+    }
+
+    addCategory({
+      id: `cat_${Date.now()}`,
+      name: newCategoryName.trim(),
+      icon: "📁",
+      sort: categories.length,
+      sites: [],
+    });
+
+    setNewCategoryName("");
+    setShowAddCategoryModal(false);
   };
 
   // 点击外部关闭下拉菜单
@@ -227,18 +249,7 @@ export default function Home() {
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => {
-                const name = prompt("输入分类名称");
-                if (name) {
-                  const { useSites } = require("@/contexts/SitesContext");
-                  const { addCategory } = useSites();
-                  addCategory({
-                    id: `cat_${Date.now()}`,
-                    name,
-                    sites: [],
-                  });
-                }
-              }}
+              onClick={() => setShowAddCategoryModal(true)}
               className="flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
@@ -268,18 +279,7 @@ export default function Home() {
           <div className="text-center py-20">
             <div className="text-gray-400 mb-4">暂无站点</div>
             <Button
-              onClick={() => {
-                const name = prompt("输入分类名称");
-                if (name) {
-                  const { useSites } = require("@/contexts/SitesContext");
-                  const { addCategory } = useSites();
-                  addCategory({
-                    id: `cat_${Date.now()}`,
-                    name,
-                    sites: [],
-                  });
-                }
-              }}
+              onClick={() => setShowAddCategoryModal(true)}
               className="flex items-center gap-2 mx-auto"
             >
               <Plus className="w-4 h-4" />
@@ -324,6 +324,36 @@ export default function Home() {
           </Button>
         </div>
       </main>
+
+      {/* 添加分类模态框 */}
+      {showAddCategoryModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-4">添加分类</h3>
+            <input
+              type="text"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="输入分类名称"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleAddCategory();
+                if (e.key === "Escape") setShowAddCategoryModal(false);
+              }}
+            />
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setShowAddCategoryModal(false)}
+              >
+                取消
+              </Button>
+              <Button onClick={handleAddCategory}>确认</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
