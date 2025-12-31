@@ -10,7 +10,7 @@ import { AddSiteCard } from "@/components/AddSiteCard";
 import { SiteCard } from "@/components/SiteCard";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
-import { Plus, LogIn, LogOut, Github, ChevronDown } from "lucide-react";
+import { Plus, LogOut, Github, ChevronDown } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
 
 // GitHub OAuth 配置
@@ -56,6 +56,7 @@ export default function Home() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showForkModal, setShowForkModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
   // 检查认证状态和处理 OAuth 回调
@@ -108,16 +109,13 @@ export default function Home() {
       return;
     }
 
-    // 显示 Fork 提示
-    const confirmed = confirm(
-      "登录后，系统会自动 Fork 仓库 'wu529778790/nav.shenzjd.com' 到你的 GitHub 账户。\n\n" +
-      "数据将存放在你的仓库中：\n" +
-      "  - 文件路径: data/sites.json\n  - 仓库名称: nav.shenzjd.com\n\n" +
-      "其他用户登录时，会 fork 同一个仓库到他们自己的账户，数据互不干扰。\n\n" +
-      "是否继续？"
-    );
+    // 显示 Fork 提示模态框
+    setShowForkModal(true);
+  };
 
-    if (!confirmed) return;
+  // 确认 Fork 并继续登录
+  const confirmForkAndLogin = () => {
+    setShowForkModal(false);
 
     // 重定向到 GitHub OAuth
     const redirectUri = encodeURIComponent(`${window.location.origin}/api/auth/callback/github`);
@@ -183,9 +181,6 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold text-gray-900">个人导航</h1>
-            <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">
-              v1.0
-            </span>
           </div>
 
           <div className="flex items-center gap-3 relative">
@@ -236,10 +231,9 @@ export default function Home() {
               <Button
                 size="sm"
                 onClick={handleGitHubLogin}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1"
               >
                 <Github className="w-4 h-4" />
-                GitHub 登录
               </Button>
             )}
           </div>
@@ -335,6 +329,38 @@ export default function Home() {
         )}
 
       </main>
+
+      {/* Fork 提示模态框 */}
+      {showForkModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Github className="w-6 h-6 text-gray-900" />
+              <h3 className="text-lg font-semibold">登录确认</h3>
+            </div>
+            <div className="text-sm text-gray-600 space-y-3 mb-6">
+              <p>登录后，系统会自动 Fork 仓库 <code className="bg-gray-100 px-1 py-0.5 rounded">wu529778790/nav.shenzjd.com</code> 到你的 GitHub 账户。</p>
+              <p>数据将存放在你的仓库中：</p>
+              <ul className="list-disc list-inside ml-4 space-y-1">
+                <li>文件路径: <code className="bg-gray-100 px-1 py-0.5 rounded">data/sites.json</code></li>
+                <li>仓库名称: <code className="bg-gray-100 px-1 py-0.5 rounded">nav.shenzjd.com</code></li>
+              </ul>
+              <p>其他用户登录时，会 fork 同一个仓库到他们自己的账户，数据互不干扰。</p>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setShowForkModal(false)}
+              >
+                取消
+              </Button>
+              <Button onClick={confirmForkAndLogin}>
+                继续登录
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 添加分类模态框 */}
       {showAddCategoryModal && (
