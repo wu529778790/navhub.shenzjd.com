@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767168854634,
+  "lastModified": 1767169062453,
   "categories": [
     {
       "id": "default",
@@ -13,6 +13,12 @@
           "title": "个人导航",
           "favicon": "https://nav.shenzjd.com/favicon.ico?favicon.0b3bf435.ico",
           "url": "https://nav.shenzjd.com/"
+        },
+        {
+          "id": "1767169062453",
+          "title": "妖火网",
+          "favicon": "https://www.google.com/s2/favicons?domain=yaohuo.me&sz=64",
+          "url": "https://yaohuo.me/"
         }
       ]
     }
