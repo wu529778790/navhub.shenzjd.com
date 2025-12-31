@@ -16,6 +16,11 @@ export function SyncStatus() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
+  // 访客模式不显示任何内容
+  if (isGuestMode) {
+    return null;
+  }
+
   // 检查是否已登录
   const isLoggedIn = () => {
     const auth = getAuthState();
