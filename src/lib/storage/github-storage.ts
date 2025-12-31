@@ -12,7 +12,7 @@ import type { NavData } from "./local-storage";
 // NEXT_PUBLIC_GITHUB_REPO=your_repo_name
 const ORIGINAL_OWNER = process.env.NEXT_PUBLIC_GITHUB_OWNER || "your_username";
 const ORIGINAL_REPO = process.env.NEXT_PUBLIC_GITHUB_REPO || "nav.shenzjd.com";
-const DATA_FILE_PATH = "src/data/sites.json";
+const DATA_FILE_PATH = "data/sites.json";
 
 /**
  * 获取 Octokit 实例
