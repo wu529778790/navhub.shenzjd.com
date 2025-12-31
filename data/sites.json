@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767186439361,
+  "lastModified": 1767186648672,
   "categories": [
     {
       "id": "default",
@@ -57,6 +57,13 @@
           "url": "https://github.com/wu529778790"
         }
       ]
+    },
+    {
+      "id": "cat_1767186648672",
+      "name": "AI",
+      "icon": "📁",
+      "sort": 1,
+      "sites": []
     }
   ]
 }
