@@ -333,6 +333,19 @@ export default function Home() {
                 </div>
               </div>
             ))}
+
+            {/* 添加分类按钮 */}
+            {!isGuestMode && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowAddCategoryModal(true)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                添加分类
+              </Button>
+            )}
           </div>
         )}
 
