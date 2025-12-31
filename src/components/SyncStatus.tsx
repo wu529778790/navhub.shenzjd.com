@@ -48,7 +48,13 @@ export function SyncStatus() {
       setLastMessage({ type: 'success', text: '同步成功' });
       setTimeout(() => setLastMessage({ type: null, text: '' }), 2000);
     } catch (error: any) {
-      const errorMsg = error?.message || '同步失败';
+      // 友好的错误提示
+      let errorMsg = error?.message || '同步失败';
+      if (errorMsg === '未认证用户') {
+        errorMsg = '请先登录 GitHub';
+      } else if (errorMsg === '当前离线，无法同步') {
+        errorMsg = '当前离线，无法同步';
+      }
       setLastMessage({ type: 'error', text: errorMsg });
       setTimeout(() => setLastMessage({ type: null, text: '' }), 3000);
     } finally {
