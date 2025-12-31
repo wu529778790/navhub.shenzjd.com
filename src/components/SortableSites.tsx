@@ -16,7 +16,7 @@ import {
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -47,7 +47,7 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.8 : 1,
   };
 
   return (
@@ -115,7 +115,7 @@ export function SortableSites({ category, allCategories, onSiteChange }: Sortabl
     >
       <SortableContext
         items={category.sites.map((site) => site.id)}
-        strategy={verticalListSortingStrategy}
+        strategy={rectSortingStrategy}
       >
         <div className="flex flex-wrap gap-1 mt-2">
           {category.sites.map((site) => (
