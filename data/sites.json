@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767170988079,
+  "lastModified": 1767171011532,
   "categories": [
     {
       "id": "default",
@@ -13,6 +13,12 @@
           "title": "个人导航",
           "favicon": "https://nav.shenzjd.com/favicon.ico?favicon.0b3bf435.ico",
           "url": "https://nav.shenzjd.com/"
+        },
+        {
+          "id": "1767171011532",
+          "title": "",
+          "favicon": "https://duckduckgo.com/favicon.ico?domain=github.com",
+          "url": "https://github.com/wu529778790/"
         }
       ]
     }
