@@ -299,7 +299,7 @@ export default function Home() {
 
         {/* 站点列表 */}
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="w-full aspect-square bg-gray-200 rounded-xl mb-2" />
@@ -319,7 +319,7 @@ export default function Home() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1">
             {/* 现有站点 */}
             {currentCategory?.sites.map((site) => (
               <SiteCard
