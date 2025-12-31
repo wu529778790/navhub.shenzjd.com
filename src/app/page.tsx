@@ -50,6 +50,7 @@ export default function Home() {
     refreshSites,
     isOnline,
     addCategory,
+    isGuestMode,
   } = useSites();
   const [session, setSession] = useState<any>(null);
   const [activeCategory, setActiveCategory] = useState<string>("default");
@@ -278,15 +279,17 @@ export default function Home() {
                 {category.name}
               </Button>
             ))}
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setShowAddCategoryModal(true)}
-              className="flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              添加分类
-            </Button>
+            {!isGuestMode && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowAddCategoryModal(true)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                添加分类
+              </Button>
+            )}
           </div>
         )}
 
@@ -310,13 +313,15 @@ export default function Home() {
         ) : categories.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-gray-400 mb-4">暂无站点</div>
-            <Button
-              onClick={() => setShowAddCategoryModal(true)}
-              className="flex items-center gap-2 mx-auto"
-            >
-              <Plus className="w-4 h-4" />
-              创建第一个分类
-            </Button>
+            {!isGuestMode && (
+              <Button
+                onClick={() => setShowAddCategoryModal(true)}
+                className="flex items-center gap-2 mx-auto"
+              >
+                <Plus className="w-4 h-4" />
+                创建第一个分类
+              </Button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1">
@@ -334,7 +339,7 @@ export default function Home() {
             ))}
 
             {/* 添加站点卡片 */}
-            {currentCategory && (
+            {currentCategory && !isGuestMode && (
               <AddSiteCard
                 activeCategory={currentCategory.id}
                 onSuccess={refreshSites}
