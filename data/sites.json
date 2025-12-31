@@ -1,12 +1,19 @@
 {
   "version": "1.0",
-  "lastModified": 1767187255886,
+  "lastModified": 1767188943424,
   "categories": [
+    {
+      "id": "cat_1767186648672",
+      "name": "AI",
+      "icon": "📁",
+      "sort": 0,
+      "sites": []
+    },
     {
       "id": "default",
       "name": "默认分类",
       "icon": "📁",
-      "sort": 0,
+      "sort": 1,
       "sites": [
         {
           "id": "1767186867865",
@@ -71,13 +78,6 @@
           "url": "https://global.v2ex.com/"
         }
       ]
-    },
-    {
-      "id": "cat_1767186648672",
-      "name": "AI",
-      "icon": "📁",
-      "sort": 1,
-      "sites": []
     }
   ]
 }
