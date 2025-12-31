@@ -1,5 +1,5 @@
 /**
- * 站点卡片组件
+ * 站点卡片组件 - 现代化设计
  */
 
 "use client";
@@ -25,8 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, Link as LinkIcon } from "lucide-react";
-import type { Site } from "@/lib/storage/local-storage";
+import { Pencil, Trash2, Link as LinkIcon, Globe } from "lucide-react";
 
 interface SiteCardProps {
   id: string;
@@ -36,6 +35,7 @@ interface SiteCardProps {
   categoryId: string;
   index: number;
   onSiteChange?: () => void;
+  view?: 'grid' | 'list';
 }
 
 export function SiteCard({
@@ -46,6 +46,7 @@ export function SiteCard({
   categoryId,
   index,
   onSiteChange,
+  view = 'grid',
 }: SiteCardProps) {
   const { updateSite, deleteSite, isGuestMode } = useSites();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -55,6 +56,7 @@ export function SiteCard({
   const [editedUrl, setEditedUrl] = useState(url);
   const [editedFavicon, setEditedFavicon] = useState(favicon);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -71,6 +73,21 @@ export function SiteCard({
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, [isContextMenuOpen]);
+
+  // 获取域名（用于无图标时的占位符）
+  const getDomain = () => {
+    try {
+      const urlObj = new URL(url);
+      return urlObj.hostname;
+    } catch {
+      return url;
+    }
+  };
+
+  // 获取首字母（用于无图标时的占位符）
+  const getInitial = () => {
+    return initialTitle.charAt(0).toUpperCase();
+  };
 
   const handleEdit = async () => {
     try {
@@ -104,20 +121,27 @@ export function SiteCard({
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     // 如果是访客模式，直接打开链接
     if (isGuestMode) {
       window.open(url, "_blank");
       return;
     }
-    // 如果点击的是图标，也打开链接
-    if ((e.target as HTMLElement).closest('.site-icon')) {
+
+    // 非访客模式：点击图标打开链接，点击其他区域编辑
+    if ((e.target as HTMLElement).closest('.site-icon-wrapper')) {
       window.open(url, "_blank");
+    } else if (!isGuestMode) {
+      openEditDialog();
     }
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (isGuestMode) return; // 访客模式不允许编辑
+    e.stopPropagation();
+    if (isGuestMode) return;
 
     setIsContextMenuOpen(true);
   };
@@ -130,6 +154,154 @@ export function SiteCard({
     setIsContextMenuOpen(false);
   };
 
+  // 网格视图
+  if (view === 'grid') {
+    return (
+      <>
+        <div
+          ref={cardRef}
+          key={id}
+          onClick={handleCardClick}
+          onContextMenu={handleContextMenu}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className={`site-card ${!isGuestMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
+          title={!isGuestMode ? "拖拽可排序，右键菜单，点击图标打开" : "点击打开链接"}
+        >
+          {/* 悬停时的快速操作按钮 - 仅在非访客模式 */}
+          {!isGuestMode && isHovered && (
+            <div className="absolute top-1 right-1 flex gap-1 z-10">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openEditDialog();
+                }}
+                className="p-1.5 bg-[var(--background)] rounded-[var(--radius-sm)] border border-[var(--border)] hover:bg-[var(--primary-100)] hover:border-[var(--primary-300)] transition-colors"
+                title="编辑"
+              >
+                <Pencil className="w-3.5 h-3.5 text-[var(--foreground-secondary)]" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDeleteAlertOpen(true);
+                }}
+                className="p-1.5 bg-[var(--background)] rounded-[var(--radius-sm)] border border-[var(--border)] hover:bg-[var(--error)]/10 hover:border-[var(--error)] transition-colors"
+                title="删除"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-[var(--error)]" />
+              </button>
+            </div>
+          )}
+
+          {/* 图标 */}
+          <div className="site-icon-wrapper">
+            {favicon ? (
+              <Image
+                src={favicon}
+                alt={initialTitle}
+                fill
+                className="object-cover"
+                unoptimized
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-50)] text-[var(--primary-700)] font-bold text-lg">
+                {getInitial()}
+              </div>
+            )}
+          </div>
+
+          {/* 标题 */}
+          <span className="site-title">{initialTitle}</span>
+
+          {/* 访客模式下的提示 */}
+          {isGuestMode && (
+            <div className="absolute inset-0 bg-[var(--primary-600)]/0 hover:bg-[var(--primary-600)]/10 transition-colors rounded-[var(--radius-md)] flex items-center justify-center opacity-0 hover:opacity-100">
+              <LinkIcon className="w-4 h-4 text-[var(--primary-600)]" />
+            </div>
+          )}
+        </div>
+
+        {/* 编辑对话框 */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>编辑站点</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[var(--foreground-secondary)]">标题</label>
+                <Input
+                  placeholder="站点名称"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[var(--foreground-secondary)]">URL</label>
+                <Input
+                  placeholder="https://example.com"
+                  value={editedUrl}
+                  onChange={(e) => setEditedUrl(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[var(--foreground-secondary)]">图标 URL (可选)</label>
+                <Input
+                  placeholder="https://example.com/favicon.ico"
+                  value={editedFavicon}
+                  onChange={(e) => setEditedFavicon(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+                className="flex-1"
+                disabled={isLoading}
+              >
+                取消
+              </Button>
+              <Button
+                onClick={handleEdit}
+                className="flex-1"
+                disabled={isLoading}
+              >
+                {isLoading ? "保存中..." : "保存"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 删除确认对话框 */}
+        <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>确认删除站点</AlertDialogTitle>
+              <AlertDialogDescription>
+                确定要删除 <strong>{initialTitle}</strong> 吗？此操作无法撤销。
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>取消</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} disabled={isLoading} className="bg-[var(--error)] hover:bg-red-600">
+                {isLoading ? "删除中..." : "删除"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </>
+    );
+  }
+
+  // 列表视图
   return (
     <>
       <div
@@ -137,19 +309,15 @@ export function SiteCard({
         key={id}
         onClick={handleCardClick}
         onContextMenu={handleContextMenu}
-        className={`flex flex-col items-center gap-2 cursor-pointer group w-[80px] relative ${!isGuestMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
-        title={!isGuestMode ? "拖拽可排序" : undefined}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)]
+                   transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1
+                   ${!isGuestMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
+        title={!isGuestMode ? "拖拽可排序，右键菜单，点击图标打开" : "点击打开链接"}
       >
-        {/* 右键菜单指示器 - 仅在非访客模式且鼠标悬停时显示 */}
-        {!isGuestMode && (
-          <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="bg-gray-200 rounded-full w-5 h-5 flex items-center justify-center text-xs text-gray-600">
-              ⋮
-            </div>
-          </div>
-        )}
-
-        <div className="site-icon w-12 h-12 relative flex items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm group-hover:shadow-md transition-all duration-200">
+        {/* 图标 */}
+        <div className="site-icon-wrapper w-10 h-10 flex-shrink-0">
           {favicon ? (
             <Image
               src={favicon}
@@ -162,69 +330,109 @@ export function SiteCard({
               }}
             />
           ) : (
-            <div className="w-full h-full bg-gray-100" />
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-50)] text-[var(--primary-700)] font-bold text-sm">
+              {getInitial()}
+            </div>
           )}
         </div>
-        <span className="text-xs text-center text-gray-600 truncate w-full">
-          {initialTitle}
-        </span>
 
-        {/* 右键菜单 */}
-        {isContextMenuOpen && (
-          <div
-            ref={contextMenuRef}
-            className="absolute left-1/2 -translate-x-1/2 top-full mt-1 w-28 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
-            onClick={(e) => e.stopPropagation()}
-          >
+        {/* 标题和URL */}
+        <div className="flex-1 min-w-0">
+          <div className="font-medium text-[var(--foreground)] truncate">{initialTitle}</div>
+          <div className="text-xs text-[var(--foreground-secondary)] truncate flex items-center gap-1">
+            <Globe className="w-3 h-3" />
+            {getDomain()}
+          </div>
+        </div>
+
+        {/* 快捷操作 */}
+        {!isGuestMode && (
+          <div className={`flex items-center gap-1 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
             <button
-              onClick={openEditDialog}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                openEditDialog();
+              }}
+              className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--muted)] text-[var(--foreground-secondary)] transition-colors"
+              title="编辑"
             >
-              <Pencil className="w-3 h-3" />
-              编辑
+              <Pencil className="w-4 h-4" />
             </button>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setIsDeleteAlertOpen(true);
-                setIsContextMenuOpen(false);
               }}
-              className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 rounded-b-lg"
+              className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--error)]/10 text-[var(--error)] transition-colors"
+              title="删除"
             >
-              <Trash2 className="w-3 h-3" />
-              删除
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
+        )}
+
+        {/* 打开链接按钮 - 访客模式 */}
+        {isGuestMode && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(url, "_blank");
+            }}
+            className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--primary-100)] text-[var(--primary-600)] transition-colors"
+            title="打开链接"
+          >
+            <LinkIcon className="w-4 h-4" />
+          </button>
         )}
       </div>
 
       {/* 编辑对话框 */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>编辑站点</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              placeholder="标题"
-              value={editedTitle}
-              onChange={(e) => setEditedTitle(e.target.value)}
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[var(--foreground-secondary)]">标题</label>
+              <Input
+                placeholder="站点名称"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[var(--foreground-secondary)]">URL</label>
+              <Input
+                placeholder="https://example.com"
+                value={editedUrl}
+                onChange={(e) => setEditedUrl(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[var(--foreground-secondary)]">图标 URL (可选)</label>
+              <Input
+                placeholder="https://example.com/favicon.ico"
+                value={editedFavicon}
+                onChange={(e) => setEditedFavicon(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDialogOpen(false)}
+              className="flex-1"
               disabled={isLoading}
-            />
-            <Input
-              placeholder="URL"
-              value={editedUrl}
-              onChange={(e) => setEditedUrl(e.target.value)}
-              disabled={isLoading}
-            />
-            <Input
-              placeholder="图标 URL (可选)"
-              value={editedFavicon}
-              onChange={(e) => setEditedFavicon(e.target.value)}
-              disabled={isLoading}
-            />
+            >
+              取消
+            </Button>
             <Button
               onClick={handleEdit}
-              className="w-full"
+              className="flex-1"
               disabled={isLoading}
             >
               {isLoading ? "保存中..." : "保存"}
@@ -237,14 +445,14 @@ export function SiteCard({
       <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogTitle>确认删除站点</AlertDialogTitle>
             <AlertDialogDescription>
-              确定要删除 "{initialTitle}" 吗？此操作无法撤销。
+              确定要删除 <strong>{initialTitle}</strong> 吗？此操作无法撤销。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
+            <AlertDialogAction onClick={handleDelete} disabled={isLoading} className="bg-[var(--error)] hover:bg-red-600">
               {isLoading ? "删除中..." : "删除"}
             </AlertDialogAction>
           </AlertDialogFooter>

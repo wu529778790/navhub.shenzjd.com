@@ -89,9 +89,10 @@ export function SyncStatus() {
 
       // 3秒后清除消息
       setTimeout(() => setSyncMessage(null), 3000);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const typedError = error as Error;
       // 友好的错误提示
-      let errorMsg = error?.message || '同步失败';
+      let errorMsg = typedError?.message || '同步失败';
       if (errorMsg === '未认证用户') {
         errorMsg = '请先登录 GitHub';
       } else if (errorMsg === '当前离线，无法同步') {

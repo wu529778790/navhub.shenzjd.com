@@ -14,12 +14,12 @@ export function Container({ children, className = "", size = "md" }: ContainerPr
   const sizeClasses = {
     sm: "max-w-2xl",
     md: "max-w-4xl",
-    lg: "max-w-6xl",
+    lg: "max-w-[1200px]",
     full: "max-w-full",
   };
 
   return (
-    <div className={`mx-auto px-4 ${sizeClasses[size]} ${className}`}>
+    <div className={`w-full mx-auto px-4 ${sizeClasses[size]} ${className}`}>
       {children}
     </div>
   );

@@ -17,6 +17,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   rectSortingStrategy,
+  verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -24,14 +25,39 @@ import { useSites } from "@/contexts/SitesContext";
 import { SiteCard } from "@/components/SiteCard";
 import { AddSiteCard } from "@/components/AddSiteCard";
 
+interface Site {
+  id: string;
+  title: string;
+  url: string;
+  favicon?: string;
+  sort?: number;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  icon?: string;
+  sort: number;
+  sites: Site[];
+}
+
 interface SortableSitesProps {
   category: {
     id: string;
     name: string;
-    sites: any[];
+    icon?: string;
+    sort?: number;
+    sites: Array<{
+      id: string;
+      title: string;
+      url: string;
+      favicon?: string;
+      sort?: number;
+    }>;
   };
   allCategories: any[];
   onSiteChange: () => void;
+  view?: 'grid' | 'list';
 }
 
 function SortableItem({ id, children }: { id: string; children: React.ReactNode }) {
@@ -62,7 +88,7 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
   );
 }
 
-export function SortableSites({ category, allCategories, onSiteChange }: SortableSitesProps) {
+export function SortableSites({ category, allCategories, onSiteChange, view = 'grid' }: SortableSitesProps) {
   const { updateSites, isGuestMode } = useSites();
 
   const sensors = useSensors(
@@ -107,6 +133,51 @@ export function SortableSites({ category, allCategories, onSiteChange }: Sortabl
     onSiteChange();
   };
 
+  // 网格视图布局
+  if (view === 'grid') {
+    return (
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={category.sites.map((site) => site.id)}
+          strategy={rectSortingStrategy}
+        >
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full">
+            {category.sites.map((site) => (
+              <SortableItem key={site.id} id={site.id}>
+                <SiteCard
+                  id={site.id}
+                  title={site.title}
+                  url={site.url}
+                  favicon={site.favicon}
+                  categoryId={category.id}
+                  index={category.sites.findIndex((s) => s.id === site.id)}
+                  onSiteChange={onSiteChange}
+                  view="grid"
+                />
+              </SortableItem>
+            ))}
+
+            {/* 添加站点卡片 */}
+            {!isGuestMode && (
+              <div className="w-[100px] h-[100px] flex-shrink-0">
+                <AddSiteCard
+                  activeCategory={category.id}
+                  onSuccess={onSiteChange}
+                  view="grid"
+                />
+              </div>
+            )}
+          </div>
+        </SortableContext>
+      </DndContext>
+    );
+  }
+
+  // 列表视图布局
   return (
     <DndContext
       sensors={sensors}
@@ -115,9 +186,9 @@ export function SortableSites({ category, allCategories, onSiteChange }: Sortabl
     >
       <SortableContext
         items={category.sites.map((site) => site.id)}
-        strategy={rectSortingStrategy}
+        strategy={verticalListSortingStrategy}
       >
-        <div className="flex flex-wrap gap-1 mt-2">
+        <div className="flex flex-col gap-2 mt-2">
           {category.sites.map((site) => (
             <SortableItem key={site.id} id={site.id}>
               <SiteCard
@@ -128,6 +199,7 @@ export function SortableSites({ category, allCategories, onSiteChange }: Sortabl
                 categoryId={category.id}
                 index={category.sites.findIndex((s) => s.id === site.id)}
                 onSiteChange={onSiteChange}
+                view="list"
               />
             </SortableItem>
           ))}
@@ -137,6 +209,7 @@ export function SortableSites({ category, allCategories, onSiteChange }: Sortabl
             <AddSiteCard
               activeCategory={category.id}
               onSuccess={onSiteChange}
+              view="list"
             />
           )}
         </div>

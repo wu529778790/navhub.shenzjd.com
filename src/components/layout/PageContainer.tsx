@@ -21,28 +21,16 @@ export function PageContainer({
   className = "",
 }: PageContainerProps) {
   return (
-    <Container size="lg" className={`py-6 ${className}`}>
+    <Container size="lg" className={`w-full py-6 ${className}`}>
       {/* 页面头部 */}
-      {(title || description || action) && (
-        <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex-1">
-            {title && (
-              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-                {title}
-              </h2>
-            )}
-            {description && (
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-                {description}
-              </p>
-            )}
-          </div>
-          {action && <div>{action}</div>}
+      {action && (
+        <div className="mb-6 flex justify-end w-full">
+          {action}
         </div>
       )}
 
       {/* 页面内容 */}
-      <div className="space-y-4">
+      <div className="space-y-4 w-full">
         {children}
       </div>
     </Container>

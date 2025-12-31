@@ -18,7 +18,7 @@ export function AppHeader() {
   const router = useRouter();
   const { isOnline } = useSites();
 
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<{ user: { id: string; name: string; avatar: string }; token: string } | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showForkModal, setShowForkModal] = useState(false);
 
@@ -100,18 +100,18 @@ export function AppHeader() {
       )}
 
       {/* 头部 */}
-      <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800">
+      <header className="sticky top-0 z-40 glass bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)]">
         <div className="container h-16 flex items-center justify-between">
           {/* 左侧：Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-9 h-9 bg-gradient-to-br from-[var(--primary-600)] to-[var(--primary-700)] rounded-[var(--radius-lg)] flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-[var(--primary-600)]/20">
               N
             </div>
-            <h1 className="text-xl font-bold tracking-tight">NavHub</h1>
+            <h1 className="text-xl font-bold tracking-tight text-gradient">NavHub</h1>
           </div>
 
           {/* 右侧：同步状态 + 操作区 */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* 同步状态 */}
             <SyncStatus />
 
@@ -120,9 +120,9 @@ export function AppHeader() {
               href="https://github.com/wu529778790/navhub.shenzjd.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors text-sm"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--radius-md)] bg-[var(--background-secondary)] hover:bg-[var(--muted)] border border-[var(--border)] transition-all duration-200 text-sm font-medium"
             >
-              <Star className="w-4 h-4" />
+              <Star className="w-4 h-4 text-[var(--primary-600)]" />
               Star
             </a>
 
@@ -131,32 +131,32 @@ export function AppHeader() {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-md)] hover:bg-[var(--muted)] transition-all duration-200 border border-[var(--border)]"
                 >
                   <img
                     src={session.user.avatar}
                     alt={session.user.name}
-                    className="w-7 h-7 rounded-full"
+                    className="w-7 h-7 rounded-[var(--radius-sm)]"
                   />
                   <ChevronDown className={`w-4 h-4 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
                 </button>
 
                 {showUserMenu && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 py-2 z-50">
-                    <div className="px-4 py-2 border-b border-neutral-100 dark:border-neutral-800">
-                      <div className="font-medium text-sm">{session.user.name}</div>
-                      <div className="text-xs text-neutral-500 mt-0.5">已登录</div>
+                  <div className="absolute right-0 top-full mt-2 w-52 bg-[var(--background)] rounded-[var(--radius-lg)] shadow-xl border border-[var(--border)] py-1 z-50 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--background-secondary)]">
+                      <div className="font-medium text-sm text-[var(--foreground)]">{session.user.name}</div>
+                      <div className="text-xs text-[var(--muted-foreground)] mt-0.5">已登录</div>
                     </div>
                     <button
                       onClick={() => router.push("/settings")}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-2"
+                      className="w-full text-left px-4 py-2.5 text-sm hover:bg-[var(--muted)] flex items-center gap-2 transition-colors"
                     >
-                      <Settings className="w-4 h-4" />
+                      <Settings className="w-4 h-4 text-[var(--foreground-secondary)]" />
                       设置
                     </button>
                     <button
                       onClick={handleGitHubLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-error hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                      className="w-full text-left px-4 py-2.5 text-sm text-[var(--error)] hover:bg-[var(--error)]/10 flex items-center gap-2 transition-colors"
                     >
                       <LogOut className="w-4 h-4" />
                       退出登录
@@ -165,7 +165,11 @@ export function AppHeader() {
                 )}
               </div>
             ) : (
-              <Button size="sm" onClick={handleGitHubLogin} className="gap-1">
+              <Button
+                size="sm"
+                onClick={handleGitHubLogin}
+                className="gap-2 shadow-md hover:shadow-lg transition-all"
+              >
                 <Github className="w-4 h-4" />
                 登录
               </Button>
