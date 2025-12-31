@@ -135,36 +135,22 @@ export class SyncManager {
   /**
    * 冲突检测与解决
    * 规则：
-   * 1. GitHub 为空 + 本地有数据 → 上传
-   * 2. GitHub 为空 + 本地为空 → 无需操作
-   * 3. GitHub 有数据 + 本地为空 → 下载
+   * 1. 本地为空（或只有默认分类）+ GitHub 有数据 → 下载
+   * 2. GitHub 为空 + 本地有有效数据 → 上传
+   * 3. 双方都为空 → 无需操作
    * 4. 双方都有数据 → 比较时间戳决定方向
    */
   private async resolveConflict(localData: NavData | null, githubData: NavData | null): Promise<SyncResult> {
-    // 情况 1: GitHub 为空，本地有数据 → 上传
-    if (githubData === null && localData && localData.categories && localData.categories.length > 0) {
-      this.updateStatus(SyncStatus.UPLOADING);
-      await saveDataToGitHub(this.options.token!, localData, `[skip ci] Upload ${new Date().toISOString()}`);
-      setLastSyncTime();
-      return {
-        success: true,
-        direction: "upload",
-        message: "上传本地数据到 GitHub"
-      };
-    }
+    // 检查本地是否是"只有默认分类且为空"的初始化状态
+    const isLocalEmpty = !localData ||
+                         !localData.categories ||
+                         localData.categories.length === 0 ||
+                         (localData.categories.length === 1 &&
+                          localData.categories[0].id === "default" &&
+                          localData.categories[0].sites.length === 0);
 
-    // 情况 2: GitHub 为空，本地也为空 → 无需操作
-    if (githubData === null && (!localData || !localData.categories || localData.categories.length === 0)) {
-      setLastSyncTime();
-      return {
-        success: true,
-        direction: "none",
-        message: "两端都为空，无需同步"
-      };
-    }
-
-    // 情况 3: GitHub 有数据，本地为空 → 下载
-    if (githubData && (!localData || !localData.categories || localData.categories.length === 0)) {
+    // 情况 1: 本地为空（或只有默认分类），GitHub 有数据 → 下载
+    if (isLocalEmpty && githubData) {
       this.updateStatus(SyncStatus.DOWNLOADING);
       saveToLocalStorage(githubData);
       setLastSyncTime();
@@ -175,8 +161,30 @@ export class SyncManager {
       };
     }
 
-    // 情况 4: 双方都有数据，比较时间戳
-    if (localData && githubData) {
+    // 情况 2: GitHub 为空，本地有有效数据 → 上传
+    if (githubData === null && !isLocalEmpty && localData) {
+      this.updateStatus(SyncStatus.UPLOADING);
+      await saveDataToGitHub(this.options.token!, localData, `[skip ci] Upload ${new Date().toISOString()}`);
+      setLastSyncTime();
+      return {
+        success: true,
+        direction: "upload",
+        message: "上传本地数据到 GitHub"
+      };
+    }
+
+    // 情况 3: 双方都为空（或只有默认分类）→ 无需操作
+    if (isLocalEmpty && githubData === null) {
+      setLastSyncTime();
+      return {
+        success: true,
+        direction: "none",
+        message: "两端都为空，无需同步"
+      };
+    }
+
+    // 情况 4: 双方都有有效数据，比较时间戳
+    if (localData && githubData && !isLocalEmpty) {
       const localTime = localData.lastModified || 0;
       const githubTime = githubData.lastModified || 0;
 
@@ -372,10 +380,18 @@ export async function manualSync(token: string): Promise<SyncResult> {
     const { getDataFromGitHub, saveDataToGitHub } = await import("./github-storage");
     const githubData = await getDataFromGitHub(token);
 
-    // 3. 冲突检测与解决
+    // 3. 检查本地是否是"只有默认分类且为空"的初始化状态
+    const isLocalEmpty = !localData ||
+                         !localData.categories ||
+                         localData.categories.length === 0 ||
+                         (localData.categories.length === 1 &&
+                          localData.categories[0].id === "default" &&
+                          localData.categories[0].sites.length === 0);
 
-    // 情况 1: GitHub 为空，本地有数据 → 上传
-    if (githubData === null && localData && localData.categories && localData.categories.length > 0) {
+    // 4. 冲突检测与解决
+
+    // 情况 1: GitHub 为空，本地有有效数据 → 上传
+    if (githubData === null && !isLocalEmpty && localData) {
       await saveDataToGitHub(token, localData, `[skip ci] Manual upload ${new Date().toISOString()}`);
       setLastSyncTime();
       return {
@@ -385,8 +401,8 @@ export async function manualSync(token: string): Promise<SyncResult> {
       };
     }
 
-    // 情况 2: GitHub 为空，本地也为空 → 无需操作
-    if (githubData === null && (!localData || !localData.categories || localData.categories.length === 0)) {
+    // 情况 2: GitHub 为空，本地也为空（或只有默认分类）→ 无需操作
+    if (githubData === null && isLocalEmpty) {
       return {
         success: true,
         direction: "none",
@@ -394,8 +410,8 @@ export async function manualSync(token: string): Promise<SyncResult> {
       };
     }
 
-    // 情况 3: 本地为空，GitHub 有数据 → 下载
-    if ((!localData || !localData.categories || localData.categories.length === 0) && githubData) {
+    // 情况 3: 本地为空（或只有默认分类），GitHub 有数据 → 下载
+    if (isLocalEmpty && githubData) {
       saveToLocalStorage(githubData);
       setLastSyncTime();
       return {
@@ -405,8 +421,8 @@ export async function manualSync(token: string): Promise<SyncResult> {
       };
     }
 
-    // 情况 4: 双方都有数据，比较时间戳
-    if (localData && githubData) {
+    // 情况 4: 双方都有有效数据，比较时间戳
+    if (localData && githubData && !isLocalEmpty) {
       const localTime = localData.lastModified || 0;
       const githubTime = githubData.lastModified || 0;
 

@@ -6,12 +6,9 @@
 import { Octokit } from "@octokit/rest";
 import type { NavData } from "./local-storage";
 
-// 用户需要配置自己的仓库信息
-// 在 .env.local 中设置：
-// NEXT_PUBLIC_GITHUB_OWNER=your_username
-// NEXT_PUBLIC_GITHUB_REPO=your_repo_name
-const ORIGINAL_OWNER = process.env.NEXT_PUBLIC_GITHUB_OWNER || "your_username";
-const ORIGINAL_REPO = process.env.NEXT_PUBLIC_GITHUB_REPO || "nav.shenzjd.com";
+// 你的 GitHub 仓库信息（硬编码）
+const ORIGINAL_OWNER = "wu529778790";
+const ORIGINAL_REPO = "nav.shenzjd.com";
 const DATA_FILE_PATH = "data/sites.json";
 
 /**
@@ -70,7 +67,7 @@ export async function ensureForked(token: string): Promise<void> {
 }
 
 /**
- * 读取数据文件
+ * 读取数据文件（已登录用户 - 读取自己的仓库）
  */
 export async function getDataFromGitHub(token: string): Promise<NavData | null> {
   try {
@@ -91,6 +88,38 @@ export async function getDataFromGitHub(token: string): Promise<NavData | null> 
     return null;
   } catch (error) {
     console.error("读取 GitHub 数据失败:", error);
+    return null;
+  }
+}
+
+/**
+ * 读取你的仓库数据（访客模式 - 无需 token）
+ */
+export async function getYourDataFromGitHub(): Promise<NavData | null> {
+  try {
+    // 使用 GitHub REST API 无需认证即可读取公开仓库
+    const response = await fetch(
+      `https://api.github.com/repos/${ORIGINAL_OWNER}/${ORIGINAL_REPO}/contents/${DATA_FILE_PATH}`,
+      {
+        headers: {
+          Accept: "application/vnd.github+json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    if (data.content) {
+      const content = Buffer.from(data.content, "base64").toString("utf-8");
+      return JSON.parse(content);
+    }
+
+    return null;
+  } catch (error) {
+    console.error("读取你的 GitHub 数据失败:", error);
     return null;
   }
 }

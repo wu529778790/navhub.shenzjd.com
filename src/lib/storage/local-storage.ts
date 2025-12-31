@@ -140,9 +140,16 @@ export function getSitesFromLocalStorage(): Category[] {
  * 保存站点数据（兼容现有代码）
  */
 export function saveSitesToLocalStorage(categories: Category[]): void {
+  // 检查是否是初始化的空默认分类
+  const isDefaultEmpty = categories.length === 1 &&
+                         categories[0].id === "default" &&
+                         categories[0].sites.length === 0;
+
   const data: NavData = {
     version: "1.0",
-    lastModified: Date.now(),
+    // 如果是空的默认分类，写一个很老的时间戳（1970年），强制后续走 GitHub 拉取
+    // 如果有真实数据，写当前时间戳
+    lastModified: isDefaultEmpty ? 0 : Date.now(),
     categories,
   };
   saveToLocalStorage(data);

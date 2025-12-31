@@ -10,7 +10,7 @@ import { AddSiteCard } from "@/components/AddSiteCard";
 import { SiteCard } from "@/components/SiteCard";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut, Github, ChevronDown } from "lucide-react";
+import { Plus, LogOut, Github, ChevronDown, Star } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
 
 // GitHub OAuth 配置
@@ -90,8 +90,11 @@ export default function Home() {
       });
       // 清除 URL 参数
       window.history.replaceState({}, "", window.location.pathname);
-      // 登录成功后，从 GitHub 拉取数据
-      setTimeout(() => refreshSites(true), 100);
+
+      // 登录成功后，强制刷新数据（会从 GitHub 拉取）
+      setTimeout(() => {
+        refreshSites(true);
+      }, 100);
       return;
     }
 
@@ -100,7 +103,7 @@ export default function Home() {
     if (auth.token && auth.user) {
       setSession({ user: auth.user, token: auth.token });
     }
-  }, []);
+  }, [refreshSites]);
 
   // GitHub OAuth 登录
   const handleGitHubLogin = () => {
@@ -184,6 +187,17 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-3 relative">
+            {/* GitHub Star 按钮 */}
+            <a
+              href="https://github.com/wu529778790/nav.shenzjd.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-sm"
+            >
+              <Star className="w-4 h-4" />
+              Star
+            </a>
+
             {/* 同步状态 */}
             <SyncStatus />
 
@@ -234,6 +248,7 @@ export default function Home() {
                 className="flex items-center gap-1"
               >
                 <Github className="w-4 h-4" />
+                登录
               </Button>
             )}
           </div>

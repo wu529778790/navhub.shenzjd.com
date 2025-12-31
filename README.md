@@ -15,6 +15,7 @@
 - **自动 Fork**：登录时自动 Fork 仓库到你的账户
 - **数据隔离**：每个用户独立仓库，数据完全私有
 - **离线支持**：无网络时可正常使用，恢复网络后自动同步
+- **访客模式**：未登录用户可查看示例数据（只读）
 
 ### 🎯 用户体验
 - **即时反馈**：所有操作立即响应
@@ -32,10 +33,6 @@
 # GitHub OAuth 配置
 NEXT_PUBLIC_GITHUB_CLIENT_ID=你的_client_id
 GITHUB_CLIENT_SECRET=你的_client_secret
-
-# GitHub 仓库配置（必需）
-NEXT_PUBLIC_GITHUB_OWNER=wu529778790
-NEXT_PUBLIC_GITHUB_REPO=nav.shenzjd.com
 ```
 
 ### 2. 安装依赖
@@ -204,8 +201,12 @@ if (localTime > githubTime) {
 |--------|------|------|
 | `NEXT_PUBLIC_GITHUB_CLIENT_ID` | GitHub OAuth Client ID | ✅ |
 | `GITHUB_CLIENT_SECRET` | GitHub OAuth Client Secret | ✅ |
-| `NEXT_PUBLIC_GITHUB_OWNER` | GitHub 用户名 | ✅ |
-| `NEXT_PUBLIC_GITHUB_REPO` | 仓库名称 | ✅ |
+
+### 访客模式
+
+未登录用户会自动显示你的示例数据（只读），无需任何配置。
+- 数据来自：`wu529778790/nav.shenzjd.com`
+- 所有修改操作需要登录后才能进行
 
 ## 📦 数据存储
 
@@ -260,6 +261,14 @@ if (localTime > githubTime) {
 ### Q: 如何解决冲突？
 
 **A:** 系统自动解决，基于时间戳选择最新数据，无需手动干预。
+
+### Q: 未登录用户能看到什么？
+
+**A:** 未登录用户会自动显示你的示例数据（只读），数据来自你的 GitHub 仓库 `wu529778790/nav.shenzjd.com`。
+
+### Q: 访客模式可以修改数据吗？
+
+**A:** 不可以。访客模式是只读的，所有修改操作都需要登录。
 
 ### Q: 可以删除数据吗？
 

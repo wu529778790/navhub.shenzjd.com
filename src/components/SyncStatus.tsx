@@ -12,7 +12,7 @@ import { showToast } from "@/components/Toast";
 import { getAuthState } from "@/lib/auth";
 
 export function SyncStatus() {
-  const { syncStatus, isOnline, lastSync, manualSync } = useSites();
+  const { syncStatus, isOnline, lastSync, manualSync, isGuestMode } = useSites();
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
@@ -44,6 +44,8 @@ export function SyncStatus() {
     if (syncStatus === "⬇️") return "⬇️ 下载中";
     if (syncStatus === "⚠️") return "⚠️ 冲突";
     if (syncStatus === "🔴") return "🔴 同步错误";
+    // 访客模式显示只读
+    if (isGuestMode) return "👁️ 只读";
     // 已登录显示在线，未登录显示待同步
     return isLoggedIn() ? "🟢 在线" : "⚪ 待同步";
   };
@@ -57,6 +59,17 @@ export function SyncStatus() {
 
     try {
       const result = await manualSync();
+
+      // 如果同步失败，显示错误消息
+      if (!result.success) {
+        if (result.error) {
+          showToast(result.error, "error", 3000);
+        } else {
+          showToast("同步失败", "error", 3000);
+        }
+        setIsSyncing(false);
+        return;
+      }
 
       // 根据同步方向显示不同的成功消息
       let successMsg = "同步成功";
@@ -97,9 +110,15 @@ export function SyncStatus() {
         <span title={isOnline ? "在线" : "离线"}>
           {getStatusText()}
         </span>
-        {lastSync && (
+        {lastSync && !isGuestMode && (
           <span className="text-muted-foreground hidden sm:inline">
             {formatLastSync()}
+          </span>
+        )}
+        {/* 访客模式提示 */}
+        {isGuestMode && (
+          <span className="text-gray-500 hidden sm:inline">
+            查看示例数据
           </span>
         )}
         {/* 同步消息提示 */}
@@ -110,8 +129,8 @@ export function SyncStatus() {
         )}
       </div>
 
-      {/* 同步按钮 */}
-      {isOnline && isLoggedIn() && (
+      {/* 同步按钮 - 访客模式不显示 */}
+      {isOnline && isLoggedIn() && !isGuestMode && (
         <Button
           onClick={handleManualSync}
           size="sm"
