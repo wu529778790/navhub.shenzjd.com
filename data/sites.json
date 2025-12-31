@@ -1,20 +1,13 @@
 {
   "version": "1.0",
-  "lastModified": 1767168448672,
+  "lastModified": 1767168476010,
   "categories": [
     {
       "id": "default",
       "name": "默认分类",
       "icon": "📁",
       "sort": 0,
-      "sites": [
-        {
-          "id": "1767168448671",
-          "title": "1",
-          "favicon": "https://www.google.com/s2/favicons?domain=nav.shenzjd.com&sz=64",
-          "url": "https://nav.shenzjd.com/"
-        }
-      ]
+      "sites": []
     }
   ]
 }
