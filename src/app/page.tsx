@@ -8,7 +8,7 @@ import { AddSiteCard } from "@/components/AddSiteCard";
 import { SiteCard } from "@/components/SiteCard";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
-import { Plus, LogIn, LogOut, RefreshCw, Github, ChevronDown } from "lucide-react";
+import { Plus, LogIn, LogOut, Github, ChevronDown } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
 
 // GitHub OAuth 配置
@@ -313,18 +313,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* 底部操作区 */}
-        <div className="mt-8 flex justify-center">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refreshSites()}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            刷新数据
-          </Button>
-        </div>
       </main>
 
       {/* 添加分类模态框 */}
