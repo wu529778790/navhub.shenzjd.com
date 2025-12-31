@@ -4,8 +4,8 @@ import { SitesProvider } from "@/contexts/SitesContext";
 import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
-  title: "navhub.shenzjd.com",
-  description: "navhub.shenzjd.com - 个人导航网站，支持本地存储和 GitHub 同步",
+  title: "NavHub",
+  description: "NavHub - 个人导航网站，支持本地存储和 GitHub 同步",
 };
 
 export default function RootLayout({

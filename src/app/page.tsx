@@ -183,7 +183,7 @@ export default function Home() {
       <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-gray-900">navhub.shenzjd.com</h1>
+            <h1 className="text-xl font-bold text-gray-900">NavHub</h1>
           </div>
 
           <div className="flex items-center gap-3 relative">
