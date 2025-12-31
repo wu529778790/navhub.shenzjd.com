@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767179808903,
+  "lastModified": 1767186139366,
   "categories": [
     {
       "id": "default",
@@ -25,6 +25,12 @@
           "title": "PanHub - 全网最全的网盘搜索",
           "favicon": "https://panhub.shenzjd.com/favicon.ico",
           "url": "https://panhub.shenzjd.com/"
+        },
+        {
+          "id": "1767186139365",
+          "title": "神族九帝’s blog",
+          "favicon": "https://blog.shenzjd.com/img/favicon.ico",
+          "url": "https://blog.shenzjd.com/"
         }
       ]
     }
