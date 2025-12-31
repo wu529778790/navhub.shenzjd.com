@@ -22,7 +22,7 @@ import {
   type Site,
 } from "@/lib/storage/local-storage";
 import { getAuthState } from "@/lib/auth";
-import { getDataFromGitHub, getYourDataFromGitHub } from "@/lib/storage/github-storage";
+import { getDataFromGitHub, getYourDataFromGitHub, saveDataToGitHub } from "@/lib/storage/github-storage";
 
 interface SitesContextType {
   sites: Category[];
@@ -226,7 +226,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
   }, [fetchSites]);
 
   // 操作函数：立即更新本地 + 后台同步
-  const updateSitesData = useCallback((newSites: Category[]) => {
+  const updateSitesData = useCallback(async (newSites: Category[], immediateSync = false) => {
     // 访客模式不允许修改
     if (isGuestMode) {
       setError("访客模式，无法修改数据（请登录后操作）");
@@ -240,7 +240,21 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     if (githubToken && !isGuestMode) {
       const navData = loadFromLocalStorage();
       if (navData) {
-        sync(navData);
+        if (immediateSync) {
+          // 立即同步（用于删除/修改操作，防止数据不一致）
+          try {
+            await saveDataToGitHub(githubToken, navData, `[skip ci] Immediate sync ${new Date().toISOString()}`);
+            // 更新最后同步时间到 localStorage
+            localStorage.setItem("nav_last_sync", Date.now().toString());
+          } catch (error) {
+            console.error("立即同步失败:", error);
+            // 同步失败时，使用防抖同步作为 fallback
+            sync(navData);
+          }
+        } else {
+          // 防抖同步（用于添加操作）
+          sync(navData);
+        }
       }
     }
   }, [githubToken, sync, isGuestMode]);
@@ -261,7 +275,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       return category;
     });
 
-    updateSitesData(newSites);
+    // 添加操作使用防抖同步
+    await updateSitesData(newSites, false);
   };
 
   const updateSite = async (categoryId: string, siteId: string, site: Site) => {
@@ -280,7 +295,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       return category;
     });
 
-    updateSitesData(newSites);
+    // 修改操作使用立即同步
+    await updateSitesData(newSites, true);
   };
 
   const deleteSite = async (categoryId: string, siteId: string) => {
@@ -299,7 +315,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       return category;
     });
 
-    updateSitesData(newSites);
+    // 删除操作使用立即同步
+    await updateSitesData(newSites, true);
   };
 
   const addCategory = async (category: Category) => {
@@ -309,7 +326,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     }
 
     const newSites = [...sites, category];
-    updateSitesData(newSites);
+    // 添加分类使用防抖同步
+    await updateSitesData(newSites, false);
   };
 
   const updateCategory = async (categoryId: string, category: Category) => {
@@ -319,7 +337,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     }
 
     const newSites = sites.map((c) => (c.id === categoryId ? category : c));
-    updateSitesData(newSites);
+    // 修改分类使用立即同步
+    await updateSitesData(newSites, true);
   };
 
   const deleteCategory = async (categoryId: string) => {
@@ -329,7 +348,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     }
 
     const newSites = sites.filter((c) => c.id !== categoryId);
-    updateSitesData(newSites);
+    // 删除分类使用立即同步
+    await updateSitesData(newSites, true);
   };
 
   const updateSites = async (newSites: Category[]) => {
@@ -338,7 +358,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    updateSitesData(newSites);
+    // 批量更新使用立即同步
+    await updateSitesData(newSites, true);
   };
 
   return (
