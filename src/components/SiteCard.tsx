@@ -170,7 +170,7 @@ export function SiteCard({
         {isContextMenuOpen && (
           <div
             ref={contextMenuRef}
-            className="absolute left-1/2 -translate-x-1/2 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+            className="absolute left-1/2 -translate-x-1/2 top-full mt-1 w-28 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -185,20 +185,10 @@ export function SiteCard({
                 setIsDeleteAlertOpen(true);
                 setIsContextMenuOpen(false);
               }}
-              className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+              className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 rounded-b-lg"
             >
               <Trash2 className="w-3 h-3" />
               删除
-            </button>
-            <button
-              onClick={() => {
-                window.open(url, "_blank");
-                setIsContextMenuOpen(false);
-              }}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 border-t border-gray-100"
-            >
-              <LinkIcon className="w-3 h-3" />
-              打开
             </button>
           </div>
         )}
