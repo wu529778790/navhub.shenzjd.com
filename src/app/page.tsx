@@ -51,8 +51,41 @@ export default function Home() {
   const [session, setSession] = useState<any>(null);
   const [activeCategory, setActiveCategory] = useState<string>("default");
 
-  // 检查认证状态
+  // 检查认证状态和处理 OAuth 回调
   useEffect(() => {
+    // 检查 URL 参数（OAuth 回调传递的数据）
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    const userId = params.get("user_id");
+    const userName = params.get("user_name");
+    const userAvatar = params.get("user_avatar");
+    const oauthError = params.get("oauth_error");
+
+    if (oauthError) {
+      alert(`登录失败: ${oauthError}`);
+      // 清除错误参数
+      window.history.replaceState({}, "", window.location.pathname);
+      return;
+    }
+
+    if (token && userId && userName && userAvatar) {
+      // 从 OAuth 回调获取的数据，存储到 localStorage
+      setGitHubToken(token);
+      setGitHubUser({
+        id: userId,
+        name: userName,
+        avatar: userAvatar,
+      });
+      setSession({
+        user: { id: userId, name: userName, avatar: userAvatar },
+        token: token,
+      });
+      // 清除 URL 参数
+      window.history.replaceState({}, "", window.location.pathname);
+      return;
+    }
+
+    // 检查本地存储
     const auth = getAuthState();
     if (auth.token && auth.user) {
       setSession({ user: auth.user, token: auth.token });
@@ -66,7 +99,8 @@ export default function Home() {
       return;
     }
     // 重定向到 GitHub OAuth
-    const redirectUri = encodeURIComponent(`${window.location.origin}/auth/github/callback`);
+    // 使用你配置的回调 URL: http://localhost/api/auth/callback/github
+    const redirectUri = encodeURIComponent(`${window.location.origin}/api/auth/callback/github`);
     const scope = encodeURIComponent("repo gist");
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}`;
   };
