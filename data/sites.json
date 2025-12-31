@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767190350710,
+  "lastModified": 1767190362459,
   "categories": [
     {
       "id": "default",
@@ -80,17 +80,17 @@
       "sort": 1,
       "sites": [
         {
-          "id": "1767189449211",
-          "title": "Claude Code - AI coding agent for terminal & IDE | Claude",
-          "favicon": "https://cdn.prod.website-files.com/6889473510b50328dbb70ae6/689f4a9aff1f63fde75cf733_favicon.png",
-          "url": "https://claude.com/product/claude-code",
-          "sort": 0
-        },
-        {
           "id": "1767189420645",
           "title": "Xiaomi MiMo API Open Platform",
           "favicon": "https://platform.xiaomimimo.com/favicon.874c9507.png",
           "url": "https://platform.xiaomimimo.com/#/docs/welcome",
+          "sort": 0
+        },
+        {
+          "id": "1767189449211",
+          "title": "Claude Code - AI coding agent for terminal & IDE | Claude",
+          "favicon": "https://cdn.prod.website-files.com/6889473510b50328dbb70ae6/689f4a9aff1f63fde75cf733_favicon.png",
+          "url": "https://claude.com/product/claude-code",
           "sort": 1
         }
       ]
