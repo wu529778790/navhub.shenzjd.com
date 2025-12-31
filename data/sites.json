@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767186305853,
+  "lastModified": 1767186377033,
   "categories": [
     {
       "id": "default",
@@ -49,6 +49,12 @@
           "title": "newshub.shenzjd.com",
           "favicon": "https://newshub.shenzjd.com/favicon.ico",
           "url": "https://newshub.shenzjd.com/"
+        },
+        {
+          "id": "1767186377033",
+          "title": "IT Tools - Handy online tools for developers",
+          "favicon": "https://it-tools.shenzjd.com/apple-touch-icon.png",
+          "url": "https://it-tools.shenzjd.com/"
         }
       ]
     }
