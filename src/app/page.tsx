@@ -8,7 +8,7 @@ import { AddSiteCard } from "@/components/AddSiteCard";
 import { SiteCard } from "@/components/SiteCard";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
-import { Plus, LogIn, LogOut, RefreshCw, Github } from "lucide-react";
+import { Plus, LogIn, LogOut, RefreshCw, Github, ChevronDown } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
 
 // GitHub OAuth 配置
@@ -50,6 +50,7 @@ export default function Home() {
   } = useSites();
   const [session, setSession] = useState<any>(null);
   const [activeCategory, setActiveCategory] = useState<string>("default");
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   // 检查认证状态和处理 OAuth 回调
   useEffect(() => {
@@ -112,6 +113,21 @@ export default function Home() {
     window.location.reload();
   };
 
+  // 点击外部关闭下拉菜单
+  useEffect(() => {
+    if (!showUserMenu) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.relative')) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showUserMenu]);
+
   // 获取当前分类
   const currentCategory = categories.find(c => c.id === activeCategory) || categories[0];
 
@@ -127,32 +143,49 @@ export default function Home() {
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative">
             {/* 同步状态 */}
             <SyncStatus />
 
             {/* 认证按钮 */}
             {session ? (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 text-sm">
+              <div className="relative">
+                {/* 头像按钮 */}
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                >
                   <img
                     src={session.user.avatar}
                     alt={session.user.name}
-                    className="w-6 h-6 rounded-full"
+                    className="w-7 h-7 rounded-full"
                   />
-                  <span className="font-medium text-gray-700">
-                    {session.user.name}
-                  </span>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleGitHubLogout}
-                  className="flex items-center gap-1 px-2"
-                  title="退出登录"
-                >
-                  <LogOut className="w-3 h-3" />
-                </Button>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* 下拉菜单 */}
+                {showUserMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <div className="font-medium text-gray-900 text-sm">
+                        {session.user.name}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        已登录
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        handleGitHubLogout();
+                        setShowUserMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      退出登录
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <Button
