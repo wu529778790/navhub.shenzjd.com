@@ -1,13 +1,20 @@
 {
   "version": "1.0",
-  "lastModified": 0,
+  "lastModified": 1767177214198,
   "categories": [
     {
       "id": "default",
       "name": "默认分类",
       "icon": "📁",
       "sort": 0,
-      "sites": []
+      "sites": [
+        {
+          "id": "1767177214197",
+          "title": "妖火",
+          "favicon": "https://yaohuo.me/blog/rose.ico",
+          "url": "https://yaohuo.me/"
+        }
+      ]
     }
   ]
 }
