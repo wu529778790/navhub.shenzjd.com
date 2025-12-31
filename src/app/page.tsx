@@ -57,22 +57,6 @@ export default function Home() {
     if (auth.token && auth.user) {
       setSession({ user: auth.user, token: auth.token });
     }
-
-    // 检查 URL 参数中的 token（OAuth 回调）
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
-    if (token) {
-      fetchGitHubUserInfo(token).then(user => {
-        if (user) {
-          setGitHubToken(token);
-          setGitHubUser(user);
-          setSession({ user, token });
-          // 清除 URL 参数
-          window.history.replaceState({}, "", window.location.pathname);
-          window.location.reload();
-        }
-      });
-    }
   }, []);
 
   // GitHub OAuth 登录
@@ -82,7 +66,7 @@ export default function Home() {
       return;
     }
     // 重定向到 GitHub OAuth
-    const redirectUri = encodeURIComponent(`${window.location.origin}/auth/github/callback`);
+    const redirectUri = encodeURIComponent(`${window.location.origin}`);
     const scope = encodeURIComponent("repo gist");
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}`;
   };
@@ -96,13 +80,6 @@ export default function Home() {
 
   // 获取当前分类
   const currentCategory = categories.find(c => c.id === activeCategory) || categories[0];
-
-  // 如果没有分类，创建默认分类
-  useEffect(() => {
-    if (categories.length === 0 && !loading) {
-      // 可以在这里初始化默认分类
-    }
-  }, [categories, loading]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -181,8 +158,8 @@ export default function Home() {
               onClick={() => {
                 const name = prompt("输入分类名称");
                 if (name) {
-                  // 添加分类逻辑 - 使用 SitesContext 的 addCategory
-                  const { addCategory } = require("@/contexts/SitesContext").useSites();
+                  const { useSites } = require("@/contexts/SitesContext");
+                  const { addCategory } = useSites();
                   addCategory({
                     id: `cat_${Date.now()}`,
                     name,
@@ -222,7 +199,6 @@ export default function Home() {
               onClick={() => {
                 const name = prompt("输入分类名称");
                 if (name) {
-                  // 使用 SitesContext 的 addCategory
                   const { useSites } = require("@/contexts/SitesContext");
                   const { addCategory } = useSites();
                   addCategory({

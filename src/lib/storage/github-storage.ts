@@ -6,8 +6,12 @@
 import { Octokit } from "@octokit/rest";
 import type { NavData } from "./local-storage";
 
-const ORIGINAL_OWNER = "wu529778790";
-const ORIGINAL_REPO = "shenzjd.com";
+// 用户需要配置自己的仓库信息
+// 在 .env.local 中设置：
+// NEXT_PUBLIC_GITHUB_OWNER=your_username
+// NEXT_PUBLIC_GITHUB_REPO=your_repo_name
+const ORIGINAL_OWNER = process.env.NEXT_PUBLIC_GITHUB_OWNER || "your_username";
+const ORIGINAL_REPO = process.env.NEXT_PUBLIC_GITHUB_REPO || "nav.shenzjd.com";
 const DATA_FILE_PATH = "src/data/sites.json";
 
 /**

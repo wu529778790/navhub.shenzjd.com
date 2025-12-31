@@ -1,9 +1,4 @@
-/**\n * 简化的认证管理\n * 使用 localStorage 存储 GitHub token\n */
-
-import { z } from "zod";
-
-// GitHub token 验证
-const githubTokenSchema = z.string().min(1);
+/**\n * 认证管理\n * 使用 localStorage 存储 GitHub token\n */
 
 export interface AuthState {
   token: string | null;
@@ -45,8 +40,7 @@ export function getAuthState(): AuthState {
  * 设置 GitHub token
  */
 export function setGitHubToken(token: string): void {
-  const validated = githubTokenSchema.parse(token);
-  localStorage.setItem("github_token", validated);
+  localStorage.setItem("github_token", token);
 }
 
 /**
@@ -69,22 +63,4 @@ export function clearAuth(): void {
  */
 export function isAuthenticated(): boolean {
   return !!localStorage.getItem("github_token");
-}
-
-/**
- * 从 URL 参数获取 token（OAuth 回调）
- */
-export function getTokenFromURL(): string | null {
-  if (typeof window === "undefined") return null;
-
-  const params = new URLSearchParams(window.location.search);
-  const token = params.get("token");
-
-  if (token) {
-    // 清除 URL 参数
-    window.history.replaceState({}, "", window.location.pathname);
-    return token;
-  }
-
-  return null;
 }
