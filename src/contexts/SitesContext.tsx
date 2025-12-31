@@ -68,7 +68,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       if (!forceRefresh) {
         // 优先从本地加载
         const localData = loadFromLocalStorage();
-        if (localData?.categories) {
+        if (localData?.categories && localData.categories.length > 0) {
           setSites(localData.categories);
           setLoading(false);
           return;
@@ -77,10 +77,20 @@ export function SitesProvider({ children }: { children: ReactNode }) {
 
       // 如果需要刷新或本地没有数据，从 GitHub 获取
       const data = await refresh();
-      if (data?.categories) {
+      if (data?.categories && data.categories.length > 0) {
         setSites(data.categories);
       } else {
-        setSites([]);
+        // 如果没有任何数据，创建默认分类
+        const defaultCategory: Category = {
+          id: "default",
+          name: "默认分类",
+          icon: "📁",
+          sort: 0,
+          sites: [],
+        };
+        setSites([defaultCategory]);
+        // 保存到本地
+        saveSitesToLocalStorage([defaultCategory]);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "加载失败");
@@ -88,6 +98,17 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       const localData = getSitesFromLocalStorage();
       if (localData.length > 0) {
         setSites(localData);
+      } else {
+        // 如果本地也没有，创建默认分类
+        const defaultCategory: Category = {
+          id: "default",
+          name: "默认分类",
+          icon: "📁",
+          sort: 0,
+          sites: [],
+        };
+        setSites([defaultCategory]);
+        saveSitesToLocalStorage([defaultCategory]);
       }
     } finally {
       setLoading(false);
