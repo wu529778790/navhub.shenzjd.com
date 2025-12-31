@@ -69,9 +69,31 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Deploy to server (optional)
-        run: |
-          echo "部署脚本可以在这里添加"
-          echo "例如: ssh user@server 'docker pull ${{ env.REGISTRY_DOCKER_HUB }}:main && docker-compose up -d'"
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || '22' }}
+          script: |
+            # 进入项目目录
+            cd ${{ secrets.SSH_DEPLOY_PATH }}
+
+            # 拉取最新代码
+            git pull origin main
+
+            # 拉取最新 Docker 镜像
+            docker pull ${{ env.REGISTRY_DOCKER_HUB }}:main
+
+            # 使用 docker-compose 重启服务
+            docker-compose down
+            docker-compose up -d
+
+            # 清理无用的镜像和容器
+            docker image prune -f
+            docker container prune -f
+
+            # 输出状态
+            docker-compose ps
+            echo "部署完成！"
