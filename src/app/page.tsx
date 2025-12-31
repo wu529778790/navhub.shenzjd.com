@@ -10,7 +10,7 @@ import { AddSiteCard } from "@/components/AddSiteCard";
 import { SiteCard } from "@/components/SiteCard";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut, Github, ChevronDown, Star } from "lucide-react";
+import { Plus, LogOut, Github, Star } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
 
 // GitHub OAuth 配置
@@ -262,65 +262,6 @@ export default function Home() {
 
       {/* 主内容区 */}
       <main className="max-w-6xl mx-auto px-4 py-6">
-        {/* 分类导航 */}
-        {categories.length > 0 && (
-          <div className="mb-6 flex flex-wrap gap-2">
-            {categories.map((category, index) => (
-              <div
-                key={category.id}
-                draggable={!isGuestMode}
-                onDragStart={(e) => {
-                  e.dataTransfer.setData("text/plain", category.id);
-                  e.dataTransfer.effectAllowed = "move";
-                }}
-                onDragOver={(e) => {
-                  if (!isGuestMode) {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = "move";
-                  }
-                }}
-                onDrop={async (e) => {
-                  if (isGuestMode) return;
-                  e.preventDefault();
-                  const draggedId = e.dataTransfer.getData("text/plain");
-                  if (draggedId && draggedId !== category.id) {
-                    const draggedIndex = categories.findIndex(c => c.id === draggedId);
-                    const targetIndex = categories.findIndex(c => c.id === category.id);
-                    if (draggedIndex !== -1 && targetIndex !== -1) {
-                      const newCategories = [...categories];
-                      const [draggedCategory] = newCategories.splice(draggedIndex, 1);
-                      newCategories.splice(targetIndex, 0, draggedCategory);
-                      newCategories.forEach((cat, i) => { cat.sort = i; });
-                      await updateSites(newCategories);
-                    }
-                  }
-                }}
-                className={`flex items-center gap-1 ${!isGuestMode ? 'cursor-move' : ''}`}
-              >
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={`flex items-center gap-2 whitespace-nowrap ${!isGuestMode ? 'opacity-90' : ''}`}
-                  title={!isGuestMode ? "拖拽可排序" : undefined}
-                >
-                  {category.name}
-                </Button>
-              </div>
-            ))}
-            {!isGuestMode && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setShowAddCategoryModal(true)}
-                className="flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                添加分类
-              </Button>
-            )}
-          </div>
-        )}
-
         {/* 错误提示 */}
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
