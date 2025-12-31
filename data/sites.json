@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767186377033,
+  "lastModified": 1767186392155,
   "categories": [
     {
       "id": "default",
@@ -55,6 +55,12 @@
           "title": "IT Tools - Handy online tools for developers",
           "favicon": "https://it-tools.shenzjd.com/apple-touch-icon.png",
           "url": "https://it-tools.shenzjd.com/"
+        },
+        {
+          "id": "1767186392155",
+          "title": "Photoshop在线版 在线PS-miniPaint",
+          "favicon": "https://ps.shenzjd.com/images/favicon.png",
+          "url": "https://ps.shenzjd.com/"
         }
       ]
     }
