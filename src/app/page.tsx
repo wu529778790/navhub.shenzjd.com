@@ -86,6 +86,8 @@ export default function Home() {
       });
       // 清除 URL 参数
       window.history.replaceState({}, "", window.location.pathname);
+      // 登录成功后，从 GitHub 拉取数据
+      setTimeout(() => refreshSites(true), 100);
       return;
     }
 
@@ -316,7 +318,7 @@ export default function Home() {
           <Button
             variant="outline"
             size="sm"
-            onClick={refreshSites}
+            onClick={() => refreshSites()}
             className="flex items-center gap-2"
           >
             <RefreshCw className="w-4 h-4" />

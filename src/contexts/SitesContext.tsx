@@ -33,7 +33,7 @@ interface SitesContextType {
   addCategory: (category: Category) => Promise<void>;
   updateCategory: (categoryId: string, category: Category) => Promise<void>;
   deleteCategory: (categoryId: string) => Promise<void>;
-  refreshSites: () => Promise<void>;
+  refreshSites: (forceRefresh?: boolean) => Promise<void>;
   updateSites: (sites: Category[]) => Promise<void>;
   syncStatus: string;
   isOnline: boolean;
@@ -52,9 +52,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
   // 获取 GitHub token（如果已登录）
   useEffect(() => {
     const auth = getAuthState();
-    if (auth.token) {
-      setGithubToken(auth.token);
-    }
+    setGithubToken(auth.token || undefined);
   }, []);
 
   const { status: syncStatus, isOnline, lastSync, sync, manualSync, refresh } = useSync(githubToken);
@@ -64,6 +62,11 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
+
+      // 每次都重新检查认证状态
+      const auth = getAuthState();
+      const currentToken = auth.token;
+      setGithubToken(currentToken || undefined);
 
       if (!forceRefresh) {
         // 优先从本地加载
@@ -76,6 +79,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       }
 
       // 如果需要刷新或本地没有数据，从 GitHub 获取
+      // 使用最新的 token 调用 refresh
       const data = await refresh();
       if (data?.categories && data.categories.length > 0) {
         setSites(data.categories);
@@ -115,6 +119,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     }
   }, [refresh]);
 
+  // 组件挂载时加载数据
   useEffect(() => {
     fetchSites();
   }, [fetchSites]);
