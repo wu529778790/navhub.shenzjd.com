@@ -390,13 +390,6 @@ export default function Home() {
                     />
                   )}
                 </div>
-
-                {/* 空状态 */}
-                {category.sites.length === 0 && !isGuestMode && (
-                  <div className="text-center py-8 text-gray-400 text-sm">
-                    暂无站点，点击右上角添加站点
-                  </div>
-                )}
               </div>
             ))}
           </div>
