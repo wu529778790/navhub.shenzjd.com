@@ -10,7 +10,7 @@ import { AddSiteCard } from "@/components/AddSiteCard";
 import { SiteCard } from "@/components/SiteCard";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut, Github, Star } from "lucide-react";
+import { Plus, LogOut, Github, Star, ChevronDown } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
 
 // GitHub OAuth 配置
