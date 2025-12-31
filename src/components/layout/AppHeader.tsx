@@ -110,13 +110,11 @@ export function AppHeader() {
             <h1 className="text-xl font-bold tracking-tight">NavHub</h1>
           </div>
 
-          {/* 中间：同步状态 */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* 右侧：同步状态 + 操作区 */}
+          <div className="flex items-center gap-3">
+            {/* 同步状态 */}
             <SyncStatus />
-          </div>
 
-          {/* 右侧：操作区 */}
-          <div className="flex items-center gap-2">
             {/* GitHub Star */}
             <a
               href="https://github.com/wu529778790/navhub.shenzjd.com"
