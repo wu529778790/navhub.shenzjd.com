@@ -1,20 +1,13 @@
 {
   "version": "1.0",
-  "lastModified": 1767176569207,
+  "lastModified": 0,
   "categories": [
     {
       "id": "default",
       "name": "默认分类",
       "icon": "📁",
       "sort": 0,
-      "sites": [
-        {
-          "id": "1767176569207",
-          "title": "资源共享频道",
-          "favicon": "https://duckduckgo.com/favicon.ico?domain=shenzjd.com",
-          "url": "https://shenzjd.com/"
-        }
-      ]
+      "sites": []
     }
   ]
 }
