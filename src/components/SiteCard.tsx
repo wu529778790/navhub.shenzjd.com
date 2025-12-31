@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, Link as LinkIcon, ArrowUp, ArrowDown } from "lucide-react";
+import { Pencil, Trash2, Link as LinkIcon } from "lucide-react";
 import type { Site } from "@/lib/storage/local-storage";
 
 interface SiteCardProps {
@@ -35,8 +35,8 @@ interface SiteCardProps {
   favicon?: string;
   categoryId: string;
   index: number;
-  totalSites: number;
   onSiteChange?: () => void;
+  onSiteReorder?: (draggedId: string, targetId: string) => Promise<void>;
 }
 
 export function SiteCard({
@@ -46,10 +46,10 @@ export function SiteCard({
   favicon = "",
   categoryId,
   index,
-  totalSites,
   onSiteChange,
+  onSiteReorder,
 }: SiteCardProps) {
-  const { updateSite, deleteSite, sortSite, isGuestMode } = useSites();
+  const { updateSite, deleteSite, isGuestMode } = useSites();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
@@ -139,7 +139,27 @@ export function SiteCard({
         key={id}
         onClick={handleCardClick}
         onContextMenu={handleContextMenu}
-        className="flex flex-col items-center gap-2 cursor-pointer group w-[80px] relative"
+        draggable={!isGuestMode}
+        onDragStart={(e) => {
+          e.dataTransfer.setData("text/plain", id);
+          e.dataTransfer.effectAllowed = "move";
+        }}
+        onDragOver={(e) => {
+          if (!isGuestMode) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+          }
+        }}
+        onDrop={async (e) => {
+          if (isGuestMode) return;
+          e.preventDefault();
+          const draggedId = e.dataTransfer.getData("text/plain");
+          if (draggedId && draggedId !== id && onSiteReorder) {
+            await onSiteReorder(draggedId, id);
+          }
+        }}
+        className={`flex flex-col items-center gap-2 cursor-pointer group w-[80px] relative ${!isGuestMode ? 'cursor-move' : ''}`}
+        title={!isGuestMode ? "拖拽可排序" : undefined}
       >
         {/* 右键菜单指示器 - 仅在非访客模式且鼠标悬停时显示 */}
         {!isGuestMode && (
@@ -184,32 +204,6 @@ export function SiteCard({
               <Pencil className="w-3 h-3" />
               编辑
             </button>
-            {totalSites > 1 && (
-              <>
-                <button
-                  onClick={async () => {
-                    await sortSite(categoryId, id, 'up');
-                    setIsContextMenuOpen(false);
-                  }}
-                  disabled={index === 0}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 disabled:opacity-50"
-                >
-                  <ArrowUp className="w-3 h-3" />
-                  上移
-                </button>
-                <button
-                  onClick={async () => {
-                    await sortSite(categoryId, id, 'down');
-                    setIsContextMenuOpen(false);
-                  }}
-                  disabled={index === totalSites - 1}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 disabled:opacity-50"
-                >
-                  <ArrowDown className="w-3 h-3" />
-                  下移
-                </button>
-              </>
-            )}
             <button
               onClick={() => {
                 setIsDeleteAlertOpen(true);

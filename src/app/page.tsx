@@ -10,7 +10,7 @@ import { AddSiteCard } from "@/components/AddSiteCard";
 import { SiteCard } from "@/components/SiteCard";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut, Github, ChevronDown, Star, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, LogOut, Github, ChevronDown, Star } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
 
 // GitHub OAuth 配置
@@ -50,7 +50,7 @@ export default function Home() {
     refreshSites,
     isOnline,
     addCategory,
-    sortCategory,
+    updateSites,
     isGuestMode,
   } = useSites();
   const [session, setSession] = useState<any>(null);
@@ -270,39 +270,46 @@ export default function Home() {
         {categories.length > 0 && (
           <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-2">
             {categories.map((category, index) => (
-              <div key={category.id} className="flex items-center gap-1">
+              <div
+                key={category.id}
+                draggable={!isGuestMode}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData("text/plain", category.id);
+                  e.dataTransfer.effectAllowed = "move";
+                }}
+                onDragOver={(e) => {
+                  if (!isGuestMode) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = "move";
+                  }
+                }}
+                onDrop={async (e) => {
+                  if (isGuestMode) return;
+                  e.preventDefault();
+                  const draggedId = e.dataTransfer.getData("text/plain");
+                  if (draggedId && draggedId !== category.id) {
+                    const draggedIndex = categories.findIndex(c => c.id === draggedId);
+                    const targetIndex = categories.findIndex(c => c.id === category.id);
+                    if (draggedIndex !== -1 && targetIndex !== -1) {
+                      const newCategories = [...categories];
+                      const [draggedCategory] = newCategories.splice(draggedIndex, 1);
+                      newCategories.splice(targetIndex, 0, draggedCategory);
+                      newCategories.forEach((cat, i) => { cat.sort = i; });
+                      await updateSites(newCategories);
+                    }
+                  }
+                }}
+                className={`flex items-center gap-1 ${!isGuestMode ? 'cursor-move' : ''}`}
+              >
                 <Button
                   variant={activeCategory === category.id ? "default" : "outline"}
                   size="sm"
                   onClick={() => setActiveCategory(category.id)}
-                  className="flex items-center gap-2 whitespace-nowrap"
+                  className={`flex items-center gap-2 whitespace-nowrap ${!isGuestMode ? 'opacity-90' : ''}`}
+                  title={!isGuestMode ? "拖拽可排序" : undefined}
                 >
                   {category.name}
                 </Button>
-                {!isGuestMode && categories.length > 1 && (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => sortCategory(category.id, 'up')}
-                      disabled={index === 0}
-                      className="h-7 w-7 p-0"
-                      title="上移"
-                    >
-                      <ArrowUp className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => sortCategory(category.id, 'down')}
-                      disabled={index === categories.length - 1}
-                      className="h-7 w-7 p-0"
-                      title="下移"
-                    >
-                      <ArrowDown className="w-3 h-3" />
-                    </Button>
-                  </>
-                )}
               </div>
             ))}
             {!isGuestMode && (
@@ -348,8 +355,24 @@ export default function Home() {
                 favicon={site.favicon}
                 categoryId={currentCategory.id}
                 index={index}
-                totalSites={currentCategory.sites.length}
                 onSiteChange={refreshSites}
+                onSiteReorder={async (draggedId, targetId) => {
+                  if (!currentCategory || isGuestMode) return;
+                  const sites = currentCategory.sites;
+                  const draggedIndex = sites.findIndex(s => s.id === draggedId);
+                  const targetIndex = sites.findIndex(s => s.id === targetId);
+                  if (draggedIndex === -1 || targetIndex === -1) return;
+
+                  const newSites = [...sites];
+                  const [draggedSite] = newSites.splice(draggedIndex, 1);
+                  newSites.splice(targetIndex, 0, draggedSite);
+                  newSites.forEach((s, i) => { s.sort = i; });
+
+                  const newCategories = categories.map(c =>
+                    c.id === currentCategory.id ? { ...c, sites: newSites } : c
+                  );
+                  await updateSites(newCategories);
+                }}
               />
             ))}
 
