@@ -66,7 +66,7 @@ export default function Home() {
       return;
     }
     // 重定向到 GitHub OAuth
-    const redirectUri = encodeURIComponent(`${window.location.origin}`);
+    const redirectUri = encodeURIComponent(`${window.location.origin}/auth/github/callback`);
     const scope = encodeURIComponent("repo gist");
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}`;
   };
