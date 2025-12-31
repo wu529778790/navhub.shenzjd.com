@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767188951626,
+  "lastModified": 1767189420645,
   "categories": [
     {
       "id": "default",
@@ -77,7 +77,14 @@
       "name": "AI",
       "icon": "📁",
       "sort": 1,
-      "sites": []
+      "sites": [
+        {
+          "id": "1767189420645",
+          "title": "Xiaomi MiMo API Open Platform",
+          "favicon": "https://platform.xiaomimimo.com/favicon.874c9507.png",
+          "url": "https://platform.xiaomimimo.com/#/docs/welcome"
+        }
+      ]
     }
   ]
 }
