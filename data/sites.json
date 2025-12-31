@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767186853183,
+  "lastModified": 1767186870261,
   "categories": [
     {
       "id": "default",
@@ -13,41 +13,48 @@
           "title": "神族九帝’s blog",
           "favicon": "https://blog.shenzjd.com/img/favicon.ico",
           "url": "https://blog.shenzjd.com/",
-          "sort": 1
+          "sort": 0
         },
         {
           "id": "1767179808902",
           "title": "PanHub - 全网最全的网盘搜索",
           "favicon": "https://panhub.shenzjd.com/favicon.ico",
           "url": "https://panhub.shenzjd.com/",
-          "sort": 2
+          "sort": 1
         },
         {
           "id": "1767186266401",
           "title": "神族九帝云盘",
           "favicon": "https://blog.shenzjd.com/img/logo.png",
           "url": "https://alist.shenzjd.com/",
-          "sort": 3
+          "sort": 2
         },
         {
           "id": "1767186305853",
           "title": "newshub.shenzjd.com",
           "favicon": "https://newshub.shenzjd.com/favicon.ico",
           "url": "https://newshub.shenzjd.com/",
-          "sort": 4
+          "sort": 3
         },
         {
           "id": "1767186377033",
           "title": "IT Tools - Handy online tools for developers",
           "favicon": "https://it-tools.shenzjd.com/apple-touch-icon.png",
           "url": "https://it-tools.shenzjd.com/",
-          "sort": 5
+          "sort": 4
         },
         {
           "id": "1767186392155",
           "title": "Photoshop在线版 在线PS-miniPaint",
           "favicon": "https://ps.shenzjd.com/images/favicon.png",
           "url": "https://ps.shenzjd.com/",
+          "sort": 5
+        },
+        {
+          "id": "1767186867865",
+          "title": "资源共享频道",
+          "favicon": "https://wsrv.nl/?w=64&h=64&fit=cover&mask=circle&url=ssl:cdn5.telesco.pe/file/o2mfpQaGCzdmwor0ha4pNWuRkV_UkmCZ0QTyCAjXG8UHbTRkxIIDYt_MJnk_zodIUHM12Em_v8j9LjA5DIwbrVLxcjxgM_G_yN3tVg0Xi08wyANHy2FZtRt680Oz0Gr_WHm2p3IhmC2Nr6ZnMm5SBzjMQcAVy-AmjQGtYVLgzpsLmWwkdWWScZVi8Y-tDjgIHsniv_x_7e4ETop6jMwoJ3eLWEq53o1MMNGvKQZn4Y4wGJRxqHFE5NVYlm5PvXZJknCbRfjuJYKeoYaZnVIQg3Fq2UuGz8H5MOXY70eo7U3ZQHwzHWt-1NQLimzpS1vYnfDNwJ1I2vQo47rR-ZUkRA.jpg",
+          "url": "https://shenzjd.com/",
           "sort": 6
         },
         {
