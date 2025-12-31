@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SitesProvider } from "@/contexts/SitesContext";
-import { ToastProvider } from "@/components/Toast";
+import { ToastProvider } from "@/components/ui/toast";
 
 export const metadata: Metadata = {
   title: "NavHub",
