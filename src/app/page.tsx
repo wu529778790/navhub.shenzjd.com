@@ -133,20 +133,25 @@ export default function Home() {
 
             {/* 认证按钮 */}
             {session ? (
-              <div className="flex items-center gap-2">
-                <img
-                  src={session.user.avatar}
-                  alt={session.user.name}
-                  className="w-6 h-6 rounded-full"
-                />
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <img
+                    src={session.user.avatar}
+                    alt={session.user.name}
+                    className="w-6 h-6 rounded-full"
+                  />
+                  <span className="font-medium text-gray-700">
+                    {session.user.name}
+                  </span>
+                </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleGitHubLogout}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-1 px-2"
+                  title="退出登录"
                 >
-                  <LogOut className="w-4 h-4" />
-                  退出
+                  <LogOut className="w-3 h-3" />
                 </Button>
               </div>
             ) : (
