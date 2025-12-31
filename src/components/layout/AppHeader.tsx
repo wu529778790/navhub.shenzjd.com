@@ -8,15 +8,14 @@ import { useState, useEffect } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
-import { LogOut, Github, Star, ChevronDown, Settings, Menu } from "lucide-react";
+import { LogOut, Github, Star, ChevronDown, Settings } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || "";
 
 export function AppHeader() {
   const router = useRouter();
-  const pathname = usePathname();
   const { isOnline } = useSites();
 
   const [session, setSession] = useState<any>(null);
