@@ -53,6 +53,7 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState<string>("default");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
   // 检查认证状态和处理 OAuth 回调
@@ -104,17 +105,35 @@ export default function Home() {
       alert("请配置 NEXT_PUBLIC_GITHUB_CLIENT_ID 环境变量");
       return;
     }
+
+    // 显示 Fork 提示
+    const confirmed = confirm(
+      "登录后，系统会自动 Fork 仓库 'wu529778790/nav.shenzjd.com' 到你的 GitHub 账户。\n\n" +
+      "数据将存放在你的仓库中：\n" +
+      "  - 文件路径: data/sites.json\n  - 仓库名称: nav.shenzjd.com\n\n" +
+      "其他用户登录时，会 fork 同一个仓库到他们自己的账户，数据互不干扰。\n\n" +
+      "是否继续？"
+    );
+
+    if (!confirmed) return;
+
     // 重定向到 GitHub OAuth
-    // 使用你配置的回调 URL: http://localhost/api/auth/callback/github
     const redirectUri = encodeURIComponent(`${window.location.origin}/api/auth/callback/github`);
     const scope = encodeURIComponent("repo gist");
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}`;
   };
 
-  // GitHub OAuth 登出
+  // GitHub OAuth 登出（带二次确认）
   const handleGitHubLogout = () => {
+    setShowLogoutModal(true);
+    setShowUserMenu(false);
+  };
+
+  // 确认登出
+  const confirmLogout = () => {
     clearAuth();
     setSession(null);
+    setShowLogoutModal(false);
     window.location.reload();
   };
 
@@ -340,6 +359,34 @@ export default function Home() {
                 取消
               </Button>
               <Button onClick={handleAddCategory}>确认</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 退出登录确认模态框 */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-3 text-red-600">确认退出登录</h3>
+            <p className="text-gray-600 mb-4 text-sm">
+              退出登录后，你将无法同步数据到 GitHub。
+              <br /><br />
+              你的本地数据仍然保留，下次登录后可以继续使用。
+            </p>
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setShowLogoutModal(false)}
+              >
+                取消
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmLogout}
+              >
+                确认退出
+              </Button>
             </div>
           </div>
         </div>

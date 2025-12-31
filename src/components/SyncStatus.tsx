@@ -14,6 +14,7 @@ import { getAuthState } from "@/lib/auth";
 export function SyncStatus() {
   const { syncStatus, isOnline, lastSync, manualSync } = useSites();
   const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
   // 检查是否已登录
   const isLoggedIn = () => {
@@ -39,20 +40,39 @@ export function SyncStatus() {
   const getStatusText = () => {
     if (!isOnline) return "⚪ 离线";
     if (syncStatus === "🟡") return "🟡 同步中";
+    if (syncStatus === "⬆️") return "⬆️ 上传中";
+    if (syncStatus === "⬇️") return "⬇️ 下载中";
+    if (syncStatus === "⚠️") return "⚠️ 冲突";
     if (syncStatus === "🔴") return "🔴 同步错误";
     // 已登录显示在线，未登录显示待同步
     return isLoggedIn() ? "🟢 在线" : "⚪ 待同步";
   };
 
-  // 处理同步点击
+  // 处理同步点击 - 双向同步
   const handleManualSync = async () => {
     if (isSyncing) return;
 
     setIsSyncing(true);
+    setSyncMessage(null);
 
     try {
-      await manualSync();
-      showToast("同步成功", "success", 2000);
+      const result = await manualSync();
+
+      // 根据同步方向显示不同的成功消息
+      let successMsg = "同步成功";
+      if (result.direction === "upload") {
+        successMsg = "📤 " + (result.message || "上传成功");
+      } else if (result.direction === "download") {
+        successMsg = "📥 " + (result.message || "下载成功");
+      } else if (result.direction === "none") {
+        successMsg = "✅ " + (result.message || "数据已同步");
+      }
+
+      showToast(successMsg, "success", 3000);
+      setSyncMessage(result.message || "");
+
+      // 3秒后清除消息
+      setTimeout(() => setSyncMessage(null), 3000);
     } catch (error: any) {
       // 友好的错误提示
       let errorMsg = error?.message || '同步失败';
@@ -60,8 +80,11 @@ export function SyncStatus() {
         errorMsg = '请先登录 GitHub';
       } else if (errorMsg === '当前离线，无法同步') {
         errorMsg = '当前离线，无法同步';
+      } else if (errorMsg === '没有本地数据可同步') {
+        errorMsg = '没有数据可同步';
       }
       showToast(errorMsg, "error", 3000);
+      setSyncMessage(null);
     } finally {
       setIsSyncing(false);
     }
@@ -79,16 +102,22 @@ export function SyncStatus() {
             {formatLastSync()}
           </span>
         )}
+        {/* 同步消息提示 */}
+        {syncMessage && (
+          <span className="text-blue-600 dark:text-blue-400 hidden md:inline">
+            ({syncMessage})
+          </span>
+        )}
       </div>
 
       {/* 同步按钮 */}
-      {isOnline && (
+      {isOnline && isLoggedIn() && (
         <Button
           onClick={handleManualSync}
           size="sm"
           disabled={isSyncing}
           className="flex items-center gap-1"
-          title="手动同步到 GitHub"
+          title="双向同步：上传本地数据或下载 GitHub 数据"
         >
           <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
           {isSyncing ? '同步中...' : '同步'}

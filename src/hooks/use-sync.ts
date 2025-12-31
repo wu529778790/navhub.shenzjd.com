@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { SyncManager, SyncStatus, initialSync, manualSync as manualSyncFn } from "@/lib/storage/sync-manager";
+import { SyncManager, SyncStatus, initialSync, manualSync as manualSyncFn, type SyncResult } from "@/lib/storage/sync-manager";
 import type { NavData } from "@/lib/storage/local-storage";
 import { getAuthState } from "@/lib/auth";
 
@@ -13,7 +13,7 @@ interface UseSyncReturn {
   lastSync: Date | null;
   sync: (data: NavData) => void;
   syncNow: (data: NavData) => Promise<void>;
-  manualSync: () => Promise<void>;
+  manualSync: () => Promise<SyncResult>;  // 返回同步结果
   refresh: () => Promise<NavData | null>;
   setToken: (token: string) => void;
 }
@@ -139,9 +139,10 @@ export function useSync(token?: string): UseSyncReturn {
   }, [isOnline, getLatestToken]);
 
   /**
-   * 手动同步
+   * 手动同步 - 双向同步
+   * 返回同步结果用于 UI 反馈
    */
-  const handleManualSync = useCallback(async () => {
+  const handleManualSync = useCallback(async (): Promise<SyncResult> => {
     if (!isOnline) {
       throw new Error("当前离线，无法同步");
     }
@@ -154,8 +155,9 @@ export function useSync(token?: string): UseSyncReturn {
       throw new Error("未认证用户");
     }
 
-    await manualSyncFn(tokenToUse);
+    const result = await manualSyncFn(tokenToUse);
     setLastSync(new Date());
+    return result;
   }, [isOnline, getLatestToken, currentToken, token]);
 
   /**
@@ -173,6 +175,7 @@ export function useSync(token?: string): UseSyncReturn {
       const latestToken = getLatestToken();
       const tokenToUse = latestToken || currentToken || token;
       const data = await initialSync(tokenToUse);
+
       if (data) {
         setLastSync(new Date());
       }

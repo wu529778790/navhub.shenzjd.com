@@ -38,7 +38,7 @@ interface SitesContextType {
   syncStatus: string;
   isOnline: boolean;
   lastSync: Date | null;
-  manualSync: () => Promise<void>;
+  manualSync: () => Promise<{ success: boolean; message?: string; direction: string }>;
 }
 
 const SitesContext = createContext<SitesContextType | null>(null);
@@ -55,7 +55,22 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     setGithubToken(auth.token || undefined);
   }, []);
 
-  const { status: syncStatus, isOnline, lastSync, sync, manualSync, refresh } = useSync(githubToken);
+  const { status: syncStatus, isOnline, lastSync, sync, manualSync: useSyncManualSync, refresh } = useSync(githubToken);
+
+  // 包装 manualSync 以在同步后刷新数据
+  const manualSync = useCallback(async () => {
+    const result = await useSyncManualSync();
+
+    // 如果是下载操作，刷新本地数据
+    if (result.direction === "download") {
+      const data = loadFromLocalStorage();
+      if (data?.categories) {
+        setSites(data.categories);
+      }
+    }
+
+    return result;
+  }, [useSyncManualSync]);
 
   // 初始化：从本地或 GitHub 加载数据
   const fetchSites = useCallback(async (forceRefresh = false) => {
@@ -68,34 +83,40 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       const currentToken = auth.token;
       setGithubToken(currentToken || undefined);
 
-      if (!forceRefresh) {
-        // 优先从本地加载
-        const localData = loadFromLocalStorage();
-        if (localData?.categories && localData.categories.length > 0) {
-          setSites(localData.categories);
-          setLoading(false);
-          return;
+      // 如果有 token，优先从 GitHub 获取最新数据
+      if (currentToken && !forceRefresh) {
+        try {
+          const data = await refresh();
+          if (data?.categories && data.categories.length > 0) {
+            setSites(data.categories);
+            setLoading(false);
+            return;
+          }
+        } catch (githubError) {
+          console.error("从 GitHub 加载失败:", githubError);
+          // GitHub 加载失败，尝试本地
         }
       }
 
-      // 如果需要刷新或本地没有数据，从 GitHub 获取
-      // 使用最新的 token 调用 refresh
-      const data = await refresh();
-      if (data?.categories && data.categories.length > 0) {
-        setSites(data.categories);
-      } else {
-        // 如果没有任何数据，创建默认分类
-        const defaultCategory: Category = {
-          id: "default",
-          name: "默认分类",
-          icon: "📁",
-          sort: 0,
-          sites: [],
-        };
-        setSites([defaultCategory]);
-        // 保存到本地
-        saveSitesToLocalStorage([defaultCategory]);
+      // 从本地加载
+      const localData = loadFromLocalStorage();
+      if (localData?.categories && localData.categories.length > 0) {
+        setSites(localData.categories);
+        setLoading(false);
+        return;
       }
+
+      // 如果没有任何数据，创建默认分类
+      const defaultCategory: Category = {
+        id: "default",
+        name: "默认分类",
+        icon: "📁",
+        sort: 0,
+        sites: [],
+      };
+      setSites([defaultCategory]);
+      saveSitesToLocalStorage([defaultCategory]);
+      setLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "加载失败");
       // 尝试从本地加载作为 fallback
@@ -114,7 +135,6 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         setSites([defaultCategory]);
         saveSitesToLocalStorage([defaultCategory]);
       }
-    } finally {
       setLoading(false);
     }
   }, [refresh]);
