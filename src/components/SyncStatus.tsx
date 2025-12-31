@@ -9,10 +9,17 @@ import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { showToast } from "@/components/Toast";
+import { getAuthState } from "@/lib/auth";
 
 export function SyncStatus() {
   const { syncStatus, isOnline, lastSync, manualSync } = useSites();
   const [isSyncing, setIsSyncing] = useState(false);
+
+  // 检查是否已登录
+  const isLoggedIn = () => {
+    const auth = getAuthState();
+    return !!auth.token;
+  };
 
   // 格式化最后同步时间
   const formatLastSync = () => {
@@ -33,7 +40,8 @@ export function SyncStatus() {
     if (!isOnline) return "⚪ 离线";
     if (syncStatus === "🟡") return "🟡 同步中";
     if (syncStatus === "🔴") return "🔴 同步错误";
-    return "🟢 在线";
+    // 已登录显示在线，未登录显示待同步
+    return isLoggedIn() ? "🟢 在线" : "⚪ 待同步";
   };
 
   // 处理同步点击
