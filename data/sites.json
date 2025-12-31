@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767186867865,
+  "lastModified": 1767186885657,
   "categories": [
     {
       "id": "default",
@@ -8,6 +8,13 @@
       "icon": "📁",
       "sort": 0,
       "sites": [
+        {
+          "id": "1767186867865",
+          "title": "资源共享频道",
+          "favicon": "https://wsrv.nl/?w=64&h=64&fit=cover&mask=circle&url=ssl:cdn5.telesco.pe/file/o2mfpQaGCzdmwor0ha4pNWuRkV_UkmCZ0QTyCAjXG8UHbTRkxIIDYt_MJnk_zodIUHM12Em_v8j9LjA5DIwbrVLxcjxgM_G_yN3tVg0Xi08wyANHy2FZtRt680Oz0Gr_WHm2p3IhmC2Nr6ZnMm5SBzjMQcAVy-AmjQGtYVLgzpsLmWwkdWWScZVi8Y-tDjgIHsniv_x_7e4ETop6jMwoJ3eLWEq53o1MMNGvKQZn4Y4wGJRxqHFE5NVYlm5PvXZJknCbRfjuJYKeoYaZnVIQg3Fq2UuGz8H5MOXY70eo7U3ZQHwzHWt-1NQLimzpS1vYnfDNwJ1I2vQo47rR-ZUkRA.jpg",
+          "url": "https://shenzjd.com/",
+          "sort": 0
+        },
         {
           "id": "1767186154553",
           "title": "神族九帝’s blog",
@@ -56,12 +63,6 @@
           "favicon": "https://github.com/fluidicon.png",
           "url": "https://github.com/wu529778790",
           "sort": 7
-        },
-        {
-          "id": "1767186867865",
-          "title": "资源共享频道",
-          "favicon": "https://wsrv.nl/?w=64&h=64&fit=cover&mask=circle&url=ssl:cdn5.telesco.pe/file/o2mfpQaGCzdmwor0ha4pNWuRkV_UkmCZ0QTyCAjXG8UHbTRkxIIDYt_MJnk_zodIUHM12Em_v8j9LjA5DIwbrVLxcjxgM_G_yN3tVg0Xi08wyANHy2FZtRt680Oz0Gr_WHm2p3IhmC2Nr6ZnMm5SBzjMQcAVy-AmjQGtYVLgzpsLmWwkdWWScZVi8Y-tDjgIHsniv_x_7e4ETop6jMwoJ3eLWEq53o1MMNGvKQZn4Y4wGJRxqHFE5NVYlm5PvXZJknCbRfjuJYKeoYaZnVIQg3Fq2UuGz8H5MOXY70eo7U3ZQHwzHWt-1NQLimzpS1vYnfDNwJ1I2vQo47rR-ZUkRA.jpg",
-          "url": "https://shenzjd.com/"
         }
       ]
     },
