@@ -36,7 +36,6 @@ interface SiteCardProps {
   categoryId: string;
   index: number;
   onSiteChange?: () => void;
-  onSiteReorder?: (draggedId: string, targetId: string) => Promise<void>;
 }
 
 export function SiteCard({
@@ -47,7 +46,6 @@ export function SiteCard({
   categoryId,
   index,
   onSiteChange,
-  onSiteReorder,
 }: SiteCardProps) {
   const { updateSite, deleteSite, isGuestMode } = useSites();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -139,26 +137,7 @@ export function SiteCard({
         key={id}
         onClick={handleCardClick}
         onContextMenu={handleContextMenu}
-        draggable={!isGuestMode}
-        onDragStart={(e) => {
-          e.dataTransfer.setData("text/plain", id);
-          e.dataTransfer.effectAllowed = "move";
-        }}
-        onDragOver={(e) => {
-          if (!isGuestMode) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = "move";
-          }
-        }}
-        onDrop={async (e) => {
-          if (isGuestMode) return;
-          e.preventDefault();
-          const draggedId = e.dataTransfer.getData("text/plain");
-          if (draggedId && draggedId !== id && onSiteReorder) {
-            await onSiteReorder(draggedId, id);
-          }
-        }}
-        className={`flex flex-col items-center gap-2 cursor-pointer group w-[80px] relative ${!isGuestMode ? 'cursor-move' : ''}`}
+        className={`flex flex-col items-center gap-2 cursor-pointer group w-[80px] relative ${!isGuestMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
         title={!isGuestMode ? "拖拽可排序" : undefined}
       >
         {/* 右键菜单指示器 - 仅在非访客模式且鼠标悬停时显示 */}

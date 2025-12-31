@@ -6,12 +6,11 @@
 
 import { useState, useEffect } from "react";
 import { useSites } from "@/contexts/SitesContext";
-import { AddSiteCard } from "@/components/AddSiteCard";
-import { SiteCard } from "@/components/SiteCard";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
 import { Plus, LogOut, Github, Star, ChevronDown } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
+import { SortableSites } from "@/components/SortableSites";
 
 // GitHub OAuth 配置
 const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || "";
@@ -291,46 +290,8 @@ export default function Home() {
                   </span>
                 </div>
 
-                {/* 站点网格 */}
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {category.sites.map((site, index) => (
-                    <SiteCard
-                      key={site.id}
-                      id={site.id}
-                      title={site.title}
-                      url={site.url}
-                      favicon={site.favicon}
-                      categoryId={category.id}
-                      index={index}
-                      onSiteChange={refreshSites}
-                      onSiteReorder={async (draggedId, targetId) => {
-                        if (isGuestMode) return;
-                        const sites = category.sites;
-                        const draggedIndex = sites.findIndex(s => s.id === draggedId);
-                        const targetIndex = sites.findIndex(s => s.id === targetId);
-                        if (draggedIndex === -1 || targetIndex === -1) return;
-
-                        const newSites = [...sites];
-                        const [draggedSite] = newSites.splice(draggedIndex, 1);
-                        newSites.splice(targetIndex, 0, draggedSite);
-                        newSites.forEach((s, i) => { s.sort = i; });
-
-                        const newCategories = categories.map(c =>
-                          c.id === category.id ? { ...c, sites: newSites } : c
-                        );
-                        await updateSites(newCategories);
-                      }}
-                    />
-                  ))}
-
-                  {/* 添加站点卡片 */}
-                  {!isGuestMode && (
-                    <AddSiteCard
-                      activeCategory={category.id}
-                      onSuccess={refreshSites}
-                    />
-                  )}
-                </div>
+                {/* 可排序站点网格 */}
+                <SortableSites category={category} allCategories={categories} onSiteChange={refreshSites} />
               </div>
             ))}
 
