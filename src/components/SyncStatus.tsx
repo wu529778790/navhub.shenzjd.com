@@ -4,11 +4,15 @@
 
 "use client";
 
+import { useState } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
+import { RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
 
 export function SyncStatus() {
   const { syncStatus, isOnline, lastSync, manualSync } = useSites();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastMessage, setLastMessage] = useState<{ type: 'success' | 'error' | null; text: string }>({ type: null, text: '' });
 
   // 格式化最后同步时间
   const formatLastSync = () => {
@@ -32,8 +36,29 @@ export function SyncStatus() {
     return "🟢 在线";
   };
 
+  // 处理同步点击
+  const handleManualSync = async () => {
+    if (isSyncing) return;
+
+    setIsSyncing(true);
+    setLastMessage({ type: null, text: '' });
+
+    try {
+      await manualSync();
+      setLastMessage({ type: 'success', text: '同步成功' });
+      setTimeout(() => setLastMessage({ type: null, text: '' }), 2000);
+    } catch (error: any) {
+      const errorMsg = error?.message || '同步失败';
+      setLastMessage({ type: 'error', text: errorMsg });
+      setTimeout(() => setLastMessage({ type: null, text: '' }), 3000);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   return (
     <div className="flex items-center gap-3 text-sm">
+      {/* 状态指示器 */}
       <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50">
         <span title={isOnline ? "在线" : "离线"}>
           {getStatusText()}
@@ -45,15 +70,34 @@ export function SyncStatus() {
         )}
       </div>
 
-      {/* 手动同步按钮 */}
+      {/* 同步按钮和反馈 */}
       {isOnline && (
-        <Button
-          onClick={manualSync}
-          size="sm"
-          title="手动同步到 GitHub"
-        >
-          同步
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleManualSync}
+            size="sm"
+            disabled={isSyncing}
+            className="flex items-center gap-1"
+            title="手动同步到 GitHub"
+          >
+            <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? '同步中...' : '同步'}
+          </Button>
+
+          {/* 同步反馈消息 */}
+          {lastMessage.type === 'success' && (
+            <div className="flex items-center gap-1 text-green-600 text-xs bg-green-50 px-2 py-1 rounded">
+              <CheckCircle2 className="w-3 h-3" />
+              {lastMessage.text}
+            </div>
+          )}
+          {lastMessage.type === 'error' && (
+            <div className="flex items-center gap-1 text-red-600 text-xs bg-red-50 px-2 py-1 rounded">
+              <AlertCircle className="w-3 h-3" />
+              {lastMessage.text}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
