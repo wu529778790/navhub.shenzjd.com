@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767186432560,
+  "lastModified": 1767186439361,
   "categories": [
     {
       "id": "default",
@@ -8,12 +8,6 @@
       "icon": "📁",
       "sort": 0,
       "sites": [
-        {
-          "id": "1767177214197",
-          "title": "妖火",
-          "favicon": "https://yaohuo.me/blog/rose.ico",
-          "url": "https://yaohuo.me/"
-        },
         {
           "id": "1767179808902",
           "title": "PanHub - 全网最全的网盘搜索",
