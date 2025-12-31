@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767186154553,
+  "lastModified": 1767186266402,
   "categories": [
     {
       "id": "default",
@@ -37,6 +37,12 @@
           "title": "神族九帝’s blog",
           "favicon": "https://blog.shenzjd.com/img/favicon.ico",
           "url": "https://blog.shenzjd.com/"
+        },
+        {
+          "id": "1767186266401",
+          "title": "神族九帝云盘",
+          "favicon": "https://blog.shenzjd.com/img/logo.png",
+          "url": "https://alist.shenzjd.com/"
         }
       ]
     }
