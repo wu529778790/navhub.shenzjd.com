@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767189497093,
+  "lastModified": 1767190003125,
   "categories": [
     {
       "id": "default",
@@ -9,24 +9,24 @@
       "sort": 0,
       "sites": [
         {
-          "id": "1767186154553",
-          "title": "神族九帝’s blog",
-          "favicon": "https://blog.shenzjd.com/img/favicon.ico",
-          "url": "https://blog.shenzjd.com/",
-          "sort": 0
-        },
-        {
           "id": "1767186867865",
           "title": "资源共享频道",
           "favicon": "https://wsrv.nl/?w=64&h=64&fit=cover&mask=circle&url=ssl:cdn5.telesco.pe/file/o2mfpQaGCzdmwor0ha4pNWuRkV_UkmCZ0QTyCAjXG8UHbTRkxIIDYt_MJnk_zodIUHM12Em_v8j9LjA5DIwbrVLxcjxgM_G_yN3tVg0Xi08wyANHy2FZtRt680Oz0Gr_WHm2p3IhmC2Nr6ZnMm5SBzjMQcAVy-AmjQGtYVLgzpsLmWwkdWWScZVi8Y-tDjgIHsniv_x_7e4ETop6jMwoJ3eLWEq53o1MMNGvKQZn4Y4wGJRxqHFE5NVYlm5PvXZJknCbRfjuJYKeoYaZnVIQg3Fq2UuGz8H5MOXY70eo7U3ZQHwzHWt-1NQLimzpS1vYnfDNwJ1I2vQo47rR-ZUkRA.jpg",
           "url": "https://shenzjd.com/",
-          "sort": 1
+          "sort": 0
         },
         {
           "id": "1767186266401",
           "title": "神族九帝云盘",
           "favicon": "https://blog.shenzjd.com/img/logo.png",
           "url": "https://alist.shenzjd.com/",
+          "sort": 1
+        },
+        {
+          "id": "1767186154553",
+          "title": "神族九帝’s blog",
+          "favicon": "https://blog.shenzjd.com/img/favicon.ico",
+          "url": "https://blog.shenzjd.com/",
           "sort": 2
         },
         {
@@ -80,16 +80,18 @@
       "sort": 1,
       "sites": [
         {
-          "id": "1767189420645",
-          "title": "Xiaomi MiMo API Open Platform",
-          "favicon": "https://platform.xiaomimimo.com/favicon.874c9507.png",
-          "url": "https://platform.xiaomimimo.com/#/docs/welcome"
-        },
-        {
           "id": "1767189449211",
           "title": "Claude Code - AI coding agent for terminal & IDE | Claude",
           "favicon": "https://cdn.prod.website-files.com/6889473510b50328dbb70ae6/689f4a9aff1f63fde75cf733_favicon.png",
-          "url": "https://claude.com/product/claude-code"
+          "url": "https://claude.com/product/claude-code",
+          "sort": 0
+        },
+        {
+          "id": "1767189420645",
+          "title": "Xiaomi MiMo API Open Platform",
+          "favicon": "https://platform.xiaomimimo.com/favicon.874c9507.png",
+          "url": "https://platform.xiaomimimo.com/#/docs/welcome",
+          "sort": 1
         }
       ]
     }
