@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { SyncManager, SyncStatus, initialSync, manualSync as manualSyncFn } from "@/lib/storage/sync-manager";
 import type { NavData } from "@/lib/storage/local-storage";
+import { getAuthState } from "@/lib/auth";
 
 interface UseSyncReturn {
   status: SyncStatus;
@@ -26,6 +27,18 @@ export function useSync(token?: string): UseSyncReturn {
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [syncManager, setSyncManager] = useState<SyncManager | null>(null);
   const [currentToken, setCurrentToken] = useState<string | undefined>(token);
+
+  // 从 localStorage 获取最新的认证状态
+  const getLatestToken = useCallback(() => {
+    const auth = getAuthState();
+    return auth.token;
+  }, []);
+
+  // 当 token 参数变化或需要刷新认证状态时更新 currentToken
+  useEffect(() => {
+    const latestToken = getLatestToken();
+    setCurrentToken(latestToken || token);
+  }, [token, getLatestToken]);
 
   // 初始化同步管理器
   useEffect(() => {
@@ -86,6 +99,7 @@ export function useSync(token?: string): UseSyncReturn {
 
   /**
    * 同步数据（防抖）
+   * 注意：这个函数依赖 syncManager，syncManager 会在 currentToken 变化时更新
    */
   const sync = useCallback((data: NavData) => {
     if (!isOnline) {
@@ -93,10 +107,18 @@ export function useSync(token?: string): UseSyncReturn {
       return;
     }
 
+    // 每次同步时检查是否有 token
+    const latestToken = getLatestToken();
+    if (!latestToken) {
+      setStatus(SyncStatus.IDLE); // 没有 token，不进行 GitHub 同步
+      return;
+    }
+
+    // 如果 syncManager 的 token 不匹配，需要重新创建
     if (syncManager) {
       syncManager.sync(data);
     }
-  }, [syncManager, isOnline]);
+  }, [syncManager, isOnline, getLatestToken]);
 
   /**
    * 立即同步
@@ -106,11 +128,15 @@ export function useSync(token?: string): UseSyncReturn {
       throw new Error("当前离线，无法同步");
     }
 
-    if (syncManager) {
-      await syncManager.syncNow(data);
-      setLastSync(new Date());
+    const latestToken = getLatestToken();
+    if (!latestToken) {
+      throw new Error("未认证用户");
     }
-  }, [syncManager, isOnline]);
+
+    // 使用最新的 token 立即同步
+    await manualSyncFn(latestToken);
+    setLastSync(new Date());
+  }, [isOnline, getLatestToken]);
 
   /**
    * 手动同步
@@ -120,13 +146,17 @@ export function useSync(token?: string): UseSyncReturn {
       throw new Error("当前离线，无法同步");
     }
 
-    if (!currentToken) {
+    // 每次执行时都重新获取最新的 token
+    const latestToken = getLatestToken();
+    const tokenToUse = latestToken || currentToken || token;
+
+    if (!tokenToUse) {
       throw new Error("未认证用户");
     }
 
-    await manualSyncFn(currentToken);
+    await manualSyncFn(tokenToUse);
     setLastSync(new Date());
-  }, [isOnline, currentToken]);
+  }, [isOnline, getLatestToken, currentToken, token]);
 
   /**
    * 刷新数据（从 GitHub 拉取）
@@ -139,7 +169,10 @@ export function useSync(token?: string): UseSyncReturn {
     }
 
     try {
-      const data = await initialSync(currentToken);
+      // 每次刷新时都重新获取最新的 token
+      const latestToken = getLatestToken();
+      const tokenToUse = latestToken || currentToken || token;
+      const data = await initialSync(tokenToUse);
       if (data) {
         setLastSync(new Date());
       }
@@ -150,7 +183,7 @@ export function useSync(token?: string): UseSyncReturn {
       const localData = localStorage.getItem("nav_data");
       return localData ? JSON.parse(localData) : null;
     }
-  }, [isOnline, currentToken]);
+  }, [isOnline, getLatestToken, currentToken, token]);
 
   /**
    * 设置 Token
