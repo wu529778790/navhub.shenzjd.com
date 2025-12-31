@@ -54,12 +54,13 @@ export default function Home() {
     isGuestMode,
   } = useSites();
   const [session, setSession] = useState<any>(null);
-  const [activeCategory, setActiveCategory] = useState<string>("default");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showForkModal, setShowForkModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
+  // 存储展开的分类ID集合
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   // 检查认证状态和处理 OAuth 回调
   useEffect(() => {
@@ -176,8 +177,18 @@ export default function Home() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [showUserMenu]);
 
-  // 获取当前分类
-  const currentCategory = categories.find(c => c.id === activeCategory) || categories[0];
+  // 切换分类展开/收起状态
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(categoryId)) {
+        newSet.delete(categoryId);
+      } else {
+        newSet.add(categoryId);
+      }
+      return newSet;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -302,9 +313,9 @@ export default function Home() {
                 className={`flex items-center gap-1 ${!isGuestMode ? 'cursor-move' : ''}`}
               >
                 <Button
-                  variant={activeCategory === category.id ? "default" : "outline"}
+                  variant={expandedCategories.has(category.id) ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setActiveCategory(category.id)}
+                  onClick={() => toggleCategory(category.id)}
                   className={`flex items-center gap-2 whitespace-nowrap ${!isGuestMode ? 'opacity-90' : ''}`}
                   title={!isGuestMode ? "拖拽可排序" : undefined}
                 >
@@ -333,7 +344,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* 站点列表 */}
+        {/* 站点列表 - 显示所有分类及其站点 */}
         {loading ? (
           <div className="flex flex-wrap gap-1">
             {[...Array(6)].map((_, i) => (
@@ -344,45 +355,78 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-wrap gap-1">
-            {/* 现有站点 */}
-            {currentCategory?.sites.map((site, index) => (
-              <SiteCard
-                key={site.id}
-                id={site.id}
-                title={site.title}
-                url={site.url}
-                favicon={site.favicon}
-                categoryId={currentCategory.id}
-                index={index}
-                onSiteChange={refreshSites}
-                onSiteReorder={async (draggedId, targetId) => {
-                  if (!currentCategory || isGuestMode) return;
-                  const sites = currentCategory.sites;
-                  const draggedIndex = sites.findIndex(s => s.id === draggedId);
-                  const targetIndex = sites.findIndex(s => s.id === targetId);
-                  if (draggedIndex === -1 || targetIndex === -1) return;
+          <div className="space-y-6">
+            {categories.map((category) => (
+              <div key={category.id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+                {/* 分类标题栏 */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-gray-900">{category.name}</h3>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                      {category.sites.length} 个站点
+                    </span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => toggleCategory(category.id)}
+                    className="text-xs"
+                  >
+                    {expandedCategories.has(category.id) ? '收起' : '展开'}
+                  </Button>
+                </div>
 
-                  const newSites = [...sites];
-                  const [draggedSite] = newSites.splice(draggedIndex, 1);
-                  newSites.splice(targetIndex, 0, draggedSite);
-                  newSites.forEach((s, i) => { s.sort = i; });
+                {/* 站点网格 */}
+                {expandedCategories.has(category.id) && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {category.sites.map((site, index) => (
+                      <SiteCard
+                        key={site.id}
+                        id={site.id}
+                        title={site.title}
+                        url={site.url}
+                        favicon={site.favicon}
+                        categoryId={category.id}
+                        index={index}
+                        onSiteChange={refreshSites}
+                        onSiteReorder={async (draggedId, targetId) => {
+                          if (isGuestMode) return;
+                          const sites = category.sites;
+                          const draggedIndex = sites.findIndex(s => s.id === draggedId);
+                          const targetIndex = sites.findIndex(s => s.id === targetId);
+                          if (draggedIndex === -1 || targetIndex === -1) return;
 
-                  const newCategories = categories.map(c =>
-                    c.id === currentCategory.id ? { ...c, sites: newSites } : c
-                  );
-                  await updateSites(newCategories);
-                }}
-              />
+                          const newSites = [...sites];
+                          const [draggedSite] = newSites.splice(draggedIndex, 1);
+                          newSites.splice(targetIndex, 0, draggedSite);
+                          newSites.forEach((s, i) => { s.sort = i; });
+
+                          const newCategories = categories.map(c =>
+                            c.id === category.id ? { ...c, sites: newSites } : c
+                          );
+                          await updateSites(newCategories);
+                        }}
+                      />
+                    ))}
+
+                    {/* 添加站点卡片 */}
+                    {!isGuestMode && (
+                      <AddSiteCard
+                        activeCategory={category.id}
+                        onSuccess={refreshSites}
+                      />
+                    )}
+                  </div>
+                )}
+
+                {/* 空状态 */}
+                {expandedCategories.has(category.id) && category.sites.length === 0 && !isGuestMode && (
+                  <div className="text-center py-8 text-gray-400 text-sm">
+                    暂无站点，点击右上角添加站点
+                  </div>
+                )}
+              </div>
             ))}
-
-            {/* 添加站点卡片 */}
-            {currentCategory && !isGuestMode && (
-              <AddSiteCard
-                activeCategory={currentCategory.id}
-                onSuccess={refreshSites}
-              />
-            )}
           </div>
         )}
 
