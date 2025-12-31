@@ -268,7 +268,7 @@ export default function Home() {
       <main className="max-w-6xl mx-auto px-4 py-6">
         {/* 分类导航 */}
         {categories.length > 0 && (
-          <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-2">
+          <div className="mb-6 flex flex-wrap gap-2">
             {categories.map((category, index) => (
               <div
                 key={category.id}
