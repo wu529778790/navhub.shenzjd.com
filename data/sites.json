@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767186392155,
+  "lastModified": 1767186421791,
   "categories": [
     {
       "id": "default",
@@ -61,6 +61,12 @@
           "title": "Photoshop在线版 在线PS-miniPaint",
           "favicon": "https://ps.shenzjd.com/images/favicon.png",
           "url": "https://ps.shenzjd.com/"
+        },
+        {
+          "id": "1767186421791",
+          "title": "wu529778790 - Overview",
+          "favicon": "https://github.com/fluidicon.png",
+          "url": "https://github.com/wu529778790"
         }
       ]
     }
