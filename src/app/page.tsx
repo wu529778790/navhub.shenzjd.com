@@ -311,16 +311,18 @@ export default function Home() {
             ))}
           </div>
         ) : categories.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-gray-400 mb-4">暂无站点</div>
-            <Button
-              onClick={() => setShowAddCategoryModal(true)}
-              className="flex items-center gap-2 mx-auto"
-            >
-              <Plus className="w-4 h-4" />
-              创建第一个分类
-            </Button>
-          </div>
+          !isGuestMode ? (
+            <div className="text-center py-20">
+              <div className="text-gray-400 mb-4">暂无站点</div>
+              <Button
+                onClick={() => setShowAddCategoryModal(true)}
+                className="flex items-center gap-2 mx-auto"
+              >
+                <Plus className="w-4 h-4" />
+                创建第一个分类
+              </Button>
+            </div>
+          ) : null
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1">
             {/* 现有站点 */}
