@@ -8,7 +8,7 @@ import type { NavData } from "./local-storage";
 
 // 你的 GitHub 仓库信息（硬编码）
 const ORIGINAL_OWNER = "wu529778790";
-const ORIGINAL_REPO = "nav.shenzjd.com";
+const ORIGINAL_REPO = "navhub.shenzjd.com";
 const DATA_FILE_PATH = "data/sites.json";
 
 /**

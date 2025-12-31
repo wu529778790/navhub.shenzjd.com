@@ -1,4 +1,4 @@
-# 个人导航网站
+# navhub.shenzjd.com
 
 一个支持**双向同步**的个人导航网站，数据存储在 GitHub，支持离线使用。
 
@@ -157,11 +157,11 @@ if (localTime > githubTime) {
 
 **Fork 提示内容：**
 ```
-登录后，系统会自动 Fork 仓库 'wu529778790/nav.shenzjd.com' 到你的 GitHub 账户。
+登录后，系统会自动 Fork 仓库 'wu529778790/navhub.shenzjd.com' 到你的 GitHub 账户。
 
 数据将存放在你的仓库中：
   - 文件路径: data/sites.json
-  - 仓库名称: nav.shenzjd.com
+  - 仓库名称: navhub.shenzjd.com
 
 其他用户登录时，会 fork 同一个仓库到他们自己的账户，数据互不干扰。
 
@@ -205,7 +205,7 @@ if (localTime > githubTime) {
 ### 访客模式
 
 未登录用户会自动显示你的示例数据（只读），无需任何配置。
-- 数据来自：`wu529778790/nav.shenzjd.com`
+- 数据来自：`wu529778790/navhub.shenzjd.com`
 - 所有修改操作需要登录后才能进行
 
 ## 📦 数据存储
@@ -213,7 +213,7 @@ if (localTime > githubTime) {
 ### 仓库结构
 
 ```
-你的仓库: your_username/nav.shenzjd.com
+你的仓库: your_username/navhub.shenzjd.com
 └── data/
     └── sites.json
 ```
@@ -248,7 +248,7 @@ if (localTime > githubTime) {
 
 ### Q: 数据存在哪里？
 
-**A:** 存储在你自己的 GitHub 仓库中（`your_username/nav.shenzjd.com`），完全私有。
+**A:** 存储在你自己的 GitHub 仓库中（`your_username/navhub.shenzjd.com`），完全私有。
 
 ### Q: 多个设备如何同步？
 
@@ -264,7 +264,7 @@ if (localTime > githubTime) {
 
 ### Q: 未登录用户能看到什么？
 
-**A:** 未登录用户会自动显示你的示例数据（只读），数据来自你的 GitHub 仓库 `wu529778790/nav.shenzjd.com`。
+**A:** 未登录用户会自动显示你的示例数据（只读），数据来自你的 GitHub 仓库 `wu529778790/navhub.shenzjd.com`。
 
 ### Q: 访客模式可以修改数据吗？
 

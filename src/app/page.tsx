@@ -183,13 +183,13 @@ export default function Home() {
       <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-gray-900">个人导航</h1>
+            <h1 className="text-xl font-bold text-gray-900">navhub.shenzjd.com</h1>
           </div>
 
           <div className="flex items-center gap-3 relative">
             {/* GitHub Star 按钮 */}
             <a
-              href="https://github.com/wu529778790/nav.shenzjd.com"
+              href="https://github.com/wu529778790/navhub.shenzjd.com"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-sm"
@@ -354,11 +354,11 @@ export default function Home() {
               <h3 className="text-lg font-semibold">登录确认</h3>
             </div>
             <div className="text-sm text-gray-600 space-y-3 mb-6">
-              <p>登录后，系统会自动 Fork 仓库 <code className="bg-gray-100 px-1 py-0.5 rounded">wu529778790/nav.shenzjd.com</code> 到你的 GitHub 账户。</p>
+              <p>登录后，系统会自动 Fork 仓库 <code className="bg-gray-100 px-1 py-0.5 rounded">wu529778790/navhub.shenzjd.com</code> 到你的 GitHub 账户。</p>
               <p>数据将存放在你的仓库中：</p>
               <ul className="list-disc list-inside ml-4 space-y-1">
                 <li>文件路径: <code className="bg-gray-100 px-1 py-0.5 rounded">data/sites.json</code></li>
-                <li>仓库名称: <code className="bg-gray-100 px-1 py-0.5 rounded">nav.shenzjd.com</code></li>
+                <li>仓库名称: <code className="bg-gray-100 px-1 py-0.5 rounded">navhub.shenzjd.com</code></li>
               </ul>
               <p>其他用户登录时，会 fork 同一个仓库到他们自己的账户，数据互不干扰。</p>
             </div>
