@@ -18,21 +18,16 @@ export async function parseURL(url: string): Promise<ParsedURL> {
     // 验证 URL 格式
     const urlObj = new URL(url);
 
-    // 尝试通过 allorigins.win 获取 HTML（绕过 CORS）
-    const apiUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const response = await fetch(apiUrl, {
-      signal: AbortSignal.timeout(5000), // 5秒超时
-    });
+    // 尝试多种代理服务获取 HTML（绕过 CORS）
+    const html = await fetchHTMLWithFallbacks(url);
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    if (!html) {
+      throw new Error("无法获取网页内容");
     }
-
-    const data = await response.json();
 
     // 解析 HTML
     const parser = new DOMParser();
-    const doc = parser.parseFromString(data.contents, "text/html");
+    const doc = parser.parseFromString(html, "text/html");
 
     // 获取标题
     const title = extractTitle(doc, urlObj);
@@ -47,9 +42,54 @@ export async function parseURL(url: string): Promise<ParsedURL> {
     // 解析失败时返回默认值
     return {
       title: "",
-      favicon: getGoogleFavicon(url),
+      favicon: getFaviconFallback(url),
     };
   }
+}
+
+/**
+ * 使用多种代理服务尝试获取 HTML
+ */
+async function fetchHTMLWithFallbacks(url: string): Promise<string | null> {
+  const enc = encodeURIComponent(url);
+
+  // 代理服务列表
+  const proxies = [
+    // 1. allorigins.win
+    `https://api.allorigins.win/get?url=${enc}`,
+    // 2. isomorphic-git.org 的 CORS 代理
+    `https://cors.isomorphic-git.org/${url}`,
+    // 3. thingproxy (支持 WebSocket)
+    `https://thingproxy.freeboard.io/fetch/${url}`,
+  ];
+
+  for (const proxyUrl of proxies) {
+    try {
+      const response = await fetch(proxyUrl, {
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (response.ok) {
+        // 不同代理返回格式不同
+        const data = await response.json();
+
+        // allorigins.win 返回 { contents: "html" }
+        if (data.contents) {
+          return data.contents;
+        }
+
+        // 其他可能直接返回文本
+        if (typeof data === 'string') {
+          return data;
+        }
+      }
+    } catch (e) {
+      // 继续尝试下一个代理
+      continue;
+    }
+  }
+
+  return null;
 }
 
 /**
@@ -97,17 +137,30 @@ function extractFavicon(doc: Document, urlObj: URL): string {
     return `${urlObj.origin}/${href}`;
   }
 
-  // 2. 使用 Google Favicon 服务作为 fallback
-  return getGoogleFavicon(urlObj.href);
+  // 2. 使用 fallback
+  return getFaviconFallback(urlObj.href);
 }
 
 /**
- * 使用 Google Favicon 服务获取图标
+ * Favicon 降级方案（多种选择）
  */
-export function getGoogleFavicon(url: string): string {
+export function getFaviconFallback(url: string): string {
   try {
     const urlObj = new URL(url);
-    return `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=64`;
+    const domain = urlObj.hostname;
+
+    // 方案 1: DuckDuckGo Favicon 服务（推荐，无需登录）
+    // https://duckduckgo.com/favicon.ico?domain=example.com
+    return `https://duckduckgo.com/favicon.ico?domain=${domain}`;
+
+    // 方案 2: Google Favicon（备用）
+    // return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+
+    // 方案 3: Favicon Kit（备用）
+    // return `https://faviconkit.com/${domain}/64`;
+
+    // 方案 4: 直接访问网站 favicon（备用）
+    // return `${urlObj.origin}/favicon.ico`;
   } catch {
     return "";
   }
