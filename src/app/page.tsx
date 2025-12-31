@@ -10,7 +10,7 @@ import { AddSiteCard } from "@/components/AddSiteCard";
 import { SiteCard } from "@/components/SiteCard";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut, Github, ChevronDown, Star } from "lucide-react";
+import { Plus, LogOut, Github, ChevronDown, Star, ArrowUp, ArrowDown } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
 
 // GitHub OAuth 配置
@@ -50,6 +50,7 @@ export default function Home() {
     refreshSites,
     isOnline,
     addCategory,
+    sortCategory,
     isGuestMode,
   } = useSites();
   const [session, setSession] = useState<any>(null);
@@ -268,16 +269,41 @@ export default function Home() {
         {/* 分类导航 */}
         {categories.length > 0 && (
           <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-2">
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                variant={activeCategory === category.id ? "default" : "outline"}
-                size="sm"
-                onClick={() => setActiveCategory(category.id)}
-                className="flex items-center gap-2 whitespace-nowrap"
-              >
-                {category.name}
-              </Button>
+            {categories.map((category, index) => (
+              <div key={category.id} className="flex items-center gap-1">
+                <Button
+                  variant={activeCategory === category.id ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setActiveCategory(category.id)}
+                  className="flex items-center gap-2 whitespace-nowrap"
+                >
+                  {category.name}
+                </Button>
+                {!isGuestMode && categories.length > 1 && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => sortCategory(category.id, 'up')}
+                      disabled={index === 0}
+                      className="h-7 w-7 p-0"
+                      title="上移"
+                    >
+                      <ArrowUp className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => sortCategory(category.id, 'down')}
+                      disabled={index === categories.length - 1}
+                      className="h-7 w-7 p-0"
+                      title="下移"
+                    >
+                      <ArrowDown className="w-3 h-3" />
+                    </Button>
+                  </>
+                )}
+              </div>
             ))}
             {!isGuestMode && (
               <Button
@@ -313,7 +339,7 @@ export default function Home() {
         ) : (
           <div className="flex flex-wrap gap-1">
             {/* 现有站点 */}
-            {currentCategory?.sites.map((site) => (
+            {currentCategory?.sites.map((site, index) => (
               <SiteCard
                 key={site.id}
                 id={site.id}
@@ -321,6 +347,8 @@ export default function Home() {
                 url={site.url}
                 favicon={site.favicon}
                 categoryId={currentCategory.id}
+                index={index}
+                totalSites={currentCategory.sites.length}
                 onSiteChange={refreshSites}
               />
             ))}

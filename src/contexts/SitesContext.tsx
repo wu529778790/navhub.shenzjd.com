@@ -34,6 +34,8 @@ interface SitesContextType {
   addCategory: (category: Category) => Promise<void>;
   updateCategory: (categoryId: string, category: Category) => Promise<void>;
   deleteCategory: (categoryId: string) => Promise<void>;
+  sortCategory: (categoryId: string, direction: 'up' | 'down') => Promise<void>;
+  sortSite: (categoryId: string, siteId: string, direction: 'up' | 'down') => Promise<void>;
   refreshSites: (forceRefresh?: boolean) => Promise<void>;
   updateSites: (sites: Category[]) => Promise<void>;
   syncStatus: string;
@@ -362,6 +364,64 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     await updateSitesData(newSites, true);
   };
 
+  // 分类排序
+  const sortCategory = async (categoryId: string, direction: 'up' | 'down') => {
+    if (isGuestMode) {
+      setError("访客模式，无法排序（请登录后操作）");
+      return;
+    }
+
+    const categoryIndex = sites.findIndex(c => c.id === categoryId);
+    if (categoryIndex === -1) return;
+
+    const newIndex = direction === 'up' ? categoryIndex - 1 : categoryIndex + 1;
+    if (newIndex < 0 || newIndex >= sites.length) return;
+
+    const newSites = [...sites];
+    const [movedCategory] = newSites.splice(categoryIndex, 1);
+    newSites.splice(newIndex, 0, movedCategory);
+
+    // 重新设置 sort 值
+    newSites.forEach((cat, index) => {
+      cat.sort = index;
+    });
+
+    await updateSitesData(newSites, true);
+  };
+
+  // 站点排序
+  const sortSite = async (categoryId: string, siteId: string, direction: 'up' | 'down') => {
+    if (isGuestMode) {
+      setError("访客模式，无法排序（请登录后操作）");
+      return;
+    }
+
+    const category = sites.find(c => c.id === categoryId);
+    if (!category) return;
+
+    const siteIndex = category.sites.findIndex(s => s.id === siteId);
+    if (siteIndex === -1) return;
+
+    const newIndex = direction === 'up' ? siteIndex - 1 : siteIndex + 1;
+    if (newIndex < 0 || newIndex >= category.sites.length) return;
+
+    const newSites = sites.map(c => {
+      if (c.id === categoryId) {
+        const newCategory = { ...c, sites: [...c.sites] };
+        const [movedSite] = newCategory.sites.splice(siteIndex, 1);
+        newCategory.sites.splice(newIndex, 0, movedSite);
+        // 重新设置 sort 值
+        newCategory.sites.forEach((site, index) => {
+          site.sort = index;
+        });
+        return newCategory;
+      }
+      return c;
+    });
+
+    await updateSitesData(newSites, true);
+  };
+
   return (
     <SitesContext.Provider
       value={{
@@ -374,6 +434,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         addCategory,
         updateCategory,
         deleteCategory,
+        sortCategory,
+        sortSite,
         refreshSites: fetchSites,
         updateSites,
         syncStatus,

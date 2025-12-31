@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, Link as LinkIcon } from "lucide-react";
+import { Pencil, Trash2, Link as LinkIcon, ArrowUp, ArrowDown } from "lucide-react";
 import type { Site } from "@/lib/storage/local-storage";
 
 interface SiteCardProps {
@@ -34,6 +34,8 @@ interface SiteCardProps {
   url: string;
   favicon?: string;
   categoryId: string;
+  index: number;
+  totalSites: number;
   onSiteChange?: () => void;
 }
 
@@ -43,9 +45,11 @@ export function SiteCard({
   url,
   favicon = "",
   categoryId,
+  index,
+  totalSites,
   onSiteChange,
 }: SiteCardProps) {
-  const { updateSite, deleteSite, isGuestMode } = useSites();
+  const { updateSite, deleteSite, sortSite, isGuestMode } = useSites();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
@@ -180,6 +184,32 @@ export function SiteCard({
               <Pencil className="w-3 h-3" />
               编辑
             </button>
+            {totalSites > 1 && (
+              <>
+                <button
+                  onClick={async () => {
+                    await sortSite(categoryId, id, 'up');
+                    setIsContextMenuOpen(false);
+                  }}
+                  disabled={index === 0}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 disabled:opacity-50"
+                >
+                  <ArrowUp className="w-3 h-3" />
+                  上移
+                </button>
+                <button
+                  onClick={async () => {
+                    await sortSite(categoryId, id, 'down');
+                    setIsContextMenuOpen(false);
+                  }}
+                  disabled={index === totalSites - 1}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 disabled:opacity-50"
+                >
+                  <ArrowDown className="w-3 h-3" />
+                  下移
+                </button>
+              </>
+            )}
             <button
               onClick={() => {
                 setIsDeleteAlertOpen(true);
