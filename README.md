@@ -148,6 +148,17 @@ pnpm format
 
 - [Docker 部署](docs/DOCKER.md)
 - [自动部署配置](docs/DEPLOYMENT.md)
+- [Fork 自动同步](docs/FORK_SYNC.md)
+
+---
+
+## 🍴 Fork 说明
+
+如果你 Fork 了本仓库，工作流会自动包含同步功能：
+
+1. **自动同步**：每天检查上游更新
+2. **手动同步**：在 Actions 中运行 Sync Fork
+3. **详细指南**：查看 [docs/FORK_SYNC.md](docs/FORK_SYNC.md)
 
 ---
 

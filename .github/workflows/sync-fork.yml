@@ -1,0 +1,155 @@
+name: Sync Fork
+
+on:
+  # 每天定时检查更新
+  schedule:
+    - cron: '0 8 * * *'  # 每天 UTC 8 点执行
+
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '强制同步（覆盖本地修改）'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+  # 当上游仓库有更新时自动触发
+  repository_dispatch:
+    types: [sync-upstream]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # 只在 fork 的仓库中运行
+    if: github.repository != 'wu529778790/navhub.shenzjd.com'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # 需要完整的历史记录以便合并
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Add upstream remote
+        run: |
+          # 添加上游仓库（原仓库）
+          git remote add upstream https://github.com/wu529778790/navhub.shenzjd.com.git
+          git fetch upstream
+
+      - name: Check for updates
+        id: check
+        run: |
+          # 获取上游和本地的最新提交
+          UPSTREAM_COMMIT=$(git rev-parse upstream/main)
+          LOCAL_COMMIT=$(git rev-parse origin/main)
+
+          echo "上游提交: $UPSTREAM_COMMIT"
+          echo "本地提交: $LOCAL_COMMIT"
+
+          if [ "$UPSTREAM_COMMIT" = "$LOCAL_COMMIT" ]; then
+            echo "upstream=behind" >> $GITHUB_OUTPUT
+            echo "status=✅ 已是最新版本" >> $GITHUB_OUTPUT
+          else
+            echo "upstream=behind" >> $GITHUB_OUTPUT
+            echo "status=🔄 发现新版本，准备同步" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Sync from upstream
+        if: steps.check.outputs.upstream == 'behind'
+        run: |
+          echo "开始同步上游更新..."
+
+          # 获取上游最新代码
+          git fetch upstream
+
+          # 检查是否有冲突
+          if git merge-base --is-ancestor upstream/main origin/main; then
+            echo "本地在上游之后，需要合并"
+            git merge --no-edit upstream/main
+          else
+            echo "上游在本地之后，可以快进或合并"
+            git merge --no-edit upstream/main
+          fi
+
+          echo "同步完成！"
+
+      - name: Handle merge conflicts
+        if: failure()
+        run: |
+          echo "⚠️ 检测到合并冲突！"
+          echo ""
+          echo "冲突文件："
+          git diff --name-only --diff-filter=U
+          echo ""
+          echo "解决方案："
+          echo "1. 手动解决冲突"
+          echo "2. 完成合并提交"
+          echo "3. 推送到你的仓库"
+
+          # 如果是强制同步模式，使用 theirs 策略
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            echo "强制同步模式：使用上游版本"
+            git checkout --theirs .
+            git add .
+            git commit -m "fix: resolve conflicts using upstream version"
+            echo "已使用上游版本解决冲突"
+          else
+            exit 1
+          fi
+
+      - name: Push changes
+        if: success() && steps.check.outputs.upstream == 'behind'
+        run: |
+          # 推送到你的仓库
+          git push origin main
+          echo "✅ 已推送更新到你的仓库"
+
+      - name: Update Docker image (optional)
+        if: success() && steps.check.outputs.upstream == 'behind'
+        run: |
+          echo "💡 提示：如果使用 Docker 部署，请重新构建镜像"
+          echo ""
+          echo "方法 1: 使用 Docker Hub"
+          echo "  docker pull wu529778790/navhub:main"
+          echo "  docker-compose up -d"
+          echo ""
+          echo "方法 2: 重新构建"
+          echo "  docker-compose build --no-cache"
+          echo "  docker-compose up -d"
+
+      - name: Create Sync Summary
+        if: always()
+        run: |
+          echo "## 同步结果" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "状态: ${{ steps.check.outputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "时间: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ 同步成功" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ 同步失败，需要手动解决" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  notify:
+    needs: sync
+    runs-on: ubuntu-latest
+    if: always() && github.repository != 'wu529778790/navhub.shenzjd.com'
+
+    steps:
+      - name: Notify result
+        run: |
+          echo "同步状态: ${{ needs.sync.result }}"
+          echo ""
+          echo "如果需要手动操作，请查看 GitHub Actions 详细日志"
