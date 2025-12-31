@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767179773227,
+  "lastModified": 1767179808903,
   "categories": [
     {
       "id": "default",
@@ -19,6 +19,12 @@
           "title": "V2EX",
           "favicon": "https://www.v2ex.com/static/icon-192.png",
           "url": "https://www.v2ex.com/"
+        },
+        {
+          "id": "1767179808902",
+          "title": "PanHub - 全网最全的网盘搜索",
+          "favicon": "https://panhub.shenzjd.com/favicon.ico",
+          "url": "https://panhub.shenzjd.com/"
         }
       ]
     }
