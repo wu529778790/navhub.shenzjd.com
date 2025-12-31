@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767186421791,
+  "lastModified": 1767186432560,
   "categories": [
     {
       "id": "default",
@@ -13,12 +13,6 @@
           "title": "妖火",
           "favicon": "https://yaohuo.me/blog/rose.ico",
           "url": "https://yaohuo.me/"
-        },
-        {
-          "id": "1767179773227",
-          "title": "V2EX",
-          "favicon": "https://www.v2ex.com/static/icon-192.png",
-          "url": "https://www.v2ex.com/"
         },
         {
           "id": "1767179808902",
