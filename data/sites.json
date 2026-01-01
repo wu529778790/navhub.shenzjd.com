@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767191520970,
+  "lastModified": 1767238133268,
   "categories": [
     {
       "id": "default",
@@ -63,13 +63,6 @@
           "favicon": "https://github.com/fluidicon.png",
           "url": "https://github.com/wu529778790",
           "sort": 7
-        },
-        {
-          "id": "1767187255885",
-          "title": "V2EX",
-          "favicon": "https://global.v2ex.com/static/icon-192.png",
-          "url": "https://global.v2ex.com/",
-          "sort": 8
         }
       ]
     },
