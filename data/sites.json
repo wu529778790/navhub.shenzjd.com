@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767457502671,
+  "lastModified": 1767457512343,
   "categories": [
     {
       "id": "default",
@@ -63,6 +63,12 @@
           "favicon": "https://github.com/fluidicon.png",
           "url": "https://github.com/wu529778790",
           "sort": 7
+        },
+        {
+          "id": "1767457512343",
+          "title": "wx-auth.shenzjd.com",
+          "favicon": "https://wx-auth.shenzjd.com/favicon.ico",
+          "url": "https://wx-auth.shenzjd.com/"
         }
       ]
     },
