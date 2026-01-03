@@ -41,7 +41,8 @@ export function SiteInfoForm({
               className="object-contain"
               unoptimized
               onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
+                const target = e.target as HTMLImageElement;
+                target.parentElement!.style.display = "none";
               }}
             />
           ) : (
@@ -78,7 +79,8 @@ export function SiteInfoForm({
                 className="object-contain"
                 unoptimized
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
+                  const target = e.target as HTMLImageElement;
+                  target.parentElement!.style.display = "none";
                 }}
               />
             </div>

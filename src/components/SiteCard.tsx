@@ -227,7 +227,8 @@ export function SiteCard({
                 className="object-cover"
                 unoptimized
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
+                  const target = e.target as HTMLImageElement;
+                  target.parentElement!.style.display = "none";
                 }}
               />
             ) : (
@@ -358,7 +359,7 @@ export function SiteCard({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
-        className={`flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)]\n                   transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1\n                   cursor-pointer`}
+        className="flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)] transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1 cursor-pointer"
         title={isGuestMode ? "点击打开链接" : "点击打开链接，右键或长按显示菜单"}
       >
         {/* 图标 */}
@@ -371,7 +372,8 @@ export function SiteCard({
               className="object-cover"
               unoptimized
               onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
+                const target = e.target as HTMLImageElement;
+                target.parentElement!.style.display = "none";
               }}
             />
           ) : (
