@@ -8,19 +8,24 @@ import { useState, useEffect } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
-import { LogOut, Github, Star, ChevronDown, Settings } from "lucide-react";
+import { LogOut, Github, Star, ChevronDown, Settings, RefreshCw } from "lucide-react";
 import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
-import { useRouter } from "next/navigation";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/toast";
+import { useSync } from "@/hooks/use-sync";
 
 const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || "";
 
 export function AppHeader() {
-  const router = useRouter();
   const { isOnline } = useSites();
+  const { showToast } = useToast();
+  const { manualSync } = useSync();
 
   const [session, setSession] = useState<{ user: { id: string; name: string; avatar: string }; token: string } | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showForkModal, setShowForkModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // 检查认证状态
   useEffect(() => {
@@ -71,11 +76,41 @@ export function AppHeader() {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}`;
   };
 
+  // 退出登录
   const handleGitHubLogout = () => {
     if (confirm("确定要退出登录吗？")) {
       clearAuth();
       setSession(null);
       window.location.reload();
+    }
+  };
+
+  // 手动同步
+  const handleManualSync = async () => {
+    if (!session) {
+      showToast("请先登录", "warning");
+      return;
+    }
+    setIsSyncing(true);
+    try {
+      const result = await manualSync();
+      if (result.success) {
+        let successMsg = "同步成功";
+        if (result.direction === "upload") {
+          successMsg = "📤 " + (result.message || "上传成功");
+        } else if (result.direction === "download") {
+          successMsg = "📥 " + (result.message || "下载成功");
+        } else if (result.direction === "none") {
+          successMsg = "✅ " + (result.message || "数据已同步");
+        }
+        showToast(successMsg, "success");
+      } else {
+        showToast(result.error || "同步失败", "error");
+      }
+    } catch (error: any) {
+      showToast(error.message || "同步失败", "error");
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -91,6 +126,16 @@ export function AppHeader() {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, [showUserMenu]);
+
+  // 监听打开设置弹窗事件
+  useEffect(() => {
+    const handleOpenSettings = () => {
+      setShowSettingsModal(true);
+    };
+
+    window.addEventListener('open-settings', handleOpenSettings);
+    return () => window.removeEventListener('open-settings', handleOpenSettings);
+  }, []);
 
   return (
     <>
@@ -150,7 +195,10 @@ export function AppHeader() {
                       <div className="text-xs text-[var(--muted-foreground)] mt-0.5">已登录</div>
                     </div>
                     <button
-                      onClick={() => router.push("/settings")}
+                      onClick={() => {
+                        setShowSettingsModal(true);
+                        setShowUserMenu(false);
+                      }}
                       className="w-full text-left px-4 py-2.5 text-sm hover:bg-[var(--muted)] flex items-center gap-2 transition-colors"
                     >
                       <Settings className="w-4 h-4 text-[var(--foreground-secondary)]" />
@@ -205,6 +253,92 @@ export function AppHeader() {
           </div>
         </div>
       )}
+
+      {/* 设置弹窗 */}
+      <Dialog open={showSettingsModal} onOpenChange={setShowSettingsModal}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>设置</DialogTitle>
+            <DialogDescription>管理账户和同步选项</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* 账户信息 */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-sm text-[var(--foreground-secondary)]">GitHub 账户</h3>
+              {session ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[var(--background-secondary)] border border-[var(--border)]">
+                    <img
+                      src={session.user.avatar}
+                      alt={session.user.name}
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">{session.user.name}</div>
+                      <div className="text-xs text-[var(--muted-foreground)]">已登录</div>
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-[var(--muted-foreground)] space-y-1">
+                    <div>• 数据自动同步到你的 GitHub 仓库</div>
+                    <div>• 仓库: <code className="bg-[var(--muted)] px-1.5 py-0.5 rounded">navhub.shenzjd.com</code></div>
+                    <div>• 文件: <code className="bg-[var(--muted)] px-1.5 py-0.5 rounded">data/sites.json</code></div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm text-[var(--muted-foreground)]">
+                  未登录，当前为访客模式（只读示例数据）
+                </div>
+              )}
+            </div>
+
+            {/* 同步状态 */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-sm text-[var(--foreground-secondary)]">同步状态</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="p-2 rounded-lg bg-[var(--background-secondary)] border border-[var(--border)]">
+                  <div className="text-[var(--muted-foreground)] text-xs">网络状态</div>
+                  <div className={isOnline ? "text-success font-medium" : "text-warning font-medium"}>
+                    {isOnline ? "在线" : "离线"}
+                  </div>
+                </div>
+                <div className="p-2 rounded-lg bg-[var(--background-secondary)] border border-[var(--border)]">
+                  <div className="text-[var(--muted-foreground)] text-xs">登录状态</div>
+                  <div className={session ? "text-success font-medium" : "text-[var(--muted-foreground)]"}>
+                    {session ? "已登录" : "未登录"}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            {session && (
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  onClick={handleManualSync}
+                  disabled={isSyncing}
+                  className="flex-1 sm:flex-none gap-1"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isSyncing ? "animate-spin" : ""}`} />
+                  {isSyncing ? "同步中..." : "手动同步"}
+                </Button>
+
+                <Button
+                  variant="destructive"
+                  onClick={handleGitHubLogout}
+                  className="flex-1 sm:flex-none gap-1"
+                >
+                  <LogOut className="w-4 h-4" />
+                  退出登录
+                </Button>
+              </div>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

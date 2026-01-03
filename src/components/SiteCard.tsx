@@ -202,6 +202,49 @@ export function SiteCard({
     setIsContextMenuOpen(false);
   };
 
+  // 删除确认弹窗内容（两个视图共用）
+  const DeleteConfirmDialog = () => (
+    <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-full bg-[var(--error)]/10 flex items-center justify-center">
+              <Trash2 className="w-5 h-5 text-[var(--error)]" />
+            </div>
+            <AlertDialogTitle>确认删除站点</AlertDialogTitle>
+          </div>
+          <AlertDialogDescription>
+            确定要删除 <strong className="text-[var(--error)]">{initialTitle}</strong> 吗？
+            <br />
+            <span className="text-xs opacity-75">此操作无法撤销，数据将从本地和 GitHub 同步删除。</span>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="gap-1">
+            <span>取消</span>
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleDelete}
+            disabled={isLoading}
+            className="bg-[var(--error)] hover:bg-red-600 hover:shadow-lg hover:shadow-red-500/20 transition-all gap-1"
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>删除中...</span>
+              </div>
+            ) : (
+              <>
+                <Trash2 className="w-4 h-4" />
+                <span>确认删除</span>
+              </>
+            )}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
   // 网格视图
   if (view === 'grid') {
     return (
@@ -328,22 +371,7 @@ export function SiteCard({
         </Dialog>
 
         {/* 删除确认对话框 */}
-        <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>确认删除站点</AlertDialogTitle>
-              <AlertDialogDescription>
-                确定要删除 <strong>{initialTitle}</strong> 吗？此操作无法撤销。
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>取消</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} disabled={isLoading} className="bg-[var(--error)] hover:bg-red-600">
-                {isLoading ? "删除中..." : "删除"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <DeleteConfirmDialog />
       </>
     );
   }
@@ -486,22 +514,7 @@ export function SiteCard({
       </Dialog>
 
       {/* 删除确认对话框 */}
-      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>确认删除站点</AlertDialogTitle>
-            <AlertDialogDescription>
-              确定要删除 <strong>{initialTitle}</strong> 吗？此操作无法撤销。
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} disabled={isLoading} className="bg-[var(--error)] hover:bg-red-600">
-              {isLoading ? "删除中..." : "删除"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog />
     </>
   );
 }
