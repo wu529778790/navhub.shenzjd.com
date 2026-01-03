@@ -129,12 +129,13 @@ export function AddSiteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="[&>button]:cursor-pointer">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>添加</DialogTitle>
-          <DialogDescription>添加一个新链接</DialogDescription>
+          <DialogTitle>添加链接</DialogTitle>
+          <DialogDescription>快速添加一个新网站链接到当前分类</DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
+
+        <div className="space-y-4 py-2">
           <UrlInput
             link={link}
             onLinkChange={setLink}
@@ -142,7 +143,11 @@ export function AddSiteDialog({
             loading={loading}
           />
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && (
+            <div className="rounded-md bg-[var(--error)]/10 border border-[var(--error)]/20 p-3">
+              <p className="text-sm text-[var(--error)]">{error}</p>
+            </div>
+          )}
 
           {siteInfo && (
             <SiteInfoForm

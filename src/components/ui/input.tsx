@@ -11,7 +11,24 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          // 现代化输入框 - 使用项目设计系统
+          "flex w-full rounded-[var(--radius-md)] border border-[var(--input-border)]",
+          "bg-[var(--background)] text-[var(--foreground)]",
+          "px-3 py-2.5 text-sm shadow-sm",
+
+          // 交互状态
+          "transition-all duration-200 ease-out",
+          "placeholder:text-[var(--muted-foreground)]",
+
+          // 焦点状态 - 使用主色调
+          "focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent",
+
+          // 禁用状态
+          "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--muted)]",
+
+          // 深色模式适配
+          "dark:bg-[var(--background)] dark:border-[var(--border-strong)]",
+
           className
         )}
         ref={ref}

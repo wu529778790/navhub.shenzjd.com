@@ -511,4 +511,76 @@
       grid-template-columns: 1fr;
     }
   }
+
+  /* 现代化弹窗样式增强 */
+  .dialog-content-wrapper {
+    @apply fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4;
+    @apply bg-[var(--background)]/95 backdrop-blur-xl border border-[var(--border)];
+    @apply rounded-[var(--radius-xl)] p-6 shadow-2xl;
+    @apply duration-300 ease-out;
+  }
+
+  /* 玻璃拟态效果 */
+  .glass-modal {
+    @apply bg-[var(--background)]/95 backdrop-blur-xl border border-[var(--border)];
+    box-shadow: 0 20px 50px -12px rgba(124, 58, 237, 0.15), 0 8px 16px -8px rgba(0, 0, 0, 0.2);
+  }
+
+  /* 弹窗动画关键帧 */
+  @keyframes dialogSlideIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -48%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  @keyframes dialogSlideOut {
+    from {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -48%) scale(0.95);
+    }
+  }
+
+  /* 遮罩动画 */
+  @keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes overlayFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  /* 应用动画类 */
+  .animate-dialog-in {
+    animation: dialogSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-dialog-out {
+    animation: dialogSlideOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-overlay-in {
+    animation: overlayFadeIn 0.2s ease-out forwards;
+  }
+
+  .animate-overlay-out {
+    animation: overlayFadeOut 0.2s ease-in forwards;
+  }
+
+  /* 移动端优化 */
+  @media (max-width: 640px) {
+    .dialog-content-wrapper {
+      @apply max-w-[calc(100vw-2rem)] p-4;
+    }
+  }
 }
