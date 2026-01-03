@@ -161,7 +161,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
               </SortableItem>
             ))}
 
-            {/* 添加站点卡片 */}
+            {/* 添加站点卡片 - 放在站点列表后面 */}
             {!isGuestMode && (
               <div className="w-[100px] h-[100px] flex-shrink-0">
                 <AddSiteCard
@@ -204,7 +204,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
             </SortableItem>
           ))}
 
-          {/* 添加站点卡片 */}
+          {/* 添加站点卡片 - 放在站点列表后面 */}
           {!isGuestMode && (
             <AddSiteCard
               activeCategory={category.id}

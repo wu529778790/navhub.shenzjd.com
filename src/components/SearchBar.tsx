@@ -135,7 +135,7 @@ export function SearchStatus({
 }
 
 /**
- * 过滤器组件 - 按分类过滤
+ * 过滤器组件 - 已移除分类过滤，保留为空组件（向后兼容）
  */
 export function CategoryFilter({
   categories,
@@ -146,35 +146,8 @@ export function CategoryFilter({
   activeCategory: string | null;
   onCategoryChange: (categoryId: string | null) => void;
 }) {
-  return (
-    <div className="flex flex-wrap gap-2 items-center">
-      <button
-        onClick={() => onCategoryChange(null)}
-        className={`px-3 py-1.5 rounded-[var(--radius-md)] text-sm font-medium transition-all duration-200
-                   ${!activeCategory
-                     ? 'bg-[var(--primary-600)] text-white shadow-md'
-                     : 'bg-[var(--background)] text-[var(--foreground-secondary)] border border-[var(--border)] hover:bg-[var(--muted)]'
-                   }`}
-      >
-        全部
-      </button>
-
-      {categories.map((category) => (
-        <button
-          key={category.id}
-          onClick={() => onCategoryChange(category.id === activeCategory ? null : category.id)}
-          className={`px-3 py-1.5 rounded-[var(--radius-md)] text-sm font-medium transition-all duration-200 flex items-center gap-1
-                     ${activeCategory === category.id
-                       ? 'bg-[var(--primary-600)] text-white shadow-md'
-                       : 'bg-[var(--background)] text-[var(--foreground-secondary)] border border-[var(--border)] hover:bg-[var(--muted)]'
-                     }`}
-        >
-          {category.icon && <span>{category.icon}</span>}
-          <span>{category.name}</span>
-        </button>
-      ))}
-    </div>
-  );
+  // 分类过滤已移除，改为锚点跳转
+  return null;
 }
 
 /**

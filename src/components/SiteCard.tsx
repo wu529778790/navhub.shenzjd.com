@@ -1,5 +1,7 @@
 /**
  * 站点卡片组件 - 现代化设计
+ * - 正常点击：打开链接
+ * - 右键/长按：显示编辑菜单
  */
 
 "use client";
@@ -56,9 +58,9 @@ export function SiteCard({
   const [editedUrl, setEditedUrl] = useState(url);
   const [editedFavicon, setEditedFavicon] = useState(favicon);
   const [isLoading, setIsLoading] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
 
   // 点击外部关闭右键菜单
   useEffect(() => {
@@ -73,6 +75,15 @@ export function SiteCard({
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, [isContextMenuOpen]);
+
+  // 清理长按定时器
+  useEffect(() => {
+    return () => {
+      if (longPressTimer.current) {
+        clearTimeout(longPressTimer.current);
+      }
+    };
+  }, []);
 
   // 获取域名（用于无图标时的占位符）
   const getDomain = () => {
@@ -120,24 +131,22 @@ export function SiteCard({
     }
   };
 
+  // 正常点击 - 打开链接
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // 如果是访客模式，直接打开链接
-    if (isGuestMode) {
-      window.open(url, "_blank");
+    // 如果右键菜单已打开，关闭菜单
+    if (isContextMenuOpen) {
+      setIsContextMenuOpen(false);
       return;
     }
 
-    // 非访客模式：点击图标打开链接，点击其他区域编辑
-    if ((e.target as HTMLElement).closest('.site-icon-wrapper')) {
-      window.open(url, "_blank");
-    } else if (!isGuestMode) {
-      openEditDialog();
-    }
+    // 打开链接
+    window.open(url, "_blank");
   };
 
+  // 右键菜单
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -146,11 +155,50 @@ export function SiteCard({
     setIsContextMenuOpen(true);
   };
 
+  // 长按处理（移动端）
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isGuestMode) return;
+
+    longPressTimer.current = setTimeout(() => {
+      setIsContextMenuOpen(true);
+      // 震动反馈（如果支持）
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }, 500); // 500ms 长按
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleTouchMove = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
   const openEditDialog = () => {
     setEditedTitle(initialTitle);
     setEditedUrl(url);
     setEditedFavicon(favicon);
     setIsEditDialogOpen(true);
+    setIsContextMenuOpen(false);
+  };
+
+  // 右键菜单操作
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    openEditDialog();
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDeleteAlertOpen(true);
     setIsContextMenuOpen(false);
   };
 
@@ -163,37 +211,12 @@ export function SiteCard({
           key={id}
           onClick={handleCardClick}
           onContextMenu={handleContextMenu}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className={`site-card ${!isGuestMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
-          title={!isGuestMode ? "拖拽可排序，右键菜单，点击图标打开" : "点击打开链接"}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchMove={handleTouchMove}
+          className="site-card cursor-pointer"
+          title={isGuestMode ? "点击打开链接" : "点击打开链接，右键或长按显示菜单"}
         >
-          {/* 悬停时的快速操作按钮 - 仅在非访客模式 */}
-          {!isGuestMode && isHovered && (
-            <div className="absolute top-1 right-1 flex gap-1 z-10">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openEditDialog();
-                }}
-                className="p-1.5 bg-[var(--background)] rounded-[var(--radius-sm)] border border-[var(--border)] hover:bg-[var(--primary-100)] hover:border-[var(--primary-300)] transition-colors"
-                title="编辑"
-              >
-                <Pencil className="w-3.5 h-3.5 text-[var(--foreground-secondary)]" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsDeleteAlertOpen(true);
-                }}
-                className="p-1.5 bg-[var(--background)] rounded-[var(--radius-sm)] border border-[var(--border)] hover:bg-[var(--error)]/10 hover:border-[var(--error)] transition-colors"
-                title="删除"
-              >
-                <Trash2 className="w-3.5 h-3.5 text-[var(--error)]" />
-              </button>
-            </div>
-          )}
-
           {/* 图标 */}
           <div className="site-icon-wrapper">
             {favicon ? (
@@ -221,6 +244,29 @@ export function SiteCard({
           {isGuestMode && (
             <div className="absolute inset-0 bg-[var(--primary-600)]/0 hover:bg-[var(--primary-600)]/10 transition-colors rounded-[var(--radius-md)] flex items-center justify-center opacity-0 hover:opacity-100">
               <LinkIcon className="w-4 h-4 text-[var(--primary-600)]" />
+            </div>
+          )}
+
+          {/* 右键菜单 - 仅在非访客模式 */}
+          {!isGuestMode && isContextMenuOpen && (
+            <div
+              ref={contextMenuRef}
+              className="absolute top-full mt-2 right-0 z-50 min-w-[140px] bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-md)] shadow-xl p-1 animate-in fade-in zoom-in-95"
+            >
+              <button
+                onClick={handleEditClick}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] hover:bg-[var(--primary-50)] text-[var(--foreground)] text-sm transition-colors"
+              >
+                <Pencil className="w-4 h-4" />
+                编辑
+              </button>
+              <button
+                onClick={handleDeleteClick}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] hover:bg-[var(--error)]/10 text-[var(--error)] text-sm transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+                删除
+              </button>
             </div>
           )}
         </div>
@@ -309,12 +355,11 @@ export function SiteCard({
         key={id}
         onClick={handleCardClick}
         onContextMenu={handleContextMenu}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={`flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)]
-                   transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1
-                   ${!isGuestMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
-        title={!isGuestMode ? "拖拽可排序，右键菜单，点击图标打开" : "点击打开链接"}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchMove={handleTouchMove}
+        className={`flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)]\n                   transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1\n                   cursor-pointer`}
+        title={isGuestMode ? "点击打开链接" : "点击打开链接，右键或长按显示菜单"}
       >
         {/* 图标 */}
         <div className="site-icon-wrapper w-10 h-10 flex-shrink-0">
@@ -345,32 +390,6 @@ export function SiteCard({
           </div>
         </div>
 
-        {/* 快捷操作 */}
-        {!isGuestMode && (
-          <div className={`flex items-center gap-1 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                openEditDialog();
-              }}
-              className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--muted)] text-[var(--foreground-secondary)] transition-colors"
-              title="编辑"
-            >
-              <Pencil className="w-4 h-4" />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsDeleteAlertOpen(true);
-              }}
-              className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--error)]/10 text-[var(--error)] transition-colors"
-              title="删除"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
         {/* 打开链接按钮 - 访客模式 */}
         {isGuestMode && (
           <button
@@ -383,6 +402,29 @@ export function SiteCard({
           >
             <LinkIcon className="w-4 h-4" />
           </button>
+        )}
+
+        {/* 右键菜单 - 仅在非访客模式 */}
+        {!isGuestMode && isContextMenuOpen && (
+          <div
+            ref={contextMenuRef}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-50 min-w-[140px] bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-md)] shadow-xl p-1 animate-in fade-in zoom-in-95"
+          >
+            <button
+              onClick={handleEditClick}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] hover:bg-[var(--primary-50)] text-[var(--foreground)] text-sm transition-colors"
+            >
+              <Pencil className="w-4 h-4" />
+              编辑
+            </button>
+            <button
+              onClick={handleDeleteClick}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] hover:bg-[var(--error)]/10 text-[var(--error)] text-sm transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              删除
+            </button>
+          </div>
         )}
       </div>
 

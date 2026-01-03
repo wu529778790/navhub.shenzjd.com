@@ -83,11 +83,23 @@ function SortableCategoryItem({ category, onEdit, onDelete, isGuestMode, allCate
     opacity: isDragging ? 0.8 : 1,
   };
 
+  // 分类点击 - 锚点跳转
+  const handleCategoryClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const element = document.getElementById(`category-${category.id}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // 更新 URL hash
+      window.history.pushState(null, '', `#category-${category.id}`);
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       className="category-card p-5"
+      id={`category-${category.id}`}
     >
       {/* 分类标题栏 - 支持拖拽和点击编辑 */}
       <div
@@ -99,11 +111,12 @@ function SortableCategoryItem({ category, onEdit, onDelete, isGuestMode, allCate
           <div className="p-1.5 bg-[var(--primary-100)] rounded-[var(--radius-sm)] text-[var(--primary-700)]">
             <GripVertical className="w-4 h-4" />
           </div>
-          <div
-            className="flex-1 cursor-pointer"
-            onClick={() => !isGuestMode && onEdit(category)}
-          >
-            <h3 className="font-semibold text-lg text-[var(--foreground)] hover:text-[var(--primary-600)] transition-colors flex items-center gap-2">
+          <div className="flex-1">
+            <h3
+              className="font-semibold text-lg text-[var(--foreground)] hover:text-[var(--primary-600)] transition-colors flex items-center gap-2 cursor-pointer"
+              onClick={handleCategoryClick}
+              title="点击跳转到此分类"
+            >
               {category.icon && <span>{category.icon}</span>}
               <span>{category.name}</span>
               <span className="badge badge-neutral text-xs font-normal">
@@ -170,9 +183,8 @@ export default function Home() {
   const [editingCategory, setEditingCategory] = useState<SimpleCategory | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<string | null>(null);
 
-  // 搜索和过滤状态
+  // 搜索状态
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // DnD Sensors for category sorting
@@ -202,14 +214,9 @@ export default function Home() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isGuestMode]);
 
-  // 搜索和过滤逻辑
+  // 搜索逻辑 - 仅按搜索词过滤
   const filteredCategories = useMemo(() => {
     let result = categories as SimpleCategory[];
-
-    // 按分类过滤
-    if (activeCategoryFilter) {
-      result = result.filter(c => c.id === activeCategoryFilter);
-    }
 
     // 按搜索词过滤
     if (searchQuery.trim()) {
@@ -238,7 +245,7 @@ export default function Home() {
     }
 
     return result;
-  }, [categories, searchQuery, activeCategoryFilter]);
+  }, [categories, searchQuery]);
 
   // 搜索结果统计
   const searchResultsCount = useMemo(() => {
@@ -282,23 +289,20 @@ export default function Home() {
 
   // 空状态处理
   const renderEmptyState = () => {
-    if (searchQuery || activeCategoryFilter) {
+    if (searchQuery) {
       return (
         <div className="empty-state card p-12">
           <div className="empty-state-icon">🔍</div>
           <div className="empty-state-title">未找到匹配内容</div>
           <div className="empty-state-description">
-            尝试调整搜索词或清除过滤器
+            尝试调整搜索词
           </div>
           <Button
             variant="outline"
-            onClick={() => {
-              setSearchQuery("");
-              setActiveCategoryFilter(null);
-            }}
+            onClick={() => setSearchQuery("")}
             className="mt-4"
           >
-            清除搜索和过滤
+            清除搜索
           </Button>
         </div>
       );
@@ -356,20 +360,12 @@ export default function Home() {
             <ViewToggle view={viewMode} onViewChange={setViewMode} />
           </div>
 
-          {/* 过滤器和状态栏 */}
-          <div className="flex items-center justify-between gap-3 flex-wrap w-full">
-            <div className="flex-1 min-w-[200px]">
-              <CategoryFilter
-                categories={categories}
-                activeCategory={activeCategoryFilter}
-                onCategoryChange={setActiveCategoryFilter}
-              />
-            </div>
-
-            {searchQuery && (
+          {/* 搜索状态栏 */}
+          {searchQuery && (
+            <div className="flex items-center justify-between gap-3 flex-wrap w-full">
               <SearchStatus query={searchQuery} resultsCount={searchResultsCount} />
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* 错误提示 */}
