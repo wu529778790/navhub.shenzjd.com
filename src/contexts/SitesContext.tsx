@@ -53,15 +53,41 @@ export function SitesProvider({ children }: { children: ReactNode }) {
   const [isGuestMode, setIsGuestMode] = useState(false);
 
   // 获取 GitHub token（如果已登录）
+  // 这个 effect 会在组件挂载时运行，并且监听 storage 变化以响应登录状态更新
   useEffect(() => {
-    const auth = getAuthState();
-    if (auth.token) {
-      setGithubToken(auth.token);
-      setIsGuestMode(false);
-    } else {
-      // 未登录，使用访客模式（只读你的数据，无需 token）
-      setIsGuestMode(true);
-    }
+    const checkAuth = () => {
+      const auth = getAuthState();
+      if (auth.token) {
+        setGithubToken(auth.token);
+        setIsGuestMode(false);
+      } else {
+        // 未登录，使用访客模式（只读你的数据，无需 token）
+        setIsGuestMode(true);
+      }
+    };
+
+    // 初始检查
+    checkAuth();
+
+    // 监听 storage 变化（用于响应登录/登出）
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'github_token' || e.key === 'github_user') {
+        checkAuth();
+      }
+    };
+
+    // 监听自定义事件（用于登录后的页面刷新）
+    const handleAuthUpdate = () => {
+      checkAuth();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('auth-update', handleAuthUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('auth-update', handleAuthUpdate);
+    };
   }, []);
 
   const { status: syncStatus, isOnline, lastSync, sync, manualSync: useSyncManualSync, refresh } = useSync(githubToken);
@@ -223,6 +249,17 @@ export function SitesProvider({ children }: { children: ReactNode }) {
   // 组件挂载时加载数据
   useEffect(() => {
     fetchSites();
+  }, [fetchSites]);
+
+  // 监听认证状态变化，自动刷新数据
+  useEffect(() => {
+    const handleAuthUpdate = () => {
+      // 认证状态变化，强制刷新数据
+      fetchSites(true);
+    };
+
+    window.addEventListener('auth-update', handleAuthUpdate);
+    return () => window.removeEventListener('auth-update', handleAuthUpdate);
   }, [fetchSites]);
 
   // 操作函数：立即更新本地 + 后台同步

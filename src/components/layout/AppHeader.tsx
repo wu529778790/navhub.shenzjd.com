@@ -43,6 +43,8 @@ export function AppHeader() {
       setGitHubUser({ id: userId, name: userName, avatar: userAvatar });
       setSession({ user: { id: userId, name: userName, avatar: userAvatar }, token });
       window.history.replaceState({}, "", window.location.pathname);
+      // 触发自定义事件通知其他组件认证状态已更新
+      window.dispatchEvent(new Event('auth-update'));
       setTimeout(() => window.location.reload(), 100);
       return;
     }
