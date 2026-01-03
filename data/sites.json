@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767457512343,
+  "lastModified": 1767457724759,
   "categories": [
     {
       "id": "default",
@@ -69,6 +69,12 @@
           "title": "wx-auth.shenzjd.com",
           "favicon": "https://wx-auth.shenzjd.com/favicon.ico",
           "url": "https://wx-auth.shenzjd.com/"
+        },
+        {
+          "id": "1767457724759",
+          "title": "妖火",
+          "favicon": "https://yaohuo.me/blog/rose.ico",
+          "url": "https://yaohuo.me/"
         }
       ]
     },
