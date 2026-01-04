@@ -315,7 +315,7 @@ export default function Home() {
         <div className="empty-state-description">
           {isGuestMode
             ? "请登录后添加分类和站点"
-            : "点击右上角的按钮添加第一个分类，开始管理你的导航"}
+            : "点击下方的按钮添加第一个分类，开始管理你的导航"}
         </div>
         {!isGuestMode && (
           <div className="mt-4 text-xs text-[var(--muted-foreground)]">
@@ -328,28 +328,12 @@ export default function Home() {
 
   return (
     <AppLayout>
-      <PageContainer
-        action={
-          !isGuestMode && (
-            <Button
-              size="sm"
-              onClick={() => setShowAddCategoryDialog(true)}
-              className="gap-1 shadow-md hover:shadow-lg transition-all"
-            >
-              <Plus className="w-4 h-4" />
-              新建
-              <span className="hidden sm:inline text-xs opacity-75 ml-1">
-                (Ctrl+N)
-              </span>
-            </Button>
-          )
-        }
-      >
+      <PageContainer>
         {/* 搜索和工具栏 */}
         <div className="flex flex-col gap-4 mb-6 w-full">
-          {/* 搜索栏 */}
-          <div className="flex gap-3 items-center w-full">
-            <div className="flex-1 min-w-0">
+          {/* 搜索栏 + 新建按钮 */}
+          <div className="flex gap-3 items-center w-full flex-wrap">
+            <div className="flex-1 min-w-0 flex-grow">
               <SearchBar
                 onSearch={setSearchQuery}
                 placeholder="搜索站点名称、URL..."
@@ -358,6 +342,21 @@ export default function Home() {
 
             {/* 视图切换 */}
             <ViewToggle view={viewMode} onViewChange={setViewMode} />
+
+            {/* 新建按钮 - 移到搜索栏右侧 */}
+            {!isGuestMode && (
+              <Button
+                size="sm"
+                onClick={() => setShowAddCategoryDialog(true)}
+                className="gap-1 shadow-md hover:shadow-lg transition-all flex-shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                新建
+                <span className="hidden sm:inline text-xs opacity-75 ml-1">
+                  (Ctrl+N)
+                </span>
+              </Button>
+            )}
           </div>
 
           {/* 搜索状态栏 */}
