@@ -16,9 +16,9 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      // 玻璃拟态遮罩 - 更柔和的渐变
-      "fixed inset-0 z-[100] bg-gradient-to-br from-black/60 via-black/70 to-black/80 backdrop-blur-sm",
-      // 流入动画
+      // Skills 规范: 高对比度遮罩，确保弹窗清晰可见
+      "fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm",
+      // 流畅的淡入动画
       "data-[state=open]:animate-in data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
@@ -37,23 +37,30 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        // 玻璃拟态容器 - 使用项目设计系统
-        "fixed left-[50%] top-[50%] z-[100] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4",
-        "bg-[var(--background)]/95 backdrop-blur-xl border border-[var(--border)]",
-        "rounded-[var(--radius-xl)] p-6 shadow-2xl",
+        // Skills 规范: 移动端优化 - 全宽，底部圆角
+        "fixed left-0 bottom-0 w-full z-[100]",
+        "bg-[var(--background)] border-t border-[var(--border)]",
+        "rounded-t-[var(--radius-2xl)] p-4",
 
-        // 增强的阴影系统 - 更立体
-        "shadow-[0_20px_50px_-12px_rgba(124,58,237,0.15),0_8px_16px_-8px_rgba(0,0,0,0.2)]",
+        // 桌面端: 居中，限制宽度
+        "sm:left-[50%] sm:top-[50%] sm:bottom-auto sm:w-full sm:max-w-lg",
+        "sm:translate-x-[-50%] sm:translate-y-[-50%]",
+        "sm:rounded-[var(--radius-xl)] sm:border sm:border-[var(--border)]",
+        "sm:shadow-2xl",
 
-        // 流畅的动画 - 从上方滑入 + 缩放
+        // 增强的阴影系统 (Skills 风格)
+        "sm:shadow-[0_20px_50px_-12px_rgba(124,58,237,0.15),0_8px_16px_-8px_rgba(0,0,0,0.2)]",
+
+        // 流畅动画 - 从下方滑入 (移动端) / 从上方滑入 (桌面端)
         "duration-300 ease-out",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-top-[48%]",
-        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+        "sm:data-[state=closed]:slide-out-to-top-[48%] sm:data-[state=open]:slide-in-from-top-[48%]",
+        "data-[state=closed]:slide-out-to-bottom-100 data-[state=open]:slide-in-from-bottom-100",
+        "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
 
         // 深色模式适配
-        "dark:bg-[var(--background)]/90 dark:border-[var(--border-strong)]",
+        "dark:bg-[var(--background)]/95 dark:border-[var(--border-strong)]",
 
         className
       )}
@@ -61,14 +68,15 @@ const DialogContent = React.forwardRef<
     >
       {children}
 
-      {/* 优化的关闭按钮 - 更现代的交互 */}
+      {/* 优化的关闭按钮 - 右上角，易触达 */}
       <DialogPrimitive.Close className={cn(
-        "absolute right-4 top-4 rounded-md p-1.5",
+        "absolute right-3 top-3 rounded-md p-1.5",
         "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
         "hover:bg-[var(--muted)] transition-all duration-200",
         "focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-2",
-        "data-[state=open]:bg-[var(--muted)] data-[state=open]:text-[var(--foreground)]",
-        "active:scale-95"
+        "active:scale-95",
+        // 移动端增大触摸区域
+        "w-8 h-8 flex items-center justify-center"
       )}>
         <X className="h-5 w-5" />
         <span className="sr-only">关闭</span>
@@ -84,9 +92,9 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      // 现代化头部布局 - 增加视觉层次
-      "flex flex-col space-y-3 text-center sm:text-left",
-      "border-b border-[var(--border)] pb-4",
+      // Skills 规范: 清晰的视觉层次
+      "flex flex-col space-y-2 text-left",
+      "pb-3 border-b border-[var(--border)]",
       className
     )}
     {...props}
@@ -100,9 +108,10 @@ const DialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      // 优化的底部操作区 - 更好的移动端适配
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-      "border-t border-[var(--border)] pt-4 mt-2",
+      // Skills 规范: 移动端垂直排列，桌面端水平排列
+      "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+      // 移动端顶部边框分隔
+      "pt-4 mt-4 border-t border-[var(--border)]",
       className
     )}
     {...props}
@@ -117,7 +126,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      // 现代化标题 - 渐变文字效果
+      // Skills 规范: 渐变标题，现代感
       "text-xl font-bold leading-tight tracking-tight",
       "bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-500)]",
       "bg-clip-text text-transparent",
@@ -136,7 +145,7 @@ const DialogDescription = React.forwardRef<
   <DialogPrimitive.Description
     ref={ref}
     className={cn(
-      // 增强的描述文本 - 更好的可读性
+      // Skills 规范: 清晰的描述文本
       "text-[var(--foreground-secondary)] text-sm leading-relaxed",
       "dark:text-[var(--muted-foreground)]",
       className

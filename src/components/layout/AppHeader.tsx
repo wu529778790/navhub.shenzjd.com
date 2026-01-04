@@ -315,12 +315,12 @@ export function AppHeader() {
 
           <DialogFooter>
             {session && (
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   onClick={handleManualSync}
                   disabled={isSyncing}
-                  className="flex-1 sm:flex-none gap-1"
+                  className="flex-1 sm:flex-none gap-1 h-12 text-base font-medium"
                 >
                   <RefreshCw className={`w-4 h-4 ${isSyncing ? "animate-spin" : ""}`} />
                   {isSyncing ? "同步中..." : "手动同步"}
@@ -329,7 +329,7 @@ export function AppHeader() {
                 <Button
                   variant="destructive"
                   onClick={handleGitHubLogout}
-                  className="flex-1 sm:flex-none gap-1"
+                  className="flex-1 sm:flex-none gap-1 h-12 text-base font-medium"
                 >
                   <LogOut className="w-4 h-4" />
                   退出登录

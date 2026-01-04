@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -61,6 +62,7 @@ export function SiteCard({
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
 
   // 点击外部关闭右键菜单
   useEffect(() => {
@@ -155,17 +157,27 @@ export function SiteCard({
     setIsContextMenuOpen(true);
   };
 
-  // 长按处理（移动端）
+  // 长按处理（移动端）- Skills 规范优化
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isGuestMode) return;
 
+    // 记录触摸起始位置，用于检测滑动取消
+    touchStartPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+
     longPressTimer.current = setTimeout(() => {
       setIsContextMenuOpen(true);
-      // 震动反馈（如果支持）
+      // 震动反馈（如果支持）- 增强反馈
       if (navigator.vibrate) {
-        navigator.vibrate(50);
+        navigator.vibrate([30, 20, 30]); // 更明显的模式
       }
-    }, 500); // 500ms 长按
+      // 视觉反馈 - 临时缩放
+      if (cardRef.current) {
+        cardRef.current.style.transform = 'scale(0.98)';
+        setTimeout(() => {
+          if (cardRef.current) cardRef.current.style.transform = '';
+        }, 150);
+      }
+    }, 450); // 450ms 长按（略微缩短）
   };
 
   const handleTouchEnd = () => {
@@ -173,12 +185,21 @@ export function SiteCard({
       clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
     }
+    touchStartPos.current = null;
   };
 
-  const handleTouchMove = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (longPressTimer.current && touchStartPos.current) {
+      const touch = e.touches[0];
+      const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
+      const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
+
+      // 如果移动超过 10px，取消长按
+      if (deltaX > 10 || deltaY > 10) {
+        clearTimeout(longPressTimer.current);
+        longPressTimer.current = null;
+        touchStartPos.current = null;
+      }
     }
   };
 
@@ -205,7 +226,7 @@ export function SiteCard({
   // 删除确认弹窗内容（两个视图共用）
   const DeleteConfirmDialog = () => (
     <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
-      <AlertDialogContent>
+      <AlertDialogContent className="sm:max-w-md">
         <AlertDialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-full bg-[var(--error)]/10 flex items-center justify-center">
@@ -214,28 +235,28 @@ export function SiteCard({
             <AlertDialogTitle>确认删除站点</AlertDialogTitle>
           </div>
           <AlertDialogDescription>
-            确定要删除 <strong className="text-[var(--error)]">{initialTitle}</strong> 吗？
+            确定要删除 <strong className="text-[var(--error)] font-semibold">{initialTitle}</strong> 吗？
             <br />
             <span className="text-xs opacity-75">此操作无法撤销，数据将从本地和 GitHub 同步删除。</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="gap-1">
+          <AlertDialogCancel className="gap-1 h-12 text-base font-medium">
             <span>取消</span>
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isLoading}
-            className="bg-[var(--error)] hover:bg-red-600 hover:shadow-lg hover:shadow-red-500/20 transition-all gap-1"
+            className="bg-[var(--error)] hover:bg-red-600 hover:shadow-lg hover:shadow-red-500/30 active:scale-95 transition-all gap-1 h-12 text-base font-medium"
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>删除中...</span>
               </div>
             ) : (
               <>
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-5 h-5" />
                 <span>确认删除</span>
               </>
             )}
@@ -295,21 +316,25 @@ export function SiteCard({
           {!isGuestMode && isContextMenuOpen && (
             <div
               ref={contextMenuRef}
-              className="absolute top-full mt-2 right-0 z-50 min-w-[140px] bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-md)] shadow-xl p-1 animate-in fade-in zoom-in-95"
+              className="absolute top-full mt-2 right-0 z-[90] min-w-[160px] bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-lg)] shadow-2xl p-1.5 animate-in fade-in zoom-in-95"
             >
               <button
                 onClick={handleEditClick}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] hover:bg-[var(--primary-50)] text-[var(--foreground)] text-sm transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] hover:bg-[var(--primary-50)] text-[var(--foreground)] text-sm font-medium transition-all active:scale-95"
               >
-                <Pencil className="w-4 h-4" />
-                编辑
+                <div className="w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center">
+                  <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)]" />
+                </div>
+                编辑站点
               </button>
               <button
                 onClick={handleDeleteClick}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] hover:bg-[var(--error)]/10 text-[var(--error)] text-sm transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] hover:bg-[var(--error)]/10 text-[var(--error)] text-sm font-medium transition-all active:scale-95 mt-0.5"
               >
-                <Trash2 className="w-4 h-4" />
-                删除
+                <div className="w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center">
+                  <Trash2 className="w-3.5 h-3.5 text-[var(--error)]" />
+                </div>
+                删除站点
               </button>
             </div>
           )}
@@ -329,6 +354,7 @@ export function SiteCard({
                   value={editedTitle}
                   onChange={(e) => setEditedTitle(e.target.value)}
                   disabled={isLoading}
+                  className="h-12"
                 />
               </div>
               <div className="space-y-2">
@@ -338,6 +364,7 @@ export function SiteCard({
                   value={editedUrl}
                   onChange={(e) => setEditedUrl(e.target.value)}
                   disabled={isLoading}
+                  className="h-12"
                 />
               </div>
               <div className="space-y-2">
@@ -347,26 +374,27 @@ export function SiteCard({
                   value={editedFavicon}
                   onChange={(e) => setEditedFavicon(e.target.value)}
                   disabled={isLoading}
+                  className="h-12"
                 />
               </div>
             </div>
-            <div className="flex gap-2">
+            <DialogFooter>
               <Button
                 variant="outline"
                 onClick={() => setIsEditDialogOpen(false)}
-                className="flex-1"
+                className="flex-1 h-12 text-base font-medium"
                 disabled={isLoading}
               >
                 取消
               </Button>
               <Button
                 onClick={handleEdit}
-                className="flex-1"
+                className="flex-1 h-12 text-base font-medium"
                 disabled={isLoading}
               >
                 {isLoading ? "保存中..." : "保存"}
               </Button>
-            </div>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
 
@@ -438,21 +466,25 @@ export function SiteCard({
         {!isGuestMode && isContextMenuOpen && (
           <div
             ref={contextMenuRef}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-50 min-w-[140px] bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-md)] shadow-xl p-1 animate-in fade-in zoom-in-95"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-[90] min-w-[160px] bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-lg)] shadow-2xl p-1.5 animate-in fade-in zoom-in-95"
           >
             <button
               onClick={handleEditClick}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] hover:bg-[var(--primary-50)] text-[var(--foreground)] text-sm transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] hover:bg-[var(--primary-50)] text-[var(--foreground)] text-sm font-medium transition-all active:scale-95"
             >
-              <Pencil className="w-4 h-4" />
-              编辑
+              <div className="w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center">
+                <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)]" />
+              </div>
+              编辑站点
             </button>
             <button
               onClick={handleDeleteClick}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] hover:bg-[var(--error)]/10 text-[var(--error)] text-sm transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] hover:bg-[var(--error)]/10 text-[var(--error)] text-sm font-medium transition-all active:scale-95 mt-0.5"
             >
-              <Trash2 className="w-4 h-4" />
-              删除
+              <div className="w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center">
+                <Trash2 className="w-3.5 h-3.5 text-[var(--error)]" />
+              </div>
+              删除站点
             </button>
           </div>
         )}
@@ -472,6 +504,7 @@ export function SiteCard({
                 value={editedTitle}
                 onChange={(e) => setEditedTitle(e.target.value)}
                 disabled={isLoading}
+                className="h-12"
               />
             </div>
             <div className="space-y-2">
@@ -481,6 +514,7 @@ export function SiteCard({
                 value={editedUrl}
                 onChange={(e) => setEditedUrl(e.target.value)}
                 disabled={isLoading}
+                className="h-12"
               />
             </div>
             <div className="space-y-2">
@@ -490,26 +524,27 @@ export function SiteCard({
                 value={editedFavicon}
                 onChange={(e) => setEditedFavicon(e.target.value)}
                 disabled={isLoading}
+                className="h-12"
               />
             </div>
           </div>
-          <div className="flex gap-2">
+          <DialogFooter>
             <Button
               variant="outline"
               onClick={() => setIsEditDialogOpen(false)}
-              className="flex-1"
+              className="flex-1 h-12 text-base font-medium"
               disabled={isLoading}
             >
               取消
             </Button>
             <Button
               onClick={handleEdit}
-              className="flex-1"
+              className="flex-1 h-12 text-base font-medium"
               disabled={isLoading}
             >
               {isLoading ? "保存中..." : "保存"}
             </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
