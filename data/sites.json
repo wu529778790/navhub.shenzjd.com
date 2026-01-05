@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767621323481,
+  "lastModified": 1767621326655,
   "categories": [
     {
       "id": "default",
@@ -123,9 +123,8 @@
         {
           "id": "1767621231386",
           "title": "cloudflare",
-          "url": "https://www.cloudflare.com",
-          "favicon": "https://www.cloudflare.com/favicon.ico",
-          "sort": 0
+          "url": "https://dash.cloudflare.com/",
+          "favicon": "https://www.cloudflare.com/favicon.ico"
         },
         {
           "id": "1767621099627",
