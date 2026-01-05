@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767618424863,
+  "lastModified": 1767620962453,
   "categories": [
     {
       "id": "default",
@@ -69,6 +69,12 @@
           "title": "妖火",
           "favicon": "https://yaohuo.me/blog/rose.ico",
           "url": "https://yaohuo.me/"
+        },
+        {
+          "id": "1767620962453",
+          "title": "Vercel: Build and deploy the best web experiences with the AI Cloud – Vercel",
+          "favicon": "https://assets.vercel.com/image/upload/q_auto/front/favicon/vercel/apple-touch-icon-256x256.png",
+          "url": "https://vercel.com/"
         }
       ]
     },
@@ -93,18 +99,17 @@
           "sort": 1
         },
         {
-          "id": "1767581467294",
-          "title": "Try NVIDIA NIM APIs",
-          "favicon": "https://build.nvidia.com/favicon.ico",
-          "url": "https://build.nvidia.com/",
-          "sort": 2
-        },
-        {
           "id": "1767189420645",
           "title": "Xiaomi MiMo API Open Platform",
           "favicon": "https://platform.xiaomimimo.com/favicon.874c9507.png",
           "url": "https://platform.xiaomimimo.com/#/docs/welcome",
-          "sort": 3
+          "sort": 2
+        },
+        {
+          "id": "1767581467294",
+          "title": "Try NVIDIA NIM APIs",
+          "favicon": "https://build.nvidia.com/favicon.ico",
+          "url": "https://build.nvidia.com/"
         }
       ]
     }
