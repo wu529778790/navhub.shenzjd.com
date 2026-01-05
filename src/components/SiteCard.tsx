@@ -65,9 +65,12 @@ export function SiteCard({
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
 
-  // 点击外部关闭右键菜单
+  // 点击外部或右键关闭右键菜单
   useEffect(() => {
     if (!isContextMenuOpen) return;
+
+    // 防止页面滚动
+    document.body.style.overflow = 'hidden';
 
     const handleClickOutside = (e: MouseEvent) => {
       if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
@@ -75,8 +78,21 @@ export function SiteCard({
       }
     };
 
+    const handleContextMenu = (e: MouseEvent) => {
+      // 如果右键点击的不是菜单内部，关闭菜单
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setIsContextMenuOpen(false);
+      }
+    };
+
     document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener("contextmenu", handleContextMenu);
+
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("contextmenu", handleContextMenu);
+    };
   }, [isContextMenuOpen]);
 
   // 清理长按定时器
@@ -227,25 +243,25 @@ export function SiteCard({
   // 删除确认弹窗内容（两个视图共用）
   const DeleteConfirmDialog = () => (
     <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
-      <AlertDialogContent className="sm:max-w-md">
+      <AlertDialogContent className="sm:max-w-md bg-[var(--background)]/95 backdrop-blur-2xl border border-[var(--border)] rounded-[var(--radius-2xl)] shadow-[0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6">
         <AlertDialogHeader>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-full bg-[var(--error)]/10 flex items-center justify-center">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 rounded-full bg-[var(--error)]/10 flex items-center justify-center border border-[var(--error)]/20">
               <Trash2 className="w-5 h-5 text-[var(--error)]" />
             </div>
-            <AlertDialogTitle className="text-2xl font-bold">确认删除站点</AlertDialogTitle>
+            <AlertDialogTitle className="text-2xl font-bold text-[var(--foreground)]">确认删除站点</AlertDialogTitle>
           </div>
-          <AlertDialogDescription className="text-[var(--foreground-secondary)] text-sm leading-relaxed">
+          <AlertDialogDescription className="text-[var(--foreground-secondary)] text-base leading-relaxed mt-2">
             确定要删除 <strong className="text-[var(--error)] font-semibold">{initialTitle}</strong> 吗？
             <br />
-            <span className="text-xs text-[var(--muted-foreground)]">此操作无法撤销，数据将从本地和 GitHub 同步删除。</span>
+            <span className="text-sm text-[var(--muted-foreground)] mt-1 inline-block">此操作无法撤销，数据将从本地和 GitHub 同步删除。</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
+        <div className="flex gap-3 pt-4 mt-4 border-t border-[var(--border)] w-full">
           <AlertDialogCancel className={cn(
-            "flex-1 h-11 rounded-[var(--radius-lg)]",
-            "border-[var(--border)] hover:border-[var(--border-strong)]",
-            "hover:bg-[var(--background-secondary)]",
+            "flex-1 h-12 rounded-[var(--radius-xl)] text-base font-medium",
+            "bg-[var(--background)] border border-[var(--border)]",
+            "hover:bg-[var(--background-secondary)] hover:border-[var(--border-strong)]",
             "transition-all duration-200 active:scale-95",
             "text-base font-medium"
           )}>
@@ -255,22 +271,22 @@ export function SiteCard({
             onClick={handleDelete}
             disabled={isLoading}
             className={cn(
-              "flex-1 h-11 rounded-[var(--radius-lg)]",
-              "bg-gradient-to-r from-[var(--error)] to-red-600",
+              "flex-1 h-12 rounded-[var(--radius-xl)] text-base font-medium",
+              "bg-gradient-to-r from-[var(--error)] to-red-600 text-white",
               "hover:from-red-600 hover:to-red-700",
               "text-white font-medium shadow-lg shadow-red-500/30",
               "transition-all duration-200 active:scale-95",
-              "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none",
+              "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100",
               "text-base font-medium"
             )}
           >
             {isLoading ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>删除中...</span>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <Trash2 className="w-4 h-4" />
                 <span>确认删除</span>
               </div>
@@ -325,7 +341,7 @@ export function SiteCard({
             <div
               ref={contextMenuRef}
               className={cn(
-                "absolute top-full mt-2 left-0 z-[90] min-w-[180px]",
+                "absolute top-full mt-2 left-0 z-[90] w-auto",
                 "bg-[var(--background)]/95 backdrop-blur-xl",
                 "border border-[var(--border)] rounded-[var(--radius-xl)]",
                 "shadow-[0_10px_40px_-12px_rgba(0,0,0,0.15)]",
@@ -336,10 +352,10 @@ export function SiteCard({
               <button
                 onClick={handleEditClick}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)]",
+                  "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
                   "hover:bg-[var(--primary-50)] text-[var(--foreground)]",
                   "text-sm font-medium transition-all active:scale-95",
-                  "group relative overflow-hidden"
+                  "group relative overflow-hidden whitespace-nowrap"
                 )}
               >
                 <div className={cn(
@@ -348,15 +364,15 @@ export function SiteCard({
                 )}>
                   <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)] group-hover:scale-110 transition-transform" />
                 </div>
-                <span className="flex-1">编辑站点</span>
+                <span>编辑站点</span>
               </button>
               <button
                 onClick={handleDeleteClick}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)]",
+                  "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
                   "hover:bg-[var(--error)]/10 text-[var(--error)]",
                   "text-sm font-medium transition-all active:scale-95 mt-0.5",
-                  "group relative overflow-hidden"
+                  "group relative overflow-hidden whitespace-nowrap"
                 )}
               >
                 <div className={cn(
@@ -365,7 +381,7 @@ export function SiteCard({
                 )}>
                   <Trash2 className="w-3.5 h-3.5 text-[var(--error)] group-hover:scale-110 transition-transform" />
                 </div>
-                <span className="flex-1">删除站点</span>
+                <span>删除站点</span>
               </button>
             </div>
           )}
@@ -373,9 +389,9 @@ export function SiteCard({
 
         {/* 编辑对话框 */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md bg-[var(--background)]/95 backdrop-blur-2xl border border-[var(--border)] rounded-[var(--radius-2xl)] shadow-[0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">编辑站点</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-[var(--foreground)]">编辑站点</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
@@ -424,14 +440,14 @@ export function SiteCard({
                 />
               </div>
             </div>
-            <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
+            <div className="flex gap-3 pt-4 mt-4 border-t border-[var(--border)] w-full">
               <Button
                 variant="outline"
                 onClick={() => setIsEditDialogOpen(false)}
                 className={cn(
-                  "flex-1 h-11 rounded-[var(--radius-lg)]",
-                  "border-[var(--border)] hover:border-[var(--border-strong)]",
-                  "hover:bg-[var(--background-secondary)]",
+                  "flex-1 h-12 rounded-[var(--radius-xl)] text-base font-medium",
+                  "bg-[var(--background)] border border-[var(--border)]",
+                  "hover:bg-[var(--background-secondary)] hover:border-[var(--border-strong)]",
                   "transition-all duration-200 active:scale-95"
                 )}
                 disabled={isLoading}
@@ -441,7 +457,7 @@ export function SiteCard({
               <Button
                 onClick={handleEdit}
                 className={cn(
-                  "flex-1 h-11 rounded-[var(--radius-lg)]",
+                  "flex-1 h-12 rounded-[var(--radius-xl)] text-base font-medium",
                   "bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-500)]",
                   "hover:from-[var(--primary-700)] hover:to-[var(--primary-600)]",
                   "text-white font-medium shadow-lg shadow-[var(--primary-500)]/20",
@@ -511,7 +527,7 @@ export function SiteCard({
           <div
             ref={contextMenuRef}
             className={cn(
-              "absolute right-4 top-1/2 -translate-y-1/2 z-[90] min-w-[180px]",
+              "absolute left-4 top-1/2 -translate-y-1/2 z-[90] w-auto",
               "bg-[var(--background)]/95 backdrop-blur-xl",
               "border border-[var(--border)] rounded-[var(--radius-xl)]",
               "shadow-[0_10px_40px_-12px_rgba(0,0,0,0.15)]",
@@ -522,10 +538,10 @@ export function SiteCard({
             <button
               onClick={handleEditClick}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)]",
+                "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
                 "hover:bg-[var(--primary-50)] text-[var(--foreground)]",
                 "text-sm font-medium transition-all active:scale-95",
-                "group relative overflow-hidden"
+                "group relative overflow-hidden whitespace-nowrap"
               )}
             >
               <div className={cn(
@@ -534,15 +550,15 @@ export function SiteCard({
               )}>
                 <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)] group-hover:scale-110 transition-transform" />
               </div>
-              <span className="flex-1">编辑站点</span>
+              <span>编辑站点</span>
             </button>
             <button
               onClick={handleDeleteClick}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)]",
+                "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
                 "hover:bg-[var(--error)]/10 text-[var(--error)]",
                 "text-sm font-medium transition-all active:scale-95 mt-0.5",
-                "group relative overflow-hidden"
+                "group relative overflow-hidden whitespace-nowrap"
               )}
             >
               <div className={cn(
@@ -551,7 +567,7 @@ export function SiteCard({
               )}>
                 <Trash2 className="w-3.5 h-3.5 text-[var(--error)] group-hover:scale-110 transition-transform" />
               </div>
-              <span className="flex-1">删除站点</span>
+              <span>删除站点</span>
             </button>
           </div>
         )}
@@ -559,9 +575,9 @@ export function SiteCard({
 
       {/* 编辑对话框 */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-[var(--background)]/95 backdrop-blur-2xl border border-[var(--border)] rounded-[var(--radius-2xl)] shadow-[0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">编辑站点</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-[var(--foreground)]">编辑站点</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -610,14 +626,14 @@ export function SiteCard({
               />
             </div>
           </div>
-          <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
+          <div className="flex gap-3 pt-4 mt-4 border-t border-[var(--border)] w-full">
             <Button
               variant="outline"
               onClick={() => setIsEditDialogOpen(false)}
               className={cn(
-                "flex-1 h-11 rounded-[var(--radius-lg)]",
-                "border-[var(--border)] hover:border-[var(--border-strong)]",
-                "hover:bg-[var(--background-secondary)]",
+                "flex-1 h-12 rounded-[var(--radius-xl)] text-base font-medium",
+                "bg-[var(--background)] border border-[var(--border)]",
+                "hover:bg-[var(--background-secondary)] hover:border-[var(--border-strong)]",
                 "transition-all duration-200 active:scale-95"
               )}
               disabled={isLoading}
@@ -627,7 +643,7 @@ export function SiteCard({
             <Button
               onClick={handleEdit}
               className={cn(
-                "flex-1 h-11 rounded-[var(--radius-lg)]",
+                "flex-1 h-12 rounded-[var(--radius-xl)] text-base font-medium",
                 "bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-500)]",
                 "hover:from-[var(--primary-700)] hover:to-[var(--primary-600)]",
                 "text-white font-medium shadow-lg shadow-[var(--primary-500)]/20",

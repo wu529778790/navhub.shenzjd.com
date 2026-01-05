@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -15,17 +15,18 @@ export function SyncStatus() {
   const { syncStatus, isOnline, lastSync, manualSync, isGuestMode } = useSites();
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // 访客模式不显示任何内容
   if (isGuestMode) {
     return null;
   }
 
-  // 检查是否已登录
-  const isLoggedIn = () => {
+  // 检查是否已登录 - 只在客户端执行
+  useEffect(() => {
     const auth = getAuthState();
-    return !!auth.token;
-  };
+    setIsLoggedIn(!!auth.token);
+  }, []);
 
   // 格式化最后同步时间
   const formatLastSync = () => {
@@ -50,7 +51,7 @@ export function SyncStatus() {
     if (syncStatus === "⚠️") return "⚠️ 冲突";
     if (syncStatus === "🔴") return "🔴 同步错误";
     // 已登录显示在线，未登录显示待同步
-    return isLoggedIn() ? "🟢 在线" : "⚪ 待同步";
+    return isLoggedIn ? "🟢 在线" : "⚪ 待同步";
   };
 
   // 处理同步点击 - 双向同步
@@ -128,7 +129,7 @@ export function SyncStatus() {
       </div>
 
       {/* 同步按钮 - 访客模式不显示 */}
-      {isOnline && isLoggedIn() && !isGuestMode && (
+      {isOnline && isLoggedIn && !isGuestMode && (
         <Button
           onClick={handleManualSync}
           size="sm"
