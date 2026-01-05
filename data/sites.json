@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767621330619,
+  "lastModified": 1767621349888,
   "categories": [
     {
       "id": "default",
@@ -142,6 +142,13 @@
           "sort": 2
         }
       ]
+    },
+    {
+      "id": "cat_1767621349888",
+      "name": "导航",
+      "icon": "📁",
+      "sort": 3,
+      "sites": []
     }
   ]
 }
