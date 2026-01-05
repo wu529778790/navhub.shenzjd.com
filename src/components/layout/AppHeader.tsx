@@ -150,8 +150,8 @@ export function AppHeader() {
       <header className="sticky top-0 z-40 glass bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)] w-full">
         <div className="h-16 flex items-center justify-between max-w-[1200px] mx-auto px-4 md:px-6">
           {/* 左侧：Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gradient-to-br from-[var(--primary-600)] to-[var(--primary-700)] rounded-[var(--radius-lg)] flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-[var(--primary-600)]/20">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.location.href = "/"}>
+            <div className="w-9 h-9 bg-gradient-to-br from-[var(--primary-600)] to-[var(--primary-700)] rounded-[var(--radius-lg)] flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-[var(--primary-600)]/20 hover:scale-105 transition-transform">
               N
             </div>
             <h1 className="text-xl font-bold tracking-tight text-gradient">NavHub</h1>

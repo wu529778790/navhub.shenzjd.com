@@ -16,11 +16,18 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      // Skills 规范: 高对比度遮罩，确保弹窗清晰可见
-      "fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm",
-      // 流畅的淡入动画
+      // 现代化遮罩 - 玻璃拟态增强
+      "fixed inset-0 z-[100]",
+      "bg-[var(--neutral-900)]/60 backdrop-blur-md",
+      "backdrop-saturate-150 backdrop-hue-rotate-15",
+
+      // 高性能动画
       "data-[state=open]:animate-in data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+
+      // 深色模式优化
+      "dark:bg-[var(--neutral-900)]/70",
+
       className
     )}
     {...props}
@@ -37,30 +44,38 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        // Skills 规范: 移动端优化 - 全宽，底部圆角
-        "fixed left-0 bottom-0 w-full z-[100]",
-        "bg-[var(--background)] border-t border-[var(--border)]",
-        "rounded-t-[var(--radius-2xl)] p-4",
+        // ===== 基础布局系统 =====
+        "fixed left-[50%] top-[50%] z-[100]",
+        "w-full max-w-lg",
+        "translate-x-[-50%] translate-y-[-50%]",
 
-        // 桌面端: 居中，限制宽度
-        "sm:left-[50%] sm:top-[50%] sm:bottom-auto sm:w-full sm:max-w-lg",
-        "sm:translate-x-[-50%] sm:translate-y-[-50%]",
-        "sm:rounded-[var(--radius-xl)] sm:border sm:border-[var(--border)]",
-        "sm:shadow-2xl",
+        // ===== 玻璃拟态容器 =====
+        "bg-[var(--background)]/90 backdrop-blur-xl",
+        "border border-[var(--border)]",
+        "rounded-[var(--radius-2xl)]",
 
-        // 增强的阴影系统 (Skills 风格)
-        "sm:shadow-[0_20px_50px_-12px_rgba(124,58,237,0.15),0_8px_16px_-8px_rgba(0,0,0,0.2)]",
+        // ===== 增强阴影系统 =====
+        "shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15),0_8px_16px_-8px_rgba(0,0,0,0.1)]",
+        "shadow-[0_0_0_1px_rgba(255,255,255,0.05)_inset]",
 
-        // 流畅动画 - 从下方滑入 (移动端) / 从上方滑入 (桌面端)
-        "duration-300 ease-out",
+        // ===== 移动端优化 =====
+        "sm:max-w-lg",
+        "max-h-[90vh] overflow-y-auto",
+
+        // ===== 现代化动画 =====
+        "duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "sm:data-[state=closed]:slide-out-to-top-[48%] sm:data-[state=open]:slide-in-from-top-[48%]",
-        "data-[state=closed]:slide-out-to-bottom-100 data-[state=open]:slide-in-from-bottom-100",
-        "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
+        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+        "data-[state=closed]:slide-out-to-top-[2%] data-[state=open]:slide-in-from-top-[2%]",
 
-        // 深色模式适配
-        "dark:bg-[var(--background)]/95 dark:border-[var(--border-strong)]",
+        // ===== 深色模式适配 =====
+        "dark:bg-[var(--background)]/95",
+        "dark:border-[var(--border-strong)]",
+        "dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),0_8px_16px_-8px_rgba(0,0,0,0.3)]",
+
+        // ===== 内容填充 =====
+        "p-6",
 
         className
       )}
@@ -68,18 +83,36 @@ const DialogContent = React.forwardRef<
     >
       {children}
 
-      {/* 优化的关闭按钮 - 右上角，易触达 */}
+      {/* 现代化关闭按钮 - 带悬停反馈 */}
       <DialogPrimitive.Close className={cn(
-        "absolute right-3 top-3 rounded-md p-1.5",
-        "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
-        "hover:bg-[var(--muted)] transition-all duration-200",
-        "focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-2",
-        "active:scale-95",
-        // 移动端增大触摸区域
-        "w-8 h-8 flex items-center justify-center"
+        // 基础样式
+        "absolute right-4 top-4",
+        "rounded-[var(--radius-md)]",
+        "p-1.5",
+
+        // 颜色和交互
+        "text-[var(--muted-foreground)]",
+        "hover:text-[var(--foreground)]",
+        "hover:bg-[var(--muted)]",
+
+        // 动画和过渡
+        "transition-all duration-200 ease-out",
+        "active:scale-90 active:rotate-3",
+
+        // 焦点状态
+        "focus:outline-none",
+        "focus-visible:ring-2 focus-visible:ring-[var(--primary-500)]",
+        "focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+
+        // 触摸优化
+        "w-9 h-9 flex items-center justify-center",
+        "touch-manipulation",
+
+        // 深色模式
+        "dark:hover:bg-[var(--neutral-800)]"
       )}>
-        <X className="h-5 w-5" />
-        <span className="sr-only">关闭</span>
+        <X className="h-5 w-5 transition-transform duration-200 hover:rotate-90" />
+        <span className="sr-only">关闭弹窗</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>

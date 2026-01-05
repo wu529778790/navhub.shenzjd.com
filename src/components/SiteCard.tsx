@@ -11,6 +11,7 @@ import { useState, useRef, useEffect } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -28,7 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, Link as LinkIcon, Globe } from "lucide-react";
+import { Pencil, Trash2, Globe } from "lucide-react";
 
 interface SiteCardProps {
   id: string;
@@ -232,22 +233,36 @@ export function SiteCard({
             <div className="w-10 h-10 rounded-full bg-[var(--error)]/10 flex items-center justify-center">
               <Trash2 className="w-5 h-5 text-[var(--error)]" />
             </div>
-            <AlertDialogTitle>确认删除站点</AlertDialogTitle>
+            <AlertDialogTitle className="text-2xl font-bold">确认删除站点</AlertDialogTitle>
           </div>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="text-[var(--foreground-secondary)] text-sm leading-relaxed">
             确定要删除 <strong className="text-[var(--error)] font-semibold">{initialTitle}</strong> 吗？
             <br />
-            <span className="text-xs opacity-75">此操作无法撤销，数据将从本地和 GitHub 同步删除。</span>
+            <span className="text-xs text-[var(--muted-foreground)]">此操作无法撤销，数据将从本地和 GitHub 同步删除。</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="gap-1 h-12 text-base font-medium">
-            <span>取消</span>
+        <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
+          <AlertDialogCancel className={cn(
+            "flex-1 h-11 rounded-[var(--radius-lg)]",
+            "border-[var(--border)] hover:border-[var(--border-strong)]",
+            "hover:bg-[var(--background-secondary)]",
+            "transition-all duration-200 active:scale-95",
+            "text-base font-medium"
+          )}>
+            取消
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isLoading}
-            className="bg-[var(--error)] hover:bg-red-600 hover:shadow-lg hover:shadow-red-500/30 active:scale-95 transition-all gap-1 h-12 text-base font-medium"
+            className={cn(
+              "flex-1 h-11 rounded-[var(--radius-lg)]",
+              "bg-gradient-to-r from-[var(--error)] to-red-600",
+              "hover:from-red-600 hover:to-red-700",
+              "text-white font-medium shadow-lg shadow-red-500/30",
+              "transition-all duration-200 active:scale-95",
+              "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none",
+              "text-base font-medium"
+            )}
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
@@ -255,13 +270,13 @@ export function SiteCard({
                 <span>删除中...</span>
               </div>
             ) : (
-              <>
-                <Trash2 className="w-5 h-5" />
+              <div className="flex items-center gap-2">
+                <Trash2 className="w-4 h-4" />
                 <span>确认删除</span>
-              </>
+              </div>
             )}
           </AlertDialogAction>
-        </AlertDialogFooter>
+        </div>
       </AlertDialogContent>
     </AlertDialog>
   );
@@ -305,36 +320,52 @@ export function SiteCard({
           {/* 标题 */}
           <span className="site-title">{initialTitle}</span>
 
-          {/* 访客模式下的提示 */}
-          {isGuestMode && (
-            <div className="absolute inset-0 bg-[var(--primary-600)]/0 hover:bg-[var(--primary-600)]/10 transition-colors rounded-[var(--radius-md)] flex items-center justify-center opacity-0 hover:opacity-100">
-              <LinkIcon className="w-4 h-4 text-[var(--primary-600)]" />
-            </div>
-          )}
-
           {/* 右键菜单 - 仅在非访客模式 */}
           {!isGuestMode && isContextMenuOpen && (
             <div
               ref={contextMenuRef}
-              className="absolute top-full mt-2 right-0 z-[90] min-w-[160px] bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-lg)] shadow-2xl p-1.5 animate-in fade-in zoom-in-95"
+              className={cn(
+                "absolute top-full mt-2 right-0 z-[90] min-w-[180px]",
+                "bg-[var(--background)]/95 backdrop-blur-xl",
+                "border border-[var(--border)] rounded-[var(--radius-xl)]",
+                "shadow-[0_10px_40px_-12px_rgba(0,0,0,0.15)]",
+                "p-1.5 animate-in fade-in zoom-in-95",
+                "overflow-hidden"
+              )}
             >
               <button
                 onClick={handleEditClick}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] hover:bg-[var(--primary-50)] text-[var(--foreground)] text-sm font-medium transition-all active:scale-95"
+                className={cn(
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)]",
+                  "hover:bg-[var(--primary-50)] text-[var(--foreground)]",
+                  "text-sm font-medium transition-all active:scale-95",
+                  "group relative overflow-hidden"
+                )}
               >
-                <div className="w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center">
-                  <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)]" />
+                <div className={cn(
+                  "w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center",
+                  "group-hover:bg-[var(--primary-200)] transition-colors"
+                )}>
+                  <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)] group-hover:scale-110 transition-transform" />
                 </div>
-                编辑站点
+                <span className="flex-1">编辑站点</span>
               </button>
               <button
                 onClick={handleDeleteClick}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] hover:bg-[var(--error)]/10 text-[var(--error)] text-sm font-medium transition-all active:scale-95 mt-0.5"
+                className={cn(
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)]",
+                  "hover:bg-[var(--error)]/10 text-[var(--error)]",
+                  "text-sm font-medium transition-all active:scale-95 mt-0.5",
+                  "group relative overflow-hidden"
+                )}
               >
-                <div className="w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center">
-                  <Trash2 className="w-3.5 h-3.5 text-[var(--error)]" />
+                <div className={cn(
+                  "w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center",
+                  "group-hover:bg-[var(--error)]/20 transition-colors"
+                )}>
+                  <Trash2 className="w-3.5 h-3.5 text-[var(--error)] group-hover:scale-110 transition-transform" />
                 </div>
-                删除站点
+                <span className="flex-1">删除站点</span>
               </button>
             </div>
           )}
@@ -344,7 +375,7 @@ export function SiteCard({
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>编辑站点</DialogTitle>
+              <DialogTitle className="text-2xl font-bold">编辑站点</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
@@ -354,7 +385,12 @@ export function SiteCard({
                   value={editedTitle}
                   onChange={(e) => setEditedTitle(e.target.value)}
                   disabled={isLoading}
-                  className="h-12"
+                  className={cn(
+                    "h-12 rounded-[var(--radius-lg)]",
+                    "bg-[var(--background)]/80 backdrop-blur-sm",
+                    "border-[var(--border)] hover:border-[var(--primary-400)]",
+                    "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
+                  )}
                 />
               </div>
               <div className="space-y-2">
@@ -364,7 +400,12 @@ export function SiteCard({
                   value={editedUrl}
                   onChange={(e) => setEditedUrl(e.target.value)}
                   disabled={isLoading}
-                  className="h-12"
+                  className={cn(
+                    "h-12 rounded-[var(--radius-lg)]",
+                    "bg-[var(--background)]/80 backdrop-blur-sm",
+                    "border-[var(--border)] hover:border-[var(--primary-400)]",
+                    "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
+                  )}
                 />
               </div>
               <div className="space-y-2">
@@ -374,27 +415,44 @@ export function SiteCard({
                   value={editedFavicon}
                   onChange={(e) => setEditedFavicon(e.target.value)}
                   disabled={isLoading}
-                  className="h-12"
+                  className={cn(
+                    "h-12 rounded-[var(--radius-lg)]",
+                    "bg-[var(--background)]/80 backdrop-blur-sm",
+                    "border-[var(--border)] hover:border-[var(--primary-400)]",
+                    "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
+                  )}
                 />
               </div>
             </div>
-            <DialogFooter>
+            <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
               <Button
                 variant="outline"
                 onClick={() => setIsEditDialogOpen(false)}
-                className="flex-1 h-12 text-base font-medium"
+                className={cn(
+                  "flex-1 h-11 rounded-[var(--radius-lg)]",
+                  "border-[var(--border)] hover:border-[var(--border-strong)]",
+                  "hover:bg-[var(--background-secondary)]",
+                  "transition-all duration-200 active:scale-95"
+                )}
                 disabled={isLoading}
               >
                 取消
               </Button>
               <Button
                 onClick={handleEdit}
-                className="flex-1 h-12 text-base font-medium"
+                className={cn(
+                  "flex-1 h-11 rounded-[var(--radius-lg)]",
+                  "bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-500)]",
+                  "hover:from-[var(--primary-700)] hover:to-[var(--primary-600)]",
+                  "text-white font-medium shadow-lg shadow-[var(--primary-500)]/20",
+                  "transition-all duration-200 active:scale-95",
+                  "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                )}
                 disabled={isLoading}
               >
                 {isLoading ? "保存中..." : "保存"}
               </Button>
-            </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
 
@@ -448,43 +506,52 @@ export function SiteCard({
           </div>
         </div>
 
-        {/* 打开链接按钮 - 访客模式 */}
-        {isGuestMode && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(url, "_blank");
-            }}
-            className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--primary-100)] text-[var(--primary-600)] transition-colors"
-            title="打开链接"
-          >
-            <LinkIcon className="w-4 h-4" />
-          </button>
-        )}
-
         {/* 右键菜单 - 仅在非访客模式 */}
         {!isGuestMode && isContextMenuOpen && (
           <div
             ref={contextMenuRef}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-[90] min-w-[160px] bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-lg)] shadow-2xl p-1.5 animate-in fade-in zoom-in-95"
+            className={cn(
+              "absolute right-4 top-1/2 -translate-y-1/2 z-[90] min-w-[180px]",
+              "bg-[var(--background)]/95 backdrop-blur-xl",
+              "border border-[var(--border)] rounded-[var(--radius-xl)]",
+              "shadow-[0_10px_40px_-12px_rgba(0,0,0,0.15)]",
+              "p-1.5 animate-in fade-in zoom-in-95",
+              "overflow-hidden"
+            )}
           >
             <button
               onClick={handleEditClick}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] hover:bg-[var(--primary-50)] text-[var(--foreground)] text-sm font-medium transition-all active:scale-95"
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)]",
+                "hover:bg-[var(--primary-50)] text-[var(--foreground)]",
+                "text-sm font-medium transition-all active:scale-95",
+                "group relative overflow-hidden"
+              )}
             >
-              <div className="w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center">
-                <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)]" />
+              <div className={cn(
+                "w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center",
+                "group-hover:bg-[var(--primary-200)] transition-colors"
+              )}>
+                <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)] group-hover:scale-110 transition-transform" />
               </div>
-              编辑站点
+              <span className="flex-1">编辑站点</span>
             </button>
             <button
               onClick={handleDeleteClick}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] hover:bg-[var(--error)]/10 text-[var(--error)] text-sm font-medium transition-all active:scale-95 mt-0.5"
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)]",
+                "hover:bg-[var(--error)]/10 text-[var(--error)]",
+                "text-sm font-medium transition-all active:scale-95 mt-0.5",
+                "group relative overflow-hidden"
+              )}
             >
-              <div className="w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center">
-                <Trash2 className="w-3.5 h-3.5 text-[var(--error)]" />
+              <div className={cn(
+                "w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center",
+                "group-hover:bg-[var(--error)]/20 transition-colors"
+              )}>
+                <Trash2 className="w-3.5 h-3.5 text-[var(--error)] group-hover:scale-110 transition-transform" />
               </div>
-              删除站点
+              <span className="flex-1">删除站点</span>
             </button>
           </div>
         )}
@@ -494,7 +561,7 @@ export function SiteCard({
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>编辑站点</DialogTitle>
+            <DialogTitle className="text-2xl font-bold">编辑站点</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -504,7 +571,12 @@ export function SiteCard({
                 value={editedTitle}
                 onChange={(e) => setEditedTitle(e.target.value)}
                 disabled={isLoading}
-                className="h-12"
+                className={cn(
+                  "h-12 rounded-[var(--radius-lg)]",
+                  "bg-[var(--background)]/80 backdrop-blur-sm",
+                  "border-[var(--border)] hover:border-[var(--primary-400)]",
+                  "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
+                )}
               />
             </div>
             <div className="space-y-2">
@@ -514,7 +586,12 @@ export function SiteCard({
                 value={editedUrl}
                 onChange={(e) => setEditedUrl(e.target.value)}
                 disabled={isLoading}
-                className="h-12"
+                className={cn(
+                  "h-12 rounded-[var(--radius-lg)]",
+                  "bg-[var(--background)]/80 backdrop-blur-sm",
+                  "border-[var(--border)] hover:border-[var(--primary-400)]",
+                  "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
+                )}
               />
             </div>
             <div className="space-y-2">
@@ -524,27 +601,44 @@ export function SiteCard({
                 value={editedFavicon}
                 onChange={(e) => setEditedFavicon(e.target.value)}
                 disabled={isLoading}
-                className="h-12"
+                className={cn(
+                  "h-12 rounded-[var(--radius-lg)]",
+                  "bg-[var(--background)]/80 backdrop-blur-sm",
+                  "border-[var(--border)] hover:border-[var(--primary-400)]",
+                  "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
+                )}
               />
             </div>
           </div>
-          <DialogFooter>
+          <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
             <Button
               variant="outline"
               onClick={() => setIsEditDialogOpen(false)}
-              className="flex-1 h-12 text-base font-medium"
+              className={cn(
+                "flex-1 h-11 rounded-[var(--radius-lg)]",
+                "border-[var(--border)] hover:border-[var(--border-strong)]",
+                "hover:bg-[var(--background-secondary)]",
+                "transition-all duration-200 active:scale-95"
+              )}
               disabled={isLoading}
             >
               取消
             </Button>
             <Button
               onClick={handleEdit}
-              className="flex-1 h-12 text-base font-medium"
+              className={cn(
+                "flex-1 h-11 rounded-[var(--radius-lg)]",
+                "bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-500)]",
+                "hover:from-[var(--primary-700)] hover:to-[var(--primary-600)]",
+                "text-white font-medium shadow-lg shadow-[var(--primary-500)]/20",
+                "transition-all duration-200 active:scale-95",
+                "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+              )}
               disabled={isLoading}
             >
               {isLoading ? "保存中..." : "保存"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 

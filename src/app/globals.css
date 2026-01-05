@@ -257,33 +257,10 @@
     transform: translateY(-2px);
   }
 
-  /* 分类卡片 - 增强视觉层次 */
+  /* 分类卡片 - 基础样式（无 hover 效果） */
   .category-card {
     @apply bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-xl)] shadow-sm;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .category-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .category-card:hover::before {
-    opacity: 1;
-  }
-
-  .category-card:hover {
-    @apply shadow-lg border-[var(--primary-300)];
-    transform: translateY(-2px);
+    transition: border-color 0.2s ease;
   }
 
   /* 站点卡片 - 现代化图标式设计 */
@@ -582,5 +559,252 @@
     .dialog-content-wrapper {
       @apply max-w-[calc(100vw-2rem)] p-4;
     }
+  }
+}
+
+/* ==================== 增强玻璃拟态和微交互 ==================== */
+
+/* 玻璃拟态增强 - 用于现代弹窗和菜单 */
+.glass-panel {
+  @apply bg-[var(--background)]/90 backdrop-blur-xl border border-[var(--border)];
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 8px 16px -8px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色模式玻璃拟态 */
+@media (prefers-color-scheme: dark) {
+  .glass-panel {
+    @apply bg-[var(--background)]/95 border-[var(--border-strong)];
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 8px 16px -8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* 悬停提升效果 */
+.hover-lift {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -6px rgba(124, 58, 237, 0.2);
+}
+
+/* 按钮微交互 */
+.btn-press {
+  transition: all 0.15s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.95) translateY(1px);
+}
+
+/* 输入框焦点增强 */
+.input-focus {
+  transition: all 0.2s ease;
+}
+
+.input-focus:focus-within {
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+/* 菜单项悬停动画 */
+.menu-item {
+  transition: all 0.15s ease;
+}
+
+.menu-item:hover {
+  background-color: rgba(139, 92, 246, 0.05);
+  transform: translateX(2px);
+}
+
+/* 移动端长按反馈 */
+.long-press-feedback {
+  transition: transform 0.15s ease;
+}
+
+.long-press-feedback:active {
+  transform: scale(0.98);
+}
+
+/* 玻璃拟态遮罩 */
+.glass-overlay {
+  @apply bg-[var(--neutral-900)]/60 backdrop-blur-md backdrop-saturate-150 backdrop-hue-rotate-15;
+}
+
+/* 深色模式遮罩 */
+@media (prefers-color-scheme: dark) {
+  .glass-overlay {
+    @apply bg-[var(--neutral-900)]/70;
+  }
+}
+
+/* 现代化滚动条 */
+.glass-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.glass-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.glass-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-[var(--border)] rounded-full;
+  transition: background-color 0.2s ease;
+}
+
+.glass-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-[var(--primary-400)];
+}
+
+/* 渐变文字效果增强 */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 深色模式渐变文字 */
+@media (prefers-color-scheme: dark) {
+  .gradient-text {
+    background: linear-gradient(135deg, var(--primary-400), var(--primary-300));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* 阴影动画 */
+.shadow-animate {
+  transition: box-shadow 0.3s ease;
+}
+
+.shadow-animate:hover {
+  box-shadow: 0 20px 40px -12px rgba(124, 58, 237, 0.25);
+}
+
+/* 边框动画 */
+.border-animate {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.border-animate:hover {
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+}
+
+/* 背景微动 */
+.bg-subtle-shift {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.bg-subtle-shift:hover {
+  background-color: var(--background-secondary);
+  transform: scale(1.01);
+}
+
+/* 现代化标签 */
+.modern-badge {
+  @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  transition: all 0.2s ease;
+}
+
+.modern-badge:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.1));
+  transform: translateY(-1px);
+}
+
+/* 状态指示器 */
+.status-indicator {
+  @apply w-2 h-2 rounded-full;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.status-indicator.success {
+  @apply bg-[var(--success)];
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+}
+
+.status-indicator.error {
+  @apply bg-[var(--error)];
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+}
+
+/* 移动端优化增强 */
+@media (max-width: 768px) {
+  /* 增大触摸目标 */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* 移动端弹窗优化 */
+  .mobile-dialog {
+    @apply max-w-[calc(100vw-2rem)] p-4;
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* 移动端菜单优化 */
+  .mobile-menu {
+    @apply bottom-0 left-0 right-0 rounded-t-2xl;
+    transform: translateY(0);
+    border-radius: 1.5rem 1.5rem 0 0;
+  }
+}
+
+/* 键盘导航焦点样式 */
+:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 玻璃拟态卡片组 */
+.glass-card-group {
+  @apply space-y-4;
+}
+
+.glass-card-group > * {
+  @apply bg-[var(--background)]/80 backdrop-blur-sm border border-[var(--border)];
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-group > *:hover {
+  @apply border-[var(--primary-300)] shadow-lg;
+  transform: translateY(-2px);
+}
+
+/* 现代化空状态 */
+.modern-empty {
+  @apply flex flex-col items-center justify-center py-16 text-center;
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.03), transparent 70%);
+}
+
+.modern-empty-icon {
+  @apply w-20 h-20 rounded-full flex items-center justify-center mb-4;
+  background: linear-gradient(135deg, var(--neutral-100), var(--neutral-50));
+  border: 2px solid var(--border);
+}
+
+/* 深色模式空状态 */
+@media (prefers-color-scheme: dark) {
+  .modern-empty {
+    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.08), transparent 70%);
+  }
+
+  .modern-empty-icon {
+    background: linear-gradient(135deg, var(--neutral-800), var(--neutral-700));
+    border-color: var(--border-strong);
   }
 }

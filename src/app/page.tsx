@@ -18,9 +18,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 // DnD Kit imports for category sorting
 import {
@@ -103,7 +103,7 @@ function SortableCategoryItem({ category, onEdit, onDelete, isGuestMode, allCate
     >
       {/* 分类标题栏 - 支持拖拽和点击编辑 */}
       <div
-        className="flex items-center justify-between mb-4 cursor-move p-2 -mx-2 -mt-2 rounded-lg hover:bg-[var(--muted)] transition-colors"
+        className="flex items-center justify-between mb-4 cursor-move p-2 -mx-2 -mt-2 rounded-lg"
         {...attributes}
         {...listeners}
       >
@@ -113,7 +113,7 @@ function SortableCategoryItem({ category, onEdit, onDelete, isGuestMode, allCate
           </div>
           <div className="flex-1">
             <h3
-              className="font-semibold text-lg text-[var(--foreground)] hover:text-[var(--primary-600)] transition-colors flex items-center gap-2 cursor-pointer"
+              className="font-semibold text-lg text-[var(--foreground)] flex items-center gap-2 cursor-pointer"
               onClick={handleCategoryClick}
               title="点击跳转到此分类"
             >
@@ -470,7 +470,7 @@ export default function Home() {
         <Dialog open onOpenChange={() => setEditingCategory(null)}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>编辑分类</DialogTitle>
+              <DialogTitle className="text-2xl font-bold">编辑分类</DialogTitle>
             </DialogHeader>
             <div className="py-4 space-y-3">
               <div className="space-y-2">
@@ -484,18 +484,38 @@ export default function Home() {
                   }}
                   placeholder="输入分类名称"
                   autoFocus
+                  className={cn(
+                    "h-12 rounded-[var(--radius-lg)]",
+                    "bg-[var(--background)]/80 backdrop-blur-sm",
+                    "border-[var(--border)] hover:border-[var(--primary-400)]",
+                    "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
+                  )}
                 />
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
               <Button
                 variant="outline"
                 onClick={() => setEditingCategory(null)}
-                className="flex-1"
+                className={cn(
+                  "flex-1 h-11 rounded-[var(--radius-lg)]",
+                  "border-[var(--border)] hover:border-[var(--border-strong)]",
+                  "hover:bg-[var(--background-secondary)]",
+                  "transition-all duration-200 active:scale-95"
+                )}
               >
                 取消
               </Button>
-              <Button onClick={handleEditCategory} className="flex-1">
+              <Button
+                onClick={handleEditCategory}
+                className={cn(
+                  "flex-1 h-11 rounded-[var(--radius-lg)]",
+                  "bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-500)]",
+                  "hover:from-[var(--primary-700)] hover:to-[var(--primary-600)]",
+                  "text-white font-medium shadow-lg shadow-[var(--primary-500)]/20",
+                  "transition-all duration-200 active:scale-95"
+                )}
+              >
                 保存
               </Button>
             </div>
@@ -508,25 +528,41 @@ export default function Home() {
         <Dialog open onOpenChange={() => setDeletingCategory(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>确认删除分类</DialogTitle>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-full bg-[var(--error)]/10 flex items-center justify-center">
+                  <Trash2 className="w-5 h-5 text-[var(--error)]" />
+                </div>
+                <DialogTitle className="text-2xl font-bold">确认删除分类</DialogTitle>
+              </div>
+              <div className="py-4 text-[var(--foreground-secondary)] text-sm leading-relaxed">
+                确定要删除这个分类吗？<strong className="text-[var(--error)] font-semibold">分类下的所有站点也会被删除。</strong>
+                <br />
+                <span className="text-xs text-[var(--muted-foreground)]">此操作无法撤销。</span>
+              </div>
             </DialogHeader>
-            <div className="py-4 text-sm text-[var(--foreground-secondary)]">
-              确定要删除这个分类吗？<strong>分类下的所有站点也会被删除。</strong>
-              <br />
-              此操作无法撤销。
-            </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
               <Button
                 variant="outline"
                 onClick={() => setDeletingCategory(null)}
-                className="flex-1"
+                className={cn(
+                  "flex-1 h-11 rounded-[var(--radius-lg)]",
+                  "border-[var(--border)] hover:border-[var(--border-strong)]",
+                  "hover:bg-[var(--background-secondary)]",
+                  "transition-all duration-200 active:scale-95"
+                )}
               >
                 取消
               </Button>
               <Button
                 variant="destructive"
                 onClick={() => handleDeleteCategory(deletingCategory)}
-                className="flex-1"
+                className={cn(
+                  "flex-1 h-11 rounded-[var(--radius-lg)]",
+                  "bg-gradient-to-r from-[var(--error)] to-red-600",
+                  "hover:from-red-600 hover:to-red-700",
+                  "text-white font-medium shadow-lg shadow-red-500/30",
+                  "transition-all duration-200 active:scale-95"
+                )}
               >
                 删除
               </Button>
