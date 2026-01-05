@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767457724759,
+  "lastModified": 1767581467295,
   "categories": [
     {
       "id": "default",
@@ -104,6 +104,12 @@
           "favicon": "https://platform.xiaomimimo.com/favicon.874c9507.png",
           "url": "https://platform.xiaomimimo.com/#/docs/welcome",
           "sort": 2
+        },
+        {
+          "id": "1767581467294",
+          "title": "Try NVIDIA NIM APIs",
+          "favicon": "https://build.nvidia.com/favicon.ico",
+          "url": "https://build.nvidia.com/"
         }
       ]
     }
