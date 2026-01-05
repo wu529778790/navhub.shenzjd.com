@@ -65,12 +65,14 @@ export function SiteCard({
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
 
-  // 点击外部或右键关闭右键菜单
+  // 点击外部关闭右键菜单
   useEffect(() => {
     if (!isContextMenuOpen) return;
 
     // 防止页面滚动
-    document.body.style.overflow = 'hidden';
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'hidden';
+    }
 
     const handleClickOutside = (e: MouseEvent) => {
       if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
@@ -78,20 +80,13 @@ export function SiteCard({
       }
     };
 
-    const handleContextMenu = (e: MouseEvent) => {
-      // 如果右键点击的不是菜单内部，关闭菜单
-      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
-        setIsContextMenuOpen(false);
-      }
-    };
-
     document.addEventListener("click", handleClickOutside);
-    document.addEventListener("contextmenu", handleContextMenu);
 
     return () => {
-      document.body.style.overflow = '';
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = '';
+      }
       document.removeEventListener("click", handleClickOutside);
-      document.removeEventListener("contextmenu", handleContextMenu);
     };
   }, [isContextMenuOpen]);
 

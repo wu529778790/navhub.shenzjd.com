@@ -16,17 +16,19 @@ export function SyncStatus() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // 访客模式不显示任何内容
-  if (isGuestMode) {
-    return null;
-  }
+  const [mounted, setMounted] = useState(false);
 
   // 检查是否已登录 - 只在客户端执行
   useEffect(() => {
     const auth = getAuthState();
     setIsLoggedIn(!!auth.token);
+    setMounted(true);
   }, []);
+
+  // 访客模式不显示任何内容 - 在客户端渲染后才检查
+  if (!mounted || isGuestMode) {
+    return null;
+  }
 
   // 格式化最后同步时间
   const formatLastSync = () => {
