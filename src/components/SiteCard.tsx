@@ -325,7 +325,7 @@ export function SiteCard({
             <div
               ref={contextMenuRef}
               className={cn(
-                "absolute top-full mt-2 right-0 z-[90] min-w-[180px]",
+                "absolute top-full mt-2 left-0 z-[90] min-w-[180px]",
                 "bg-[var(--background)]/95 backdrop-blur-xl",
                 "border border-[var(--border)] rounded-[var(--radius-xl)]",
                 "shadow-[0_10px_40px_-12px_rgba(0,0,0,0.15)]",
