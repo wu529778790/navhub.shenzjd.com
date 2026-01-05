@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767621257800,
+  "lastModified": 1767621265763,
   "categories": [
     {
       "id": "default",
@@ -137,9 +137,8 @@
         {
           "id": "1767621231386",
           "title": "cloudflare",
-          "url": "https://www.cloudflare.com/zh-cn/",
-          "favicon": "https://www.cloudflare.com/favicon.ico",
-          "sort": 2
+          "url": "https://www.cloudflare.com",
+          "favicon": "https://www.cloudflare.com/favicon.ico"
         }
       ]
     }
