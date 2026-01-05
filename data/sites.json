@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767620962453,
+  "lastModified": 1767621083472,
   "categories": [
     {
       "id": "default",
@@ -112,6 +112,13 @@
           "url": "https://build.nvidia.com/"
         }
       ]
+    },
+    {
+      "id": "cat_1767621083472",
+      "name": "服务器",
+      "icon": "📁",
+      "sort": 2,
+      "sites": []
     }
   ]
 }
