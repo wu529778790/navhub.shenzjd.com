@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767621248588,
+  "lastModified": 1767621251570,
   "categories": [
     {
       "id": "default",
@@ -122,10 +122,9 @@
       "sites": [
         {
           "id": "1767621231386",
-          "title": "随时随地连接、保护和构建",
-          "favicon": "https://www.cloudflare.com/favicon.ico",
+          "title": "cloudflare",
           "url": "https://www.cloudflare.com/zh-cn/",
-          "sort": 0
+          "favicon": "https://www.cloudflare.com/favicon.ico"
         },
         {
           "id": "1767621099627",
