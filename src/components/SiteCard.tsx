@@ -355,7 +355,7 @@ export function SiteCard({
                   "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
                   "hover:bg-[var(--primary-50)] text-[var(--foreground)]",
                   "text-sm font-medium transition-all active:scale-95",
-                  "group relative overflow-hidden whitespace-nowrap"
+                  "group relative overflow-hidden whitespace-nowrap cursor-pointer"
                 )}
               >
                 <div className={cn(
@@ -372,7 +372,7 @@ export function SiteCard({
                   "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
                   "hover:bg-[var(--error)]/10 text-[var(--error)]",
                   "text-sm font-medium transition-all active:scale-95 mt-0.5",
-                  "group relative overflow-hidden whitespace-nowrap"
+                  "group relative overflow-hidden whitespace-nowrap cursor-pointer"
                 )}
               >
                 <div className={cn(
@@ -541,7 +541,7 @@ export function SiteCard({
                 "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
                 "hover:bg-[var(--primary-50)] text-[var(--foreground)]",
                 "text-sm font-medium transition-all active:scale-95",
-                "group relative overflow-hidden whitespace-nowrap"
+                "group relative overflow-hidden whitespace-nowrap cursor-pointer"
               )}
             >
               <div className={cn(
@@ -558,7 +558,7 @@ export function SiteCard({
                 "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
                 "hover:bg-[var(--error)]/10 text-[var(--error)]",
                 "text-sm font-medium transition-all active:scale-95 mt-0.5",
-                "group relative overflow-hidden whitespace-nowrap"
+                "group relative overflow-hidden whitespace-nowrap cursor-pointer"
               )}
             >
               <div className={cn(
