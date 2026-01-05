@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767621125589,
+  "lastModified": 1767621190052,
   "categories": [
     {
       "id": "default",
@@ -99,17 +99,18 @@
           "sort": 1
         },
         {
+          "id": "1767581467294",
+          "title": "Try NVIDIA NIM APIs",
+          "favicon": "https://build.nvidia.com/favicon.ico",
+          "url": "https://build.nvidia.com/",
+          "sort": 2
+        },
+        {
           "id": "1767189420645",
           "title": "Xiaomi MiMo API Open Platform",
           "favicon": "https://platform.xiaomimimo.com/favicon.874c9507.png",
           "url": "https://platform.xiaomimimo.com/#/docs/welcome",
-          "sort": 2
-        },
-        {
-          "id": "1767581467294",
-          "title": "Try NVIDIA NIM APIs",
-          "favicon": "https://build.nvidia.com/favicon.ico",
-          "url": "https://build.nvidia.com/"
+          "sort": 3
         }
       ]
     },
