@@ -304,7 +304,7 @@ export function SiteCard({
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onTouchMove={handleTouchMove}
-          className="site-card cursor-pointer"
+          className={cn("site-card cursor-pointer", isContextMenuOpen && "z-[9999]")}
           title={isGuestMode ? "点击打开链接" : "点击打开链接，右键或长按显示菜单"}
         >
           {/* 图标 */}
@@ -336,7 +336,7 @@ export function SiteCard({
             <div
               ref={contextMenuRef}
               className={cn(
-                "absolute top-full mt-2 left-0 z-[90] w-auto",
+                "absolute top-full mt-2 left-0 z-[9999] w-auto",
                 "bg-[var(--background)]/95 backdrop-blur-xl",
                 "border border-[var(--border)] rounded-[var(--radius-xl)]",
                 "shadow-[0_10px_40px_-12px_rgba(0,0,0,0.15)]",
@@ -484,7 +484,7 @@ export function SiteCard({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
-        className="flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)] transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1 cursor-pointer"
+        className={cn("flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)] transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1 cursor-pointer", isContextMenuOpen && "z-[9999]")}
         title={isGuestMode ? "点击打开链接" : "点击打开链接，右键或长按显示菜单"}
       >
         {/* 图标 */}
@@ -522,7 +522,7 @@ export function SiteCard({
           <div
             ref={contextMenuRef}
             className={cn(
-              "absolute left-4 top-1/2 -translate-y-1/2 z-[90] w-auto",
+              "absolute left-4 top-1/2 -translate-y-1/2 z-[9999] w-auto",
               "bg-[var(--background)]/95 backdrop-blur-xl",
               "border border-[var(--border)] rounded-[var(--radius-xl)]",
               "shadow-[0_10px_40px_-12px_rgba(0,0,0,0.15)]",
