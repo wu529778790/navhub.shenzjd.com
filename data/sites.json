@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767621099627,
+  "lastModified": 1767621125589,
   "categories": [
     {
       "id": "default",
@@ -124,6 +124,12 @@
           "title": "腾讯云 - 产业智变 云启未来",
           "favicon": "https://cloudcache.tencent-cloud.com/qcloud/favicon.ico?t=201902181234",
           "url": "https://cloud.tencent.com/"
+        },
+        {
+          "id": "1767621125589",
+          "title": "Launch into the future - Spaceship",
+          "favicon": "https://spaceship-cdn.com/static/spaceship/favicon/spaceship-apple-touch-icon.png",
+          "url": "https://www.spaceship.com/"
         }
       ]
     }
