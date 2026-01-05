@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767618424863,
+  "lastModified": 1767621367440,
   "categories": [
     {
       "id": "default",
@@ -69,6 +69,12 @@
           "title": "妖火",
           "favicon": "https://yaohuo.me/blog/rose.ico",
           "url": "https://yaohuo.me/"
+        },
+        {
+          "id": "1767620962453",
+          "title": "Vercel: Build and deploy the best web experiences with the AI Cloud – Vercel",
+          "favicon": "https://assets.vercel.com/image/upload/q_auto/front/favicon/vercel/apple-touch-icon-256x256.png",
+          "url": "https://vercel.com/"
         }
       ]
     },
@@ -93,18 +99,61 @@
           "sort": 1
         },
         {
-          "id": "1767581467294",
-          "title": "Try NVIDIA NIM APIs",
-          "favicon": "https://build.nvidia.com/favicon.ico",
-          "url": "https://build.nvidia.com/",
-          "sort": 2
-        },
-        {
           "id": "1767189420645",
           "title": "Xiaomi MiMo API Open Platform",
           "favicon": "https://platform.xiaomimimo.com/favicon.874c9507.png",
           "url": "https://platform.xiaomimimo.com/#/docs/welcome",
+          "sort": 2
+        },
+        {
+          "id": "1767581467294",
+          "title": "Try NVIDIA NIM APIs",
+          "favicon": "https://build.nvidia.com/favicon.ico",
+          "url": "https://build.nvidia.com/",
           "sort": 3
+        }
+      ]
+    },
+    {
+      "id": "cat_1767621083472",
+      "name": "服务器",
+      "icon": "📁",
+      "sort": 2,
+      "sites": [
+        {
+          "id": "1767621099627",
+          "title": "腾讯云 - 产业智变 云启未来",
+          "favicon": "https://cloudcache.tencent-cloud.com/qcloud/favicon.ico?t=201902181234",
+          "url": "https://cloud.tencent.com/",
+          "sort": 0
+        },
+        {
+          "id": "1767621125589",
+          "title": "Launch into the future - Spaceship",
+          "favicon": "https://spaceship-cdn.com/static/spaceship/favicon/spaceship-apple-touch-icon.png",
+          "url": "https://www.spaceship.com/",
+          "sort": 1
+        },
+        {
+          "id": "1767621231386",
+          "title": "cloudflare",
+          "url": "https://dash.cloudflare.com/",
+          "favicon": "https://www.cloudflare.com/favicon.ico",
+          "sort": 2
+        }
+      ]
+    },
+    {
+      "id": "cat_1767621349888",
+      "name": "导航",
+      "icon": "📁",
+      "sort": 3,
+      "sites": [
+        {
+          "id": "1767621367440",
+          "title": "发现AI - 专业AI导航网站,一站式AI导航,发现AI官网",
+          "favicon": "https://www.faxianai.com/wp-content/uploads/2025/04/cropped-1744873486-favicon-270x270.png",
+          "url": "https://www.faxianai.com/"
         }
       ]
     }
