@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767621349888,
+  "lastModified": 1767621367440,
   "categories": [
     {
       "id": "default",
@@ -148,7 +148,14 @@
       "name": "导航",
       "icon": "📁",
       "sort": 3,
-      "sites": []
+      "sites": [
+        {
+          "id": "1767621367440",
+          "title": "发现AI - 专业AI导航网站,一站式AI导航,发现AI官网",
+          "favicon": "https://www.faxianai.com/wp-content/uploads/2025/04/cropped-1744873486-favicon-270x270.png",
+          "url": "https://www.faxianai.com/"
+        }
+      ]
     }
   ]
 }
