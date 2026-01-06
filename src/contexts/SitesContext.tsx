@@ -135,71 +135,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         setIsGuestMode(true);
       }
 
-      // forceRefresh=true 表示需要强制从 GitHub 拉取（登录后场景）
-      if (forceRefresh) {
-        if (currentToken) {
-          // 已登录：从用户自己的 GitHub 仓库拉取
-          try {
-            const githubData = await getDataFromGitHub(currentToken);
-            if (githubData?.categories && githubData.categories.length > 0) {
-              saveSitesToLocalStorage(githubData.categories);
-              setSites(githubData.categories);
-              setLoading(false);
-              return;
-            }
-          } catch (githubError) {
-            console.error("从 GitHub 拉取失败:", githubError);
-          }
-        } else {
-          // 未登录：从你的仓库拉取示例数据
-          try {
-            const yourData = await getYourDataFromGitHub();
-            if (yourData?.categories && yourData.categories.length > 0) {
-              saveSitesToLocalStorage(yourData.categories);
-              setSites(yourData.categories);
-              setLoading(false);
-              return;
-            }
-          } catch (guestError) {
-            console.error("读取示例数据失败:", guestError);
-          }
-        }
-      }
-
-      // 普通加载：检查本地数据是否有效（有真实数据且未过期）
-      const localData = loadFromLocalStorage();
-
-      // 如果本地有数据（loadFromLocalStorage 返回非 null，说明未过期且有数据），直接使用
-      if (localData?.categories && localData.categories.length > 0) {
-        // 额外检查：如果是空的默认分类且时间戳为 0，仍然需要拉取
-        const isDefaultEmpty = localData.categories.length === 1 &&
-                               localData.categories[0].id === "default" &&
-                               localData.categories[0].sites.length === 0 &&
-                               localData.lastModified === 0;
-
-        if (!isDefaultEmpty) {
-          setSites(localData.categories);
-          setLoading(false);
-          return;
-        }
-      }
-
-      // 本地是初始化状态，尝试从 GitHub 拉取
-      if (currentToken) {
-        try {
-          const githubData = await getDataFromGitHub(currentToken);
-          if (githubData?.categories && githubData.categories.length > 0) {
-            saveSitesToLocalStorage(githubData.categories);
-            setSites(githubData.categories);
-            setLoading(false);
-            return;
-          }
-        } catch (githubError) {
-          console.error("从 GitHub 加载失败:", githubError);
-        }
-      }
-
-      // 访客模式：从你的仓库拉取
+      // 访客模式：每次都直接从你的 GitHub 拉取最新数据，不使用本地缓存
       if (!currentToken) {
         try {
           const yourData = await getYourDataFromGitHub();
@@ -211,6 +147,55 @@ export function SitesProvider({ children }: { children: ReactNode }) {
           }
         } catch (guestError) {
           console.error("读取示例数据失败:", guestError);
+        }
+        // 如果 GitHub 拉取失败，继续执行后面的 fallback 逻辑
+      }
+
+      // 已登录模式：forceRefresh=true 表示需要强制从 GitHub 拉取
+      if (forceRefresh && currentToken) {
+        try {
+          const githubData = await getDataFromGitHub(currentToken);
+          if (githubData?.categories && githubData.categories.length > 0) {
+            saveSitesToLocalStorage(githubData.categories);
+            setSites(githubData.categories);
+            setLoading(false);
+            return;
+          }
+        } catch (githubError) {
+          console.error("从 GitHub 拉取失败:", githubError);
+        }
+      }
+
+      // 已登录模式：普通加载，检查本地数据是否有效
+      if (currentToken) {
+        const localData = loadFromLocalStorage();
+
+        // 如果本地有有效数据（未过期且有真实内容），直接使用
+        if (localData?.categories && localData.categories.length > 0) {
+          // 额外检查：如果是空的默认分类且时间戳为 0，仍然需要拉取
+          const isDefaultEmpty = localData.categories.length === 1 &&
+                                 localData.categories[0].id === "default" &&
+                                 localData.categories[0].sites.length === 0 &&
+                                 localData.lastModified === 0;
+
+          if (!isDefaultEmpty) {
+            setSites(localData.categories);
+            setLoading(false);
+            return;
+          }
+        }
+
+        // 本地是初始化状态，尝试从 GitHub 拉取
+        try {
+          const githubData = await getDataFromGitHub(currentToken);
+          if (githubData?.categories && githubData.categories.length > 0) {
+            saveSitesToLocalStorage(githubData.categories);
+            setSites(githubData.categories);
+            setLoading(false);
+            return;
+          }
+        } catch (githubError) {
+          console.error("从 GitHub 加载失败:", githubError);
         }
       }
 

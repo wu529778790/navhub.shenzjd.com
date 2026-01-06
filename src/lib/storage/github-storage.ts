@@ -108,12 +108,14 @@ export async function getYourDataFromGitHub(): Promise<NavData | null> {
     );
 
     if (!response.ok) {
+      console.error("GitHub API 请求失败:", response.status, response.statusText);
       return null;
     }
 
     const data = await response.json();
     if (data.content) {
-      const content = Buffer.from(data.content, "base64").toString("utf-8");
+      // 浏览器环境兼容的 base64 解码
+      const content = atob(data.content.replace(/\n/g, ''));
       return JSON.parse(content);
     }
 
