@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767678366033,
+  "lastModified": 1767678380534,
   "categories": [
     {
       "id": "default",
@@ -148,9 +148,9 @@
         },
         {
           "id": "1767678366033",
-          "title": "Connect, protect, and build everywhere",
-          "favicon": "https://www.cloudflare.com/favicon.ico",
-          "url": "https://www.cloudflare.com/"
+          "title": "cloudflare",
+          "url": "https://dash.cloudflare.com/",
+          "favicon": "https://www.cloudflare.com/favicon.ico"
         }
       ]
     }
