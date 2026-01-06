@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767698214269,
+  "lastModified": 1767698245269,
   "categories": [
     {
       "id": "default",
@@ -170,6 +170,12 @@
           "title": "News Hacker｜极客洞察",
           "favicon": "https://newshacker.me/favicon.png",
           "url": "https://newshacker.me/"
+        },
+        {
+          "id": "1767698245269",
+          "title": "V2EX",
+          "favicon": "https://www.v2ex.com/static/icon-192.png",
+          "url": "https://www.v2ex.com/"
         }
       ]
     }
