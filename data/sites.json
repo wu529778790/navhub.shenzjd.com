@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767669627935,
+  "lastModified": 1767669681064,
   "categories": [
     {
       "id": "default",
@@ -124,6 +124,12 @@
           "title": "Agent Skills 市场 - Claude、Codex 和 ChatGPT Skills | SkillsMP",
           "favicon": "https://skillsmp.com/apple-touch-icon.png",
           "url": "https://skillsmp.com/zh"
+        },
+        {
+          "id": "1767669681064",
+          "title": "Claude Code Templates - Supercharge Your AI Development with Anthropic Claude",
+          "favicon": "https://www.aitmpl.com/static/favicon/android-chrome-512x512.png",
+          "url": "https://www.aitmpl.com/skills"
         }
       ]
     }
