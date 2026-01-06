@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767698205560,
+  "lastModified": 1767698214269,
   "categories": [
     {
       "id": "default",
@@ -164,7 +164,14 @@
       "id": "cat_1767698205560",
       "name": "社区",
       "sort": 4,
-      "sites": []
+      "sites": [
+        {
+          "id": "1767698214269",
+          "title": "News Hacker｜极客洞察",
+          "favicon": "https://newshacker.me/favicon.png",
+          "url": "https://newshacker.me/"
+        }
+      ]
     }
   ]
 }
