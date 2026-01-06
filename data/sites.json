@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767670358815,
+  "lastModified": 1767678103295,
   "categories": [
     {
       "id": "default",
@@ -121,6 +121,13 @@
           "url": "https://claudemarketplaces.com/"
         }
       ]
+    },
+    {
+      "id": "cat_1767678103295",
+      "name": "服务器",
+      "icon": "📁",
+      "sort": 3,
+      "sites": []
     }
   ]
 }
