@@ -97,29 +97,46 @@ export async function getDataFromGitHub(token: string): Promise<NavData | null> 
  */
 export async function getYourDataFromGitHub(): Promise<NavData | null> {
   try {
-    // 使用 GitHub REST API 无需认证即可读取公开仓库
-    const response = await fetch(
-      `https://api.github.com/repos/${ORIGINAL_OWNER}/${ORIGINAL_REPO}/contents/${DATA_FILE_PATH}`,
-      {
-        headers: {
-          Accept: "application/vnd.github+json",
-        },
-      }
-    );
+    // 优先使用 raw.githubusercontent.com（更稳定，无 API 限流）
+    const rawUrl = `https://raw.githubusercontent.com/${ORIGINAL_OWNER}/${ORIGINAL_REPO}/main/${DATA_FILE_PATH}`;
+
+    const response = await fetch(rawUrl, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'NavHub-App',
+      },
+    });
 
     if (!response.ok) {
-      console.error("GitHub API 请求失败:", response.status, response.statusText);
+      console.error("GitHub Raw 请求失败:", response.status, response.statusText);
+
+      // Fallback: 尝试使用 GitHub API
+      console.log("尝试使用 GitHub API 作为 fallback...");
+      const apiResponse = await fetch(
+        `https://api.github.com/repos/${ORIGINAL_OWNER}/${ORIGINAL_REPO}/contents/${DATA_FILE_PATH}`,
+        {
+          headers: {
+            Accept: "application/vnd.github+json",
+            'User-Agent': 'NavHub-App',
+          },
+        }
+      );
+
+      if (!apiResponse.ok) {
+        console.error("GitHub API 请求也失败:", apiResponse.status, apiResponse.statusText);
+        return null;
+      }
+
+      const apiData = await apiResponse.json();
+      if (apiData.content) {
+        const content = atob(apiData.content.replace(/\n/g, ''));
+        return JSON.parse(content);
+      }
       return null;
     }
 
     const data = await response.json();
-    if (data.content) {
-      // 浏览器环境兼容的 base64 解码
-      const content = atob(data.content.replace(/\n/g, ''));
-      return JSON.parse(content);
-    }
-
-    return null;
+    return data;
   } catch (error) {
     console.error("读取你的 GitHub 数据失败:", error);
     return null;
