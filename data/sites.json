@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767698245269,
+  "lastModified": 1767701405774,
   "categories": [
     {
       "id": "default",
@@ -178,6 +178,12 @@
           "url": "https://www.v2ex.com/"
         }
       ]
+    },
+    {
+      "id": "cat_1767701405774",
+      "name": "政府",
+      "sort": 5,
+      "sites": []
     }
   ]
 }
