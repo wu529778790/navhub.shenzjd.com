@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767669681064,
+  "lastModified": 1767669720431,
   "categories": [
     {
       "id": "default",
@@ -130,6 +130,12 @@
           "title": "Claude Code Templates - Supercharge Your AI Development with Anthropic Claude",
           "favicon": "https://www.aitmpl.com/static/favicon/android-chrome-512x512.png",
           "url": "https://www.aitmpl.com/skills"
+        },
+        {
+          "id": "1767669720431",
+          "title": "Claude Code Plugin Marketplace | AI Tools & Extensions",
+          "favicon": "https://claudemarketplaces.com/favicon/apple-touch-icon.png",
+          "url": "https://claudemarketplaces.com/"
         }
       ]
     }
