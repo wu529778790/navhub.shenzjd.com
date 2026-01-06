@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767680539544,
+  "lastModified": 1767698205560,
   "categories": [
     {
       "id": "default",
@@ -159,6 +159,12 @@
           "favicon": "https://www.cloudflare.com/favicon.ico"
         }
       ]
+    },
+    {
+      "id": "cat_1767698205560",
+      "name": "社区",
+      "sort": 4,
+      "sites": []
     }
   ]
 }
