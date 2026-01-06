@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767678299637,
+  "lastModified": 1767678366033,
   "categories": [
     {
       "id": "default",
@@ -145,6 +145,12 @@
           "title": "迈向未来 - Spaceship",
           "favicon": "https://spaceship-cdn.com/static/spaceship/favicon/spaceship-apple-touch-icon.png",
           "url": "https://www.spaceship.com/zh"
+        },
+        {
+          "id": "1767678366033",
+          "title": "Connect, protect, and build everywhere",
+          "favicon": "https://www.cloudflare.com/favicon.ico",
+          "url": "https://www.cloudflare.com/"
         }
       ]
     }
