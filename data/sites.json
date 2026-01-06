@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767659542111,
+  "lastModified": 1767669620985,
   "categories": [
     {
       "id": "default",
@@ -65,6 +65,12 @@
           "sort": 7
         },
         {
+          "id": "1767457512343",
+          "title": "wx-auth.shenzjd.com",
+          "favicon": "https://wx-auth.shenzjd.com/favicon.ico",
+          "url": "https://wx-auth.shenzjd.com/"
+        },
+        {
           "id": "1767457724759",
           "title": "妖火",
           "favicon": "https://yaohuo.me/blog/rose.ico",
@@ -106,6 +112,13 @@
           "url": "https://build.nvidia.com/"
         }
       ]
+    },
+    {
+      "id": "cat_1767669620985",
+      "name": "Skills",
+      "icon": "📁",
+      "sort": 2,
+      "sites": []
     }
   ]
 }
