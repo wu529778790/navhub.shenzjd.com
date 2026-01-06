@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767678417784,
+  "lastModified": 1767678421816,
   "categories": [
     {
       "id": "default",
@@ -93,12 +93,6 @@
           "title": "Try NVIDIA NIM APIs",
           "favicon": "https://build.nvidia.com/favicon.ico",
           "url": "https://build.nvidia.com/"
-        },
-        {
-          "id": "1767678299637",
-          "title": "Grok",
-          "favicon": "https://grok.com/images/favicon-light.png",
-          "url": "https://grok.com/"
         },
         {
           "id": "1767678417784",
