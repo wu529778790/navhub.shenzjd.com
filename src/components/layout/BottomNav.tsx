@@ -37,7 +37,7 @@ export function BottomNav() {
             <button
               key={item.path}
               onClick={() => handleClick(item)}
-              className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-lg transition-all duration-200 ${
+              className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
                 isActive
                   ? "text-primary-600 bg-primary-50 dark:bg-primary-900/20"
                   : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"

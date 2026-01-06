@@ -23,7 +23,7 @@ export function AddSiteCard({ activeCategory, onSuccess, view = 'grid' }: AddSit
       <>
         <div
           onClick={() => setIsAddDialogOpen(true)}
-          className="site-card border-dashed border-[var(--border)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)]/50"
+          className="site-card border-dashed border-[var(--border)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)]/50 cursor-pointer"
           title="添加新站点"
         >
           <div className="site-icon-wrapper bg-[var(--muted)] hover:bg-[var(--primary-100)] transition-colors">

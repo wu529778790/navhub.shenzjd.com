@@ -81,24 +81,31 @@
   --container-padding: 1.5rem;
 }
 
-/* 深色模式 - 优化的暗色调色板 */
+/* 深色模式 - 优化的暗色调色板，确保对比度 */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --background-secondary: #141414;
-    --foreground: #ededed;
-    --foreground-secondary: #a3a3a3;
-    --muted: #1a1a1a;
-    --muted-foreground: #a3a3a3;
-    --border: #262626;
-    --border-strong: #404040;
-    --input-border: #404040;
+    /* 背景 - 纯黑而非深灰，提供更好的对比度 */
+    --background: #000000;
+    --background-secondary: #0f0f0f;
 
-    /* 深色模式下的阴影 */
-    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.6), 0 1px 2px -1px rgb(0 0 0 / 0.6);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.6), 0 2px 4px -2px rgb(0 0 0 / 0.6);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6), 0 4px 6px -4px rgb(0 0 0 / 0.6);
+    /* 前景 - 纯白而非浅灰，确保可读性 */
+    --foreground: #ffffff;
+    --foreground-secondary: #d4d4d4; /* 比 a3a3a3 更亮，WCAG AA 合规 */
+
+    /* 弱化文本 - 保持足够对比度 */
+    --muted: #1a1a1a;
+    --muted-foreground: #a8a8a8; /* 比 a3a3a3 稍亮 */
+
+    /* 边框 - 更清晰可见 */
+    --border: #333333;
+    --border-strong: #525252;
+    --input-border: #4a4a4a;
+
+    /* 深色模式下的阴影 - 更明显 */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.7);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.8), 0 1px 2px -1px rgb(0 0 0 / 0.8);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.8), 0 2px 4px -2px rgb(0 0 0 / 0.8);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.85), 0 4px 6px -4px rgb(0 0 0 / 0.85);
   }
 }
 
@@ -271,11 +278,14 @@
     height: 100px;
     position: relative;
     flex-shrink: 0;
+    /* 预留空间，防止 hover 时的阴影导致布局变化 */
+    margin: 2px;
   }
 
   .site-card:hover {
     @apply border-[var(--primary-300)] shadow-md bg-[var(--background-secondary)];
-    transform: translateY(-2px) scale(1.02);
+    /* 使用 translateY 而不是 scale，避免布局偏移 */
+    transform: translateY(-2px);
   }
 
   .site-icon-wrapper {
@@ -289,8 +299,9 @@
 
   .site-card:hover .site-icon-wrapper {
     background: linear-gradient(135deg, var(--primary-200), var(--primary-100));
-    transform: scale(1.05);
+    /* 使用轻微的颜色变化而不是缩放，避免布局偏移 */
     box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+    border-color: var(--primary-300);
   }
 
   .site-title {
@@ -394,6 +405,15 @@
   .empty-state-icon {
     @apply w-20 h-20 bg-[var(--muted)] rounded-full flex items-center justify-center mb-4;
     background: linear-gradient(135deg, var(--neutral-100), var(--neutral-50));
+    /* 确保图标在空状态中居中显示 */
+    @apply p-4;
+  }
+
+  /* 深色模式空状态图标 */
+  @media (prefers-color-scheme: dark) {
+    .empty-state-icon {
+      background: linear-gradient(135deg, var(--neutral-800), var(--neutral-700));
+    }
   }
 
   .empty-state-title {

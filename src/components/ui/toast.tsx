@@ -86,8 +86,9 @@ export function ToastProvider({ children }: ToastProviderProps) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`slide-up flex items-start gap-3 p-4 rounded-lg border shadow-lg ${getBgColor(toast.type)}`}
+            className={`slide-up flex items-start gap-3 p-4 rounded-lg border shadow-lg cursor-pointer ${getBgColor(toast.type)}`}
             onClick={() => removeToast(toast.id)}
+            title="点击关闭通知"
           >
             {getIcon(toast.type)}
             <div className="flex-1 text-sm font-medium">{toast.message}</div>
@@ -96,7 +97,8 @@ export function ToastProvider({ children }: ToastProviderProps) {
                 e.stopPropagation();
                 removeToast(toast.id);
               }}
-              className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+              className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer"
+              title="关闭"
             >
               <X className="w-4 h-4" />
             </button>

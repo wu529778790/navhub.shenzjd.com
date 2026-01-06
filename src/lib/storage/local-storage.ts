@@ -22,7 +22,7 @@ export interface Site {
 export interface Category {
   id: string;
   name: string;
-  icon: string;
+  icon?: string;  // 可选，不再强制使用 emoji
   sort: number;
   sites: Site[];
 }

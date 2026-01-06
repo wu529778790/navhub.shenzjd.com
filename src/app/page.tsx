@@ -8,6 +8,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Edit2, GripVertical, Keyboard } from "lucide-react";
+import { IconFolder, IconSearch, IconBook } from "@/components/icons";
 import { SortableSites } from "@/components/SortableSites";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -117,7 +118,7 @@ function SortableCategoryItem({ category, onEdit, onDelete, isGuestMode, allCate
               onClick={handleCategoryClick}
               title="点击跳转到此分类"
             >
-              {category.icon && <span>{category.icon}</span>}
+              <IconFolder className="w-5 h-5 text-[var(--primary-600)]" />
               <span>{category.name}</span>
               <span className="badge badge-neutral text-xs font-normal">
                 {category.sites.length}
@@ -292,7 +293,9 @@ export default function Home() {
     if (searchQuery) {
       return (
         <div className="empty-state card p-12">
-          <div className="empty-state-icon">🔍</div>
+          <div className="empty-state-icon">
+            <IconSearch className="w-8 h-8 text-[var(--muted-foreground)]" />
+          </div>
           <div className="empty-state-title">未找到匹配内容</div>
           <div className="empty-state-description">
             尝试调整搜索词
@@ -310,7 +313,9 @@ export default function Home() {
 
     return (
       <div className="empty-state card p-12">
-        <div className="empty-state-icon">📚</div>
+        <div className="empty-state-icon">
+          <IconBook className="w-8 h-8 text-[var(--muted-foreground)]" />
+        </div>
         <div className="empty-state-title">暂无分类</div>
         <div className="empty-state-description">
           {isGuestMode
@@ -456,7 +461,6 @@ export default function Home() {
             addCategory({
               id: `cat_${Date.now()}`,
               name: name.trim(),
-              icon: "📁",
               sort: categories.length,
               sites: [],
             });

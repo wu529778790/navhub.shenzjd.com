@@ -5,7 +5,6 @@
     {
       "id": "default",
       "name": "默认分类",
-      "icon": "📁",
       "sort": 0,
       "sites": [
         {

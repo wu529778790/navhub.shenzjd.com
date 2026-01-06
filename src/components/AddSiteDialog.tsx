@@ -162,7 +162,7 @@ export function AddSiteDialog({
             {/* 剪贴板按钮 */}
             <button
               className={cn(
-                "p-1.5 rounded-[var(--radius-md)]",
+                "p-1.5 rounded-[var(--radius-md)] cursor-pointer",
                 "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
                 "hover:bg-[var(--muted)] transition-all duration-200",
                 "focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)]",
@@ -196,7 +196,7 @@ export function AddSiteDialog({
           onClick={() => handleParse()}
           disabled={loading || !link}
           className={cn(
-            "h-12 px-5 rounded-[var(--radius-lg)]",
+            "h-12 px-5 rounded-[var(--radius-lg)] cursor-pointer",
             "bg-[var(--primary-600)] hover:bg-[var(--primary-700)]",
             "text-white font-medium shadow-lg shadow-[var(--primary-500)]/20",
             "transition-all duration-200 active:scale-95",
@@ -296,7 +296,7 @@ export function AddSiteDialog({
           />
           {siteInfo?.favicon && (
             <div className={cn(
-              "relative w-10 h-10 rounded-[var(--radius-md)] overflow-hidden",
+              "relative w-10 h-10 rounded-[var(--radius-md)] overflow-hidden cursor-pointer",
               "border border-[var(--border)] bg-[var(--muted)]",
               "flex items-center justify-center flex-shrink-0",
               "hover:scale-105 transition-transform duration-200"
@@ -338,7 +338,7 @@ export function AddSiteDialog({
         onClick={handleConfirm}
         disabled={isSubmitting}
         className={cn(
-          "w-full h-12 text-base font-semibold rounded-[var(--radius-lg)]",
+          "w-full h-12 text-base font-semibold rounded-[var(--radius-lg)] cursor-pointer",
           "bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-500)]",
           "hover:from-[var(--primary-700)] hover:to-[var(--primary-600)]",
           "text-white shadow-lg shadow-[var(--primary-500)]/30",

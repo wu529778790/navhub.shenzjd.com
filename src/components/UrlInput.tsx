@@ -40,7 +40,7 @@ export function UrlInput({ link, onLinkChange, onParse, loading }: UrlInputProps
           />
           <button
             className={cn(
-              "absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md",
+              "absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md cursor-pointer",
               "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
               "hover:bg-[var(--muted)] transition-all duration-200",
               "focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)]",

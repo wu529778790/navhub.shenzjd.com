@@ -70,7 +70,7 @@ export function SiteInfoForm({
             className="h-11 text-sm"
           />
           {siteInfo.favicon && (
-            <div className="relative w-8 h-8 rounded-md overflow-hidden border border-[var(--border)] bg-[var(--muted)] flex items-center justify-center flex-shrink-0">
+            <div className="relative w-8 h-8 rounded-md overflow-hidden border border-[var(--border)] bg-[var(--muted)] flex items-center justify-center flex-shrink-0 cursor-pointer" title="预览图标">
               <Image
                 src={siteInfo.favicon}
                 alt="预览"

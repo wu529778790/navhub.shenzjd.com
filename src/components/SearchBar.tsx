@@ -71,7 +71,7 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
         {query && (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-[var(--muted)] text-[var(--muted-foreground)] transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-[var(--muted)] text-[var(--muted-foreground)] transition-colors cursor-pointer"
             aria-label="清除搜索"
           >
             <X className="w-4 h-4" />
@@ -164,7 +164,7 @@ export function ViewToggle({
     <div className="flex items-center gap-1 bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-md)] p-1">
       <button
         onClick={() => onViewChange("grid")}
-        className={`px-3 py-1.5 rounded-[var(--radius-sm)] text-sm transition-all duration-200
+        className={`px-3 py-1.5 rounded-[var(--radius-sm)] text-sm transition-all duration-200 cursor-pointer
                    ${view === "grid"
                      ? 'bg-[var(--primary-600)] text-white shadow-sm'
                      : 'text-[var(--foreground-secondary)] hover:bg-[var(--muted)]'
@@ -176,7 +176,7 @@ export function ViewToggle({
       </button>
       <button
         onClick={() => onViewChange("list")}
-        className={`px-3 py-1.5 rounded-[var(--radius-sm)] text-sm transition-all duration-200
+        className={`px-3 py-1.5 rounded-[var(--radius-sm)] text-sm transition-all duration-200 cursor-pointer
                    ${view === "list"
                      ? 'bg-[var(--primary-600)] text-white shadow-sm'
                      : 'text-[var(--foreground-secondary)] hover:bg-[var(--muted)]'

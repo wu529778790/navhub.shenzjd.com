@@ -178,7 +178,7 @@ export function AppHeader() {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-md)] hover:bg-[var(--muted)] transition-all duration-200 border border-[var(--border)]"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-md)] hover:bg-[var(--muted)] transition-all duration-200 border border-[var(--border)] cursor-pointer"
                 >
                   <img
                     src={session.user.avatar}
@@ -199,14 +199,14 @@ export function AppHeader() {
                         setShowSettingsModal(true);
                         setShowUserMenu(false);
                       }}
-                      className="w-full text-left px-4 py-2.5 text-sm hover:bg-[var(--muted)] flex items-center gap-2 transition-colors"
+                      className="w-full text-left px-4 py-2.5 text-sm hover:bg-[var(--muted)] flex items-center gap-2 transition-colors cursor-pointer"
                     >
                       <Settings className="w-4 h-4 text-[var(--foreground-secondary)]" />
                       设置
                     </button>
                     <button
                       onClick={handleGitHubLogout}
-                      className="w-full text-left px-4 py-2.5 text-sm text-[var(--error)] hover:bg-[var(--error)]/10 flex items-center gap-2 transition-colors"
+                      className="w-full text-left px-4 py-2.5 text-sm text-[var(--error)] hover:bg-[var(--error)]/10 flex items-center gap-2 transition-colors cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" />
                       退出登录
@@ -245,10 +245,10 @@ export function AppHeader() {
               </ul>
             </div>
             <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => setShowForkModal(false)}>
+              <Button variant="outline" onClick={() => setShowForkModal(false)} className="cursor-pointer">
                 取消
               </Button>
-              <Button onClick={confirmForkAndLogin}>继续登录</Button>
+              <Button onClick={confirmForkAndLogin} className="cursor-pointer">继续登录</Button>
             </div>
           </div>
         </div>
@@ -320,7 +320,7 @@ export function AppHeader() {
                   variant="outline"
                   onClick={handleManualSync}
                   disabled={isSyncing}
-                  className="flex-1 sm:flex-none gap-1 h-12 text-base font-medium"
+                  className="flex-1 sm:flex-none gap-1 h-12 text-base font-medium cursor-pointer"
                 >
                   <RefreshCw className={`w-4 h-4 ${isSyncing ? "animate-spin" : ""}`} />
                   {isSyncing ? "同步中..." : "手动同步"}
@@ -329,7 +329,7 @@ export function AppHeader() {
                 <Button
                   variant="destructive"
                   onClick={handleGitHubLogout}
-                  className="flex-1 sm:flex-none gap-1 h-12 text-base font-medium"
+                  className="flex-1 sm:flex-none gap-1 h-12 text-base font-medium cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                   退出登录

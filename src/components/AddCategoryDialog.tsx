@@ -74,7 +74,7 @@ export function AddCategoryDialog({ onClose, onConfirm }: AddCategoryDialogProps
               <button
                 className={cn(
                   "absolute right-3 top-1/2 -translate-y-1/2",
-                  "p-1 rounded-[var(--radius-md)]",
+                  "p-1 rounded-[var(--radius-md)] cursor-pointer",
                   "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
                   "hover:bg-[var(--muted)] transition-all duration-200",
                   "active:scale-90"

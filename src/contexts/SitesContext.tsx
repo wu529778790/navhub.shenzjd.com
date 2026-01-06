@@ -218,7 +218,6 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       const defaultCategory: Category = {
         id: "default",
         name: "默认分类",
-        icon: "📁",
         sort: 0,
         sites: [],
       };
@@ -235,7 +234,6 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         const defaultCategory: Category = {
           id: "default",
           name: "默认分类",
-          icon: "📁",
           sort: 0,
           sites: [],
         };
