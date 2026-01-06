@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767669726882,
+  "lastModified": 1767669754136,
   "categories": [
     {
       "id": "default",
@@ -17,10 +17,9 @@
         },
         {
           "id": "1767186266401",
-          "title": "神族九帝云盘",
-          "favicon": "https://blog.shenzjd.com/img/logo.png",
+          "title": "云盘 alist",
           "url": "https://alist.shenzjd.com/",
-          "sort": 1
+          "favicon": "https://blog.shenzjd.com/img/logo.png"
         },
         {
           "id": "1767186154553",
