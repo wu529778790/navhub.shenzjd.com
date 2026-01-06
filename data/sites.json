@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767669805830,
+  "lastModified": 1767669821184,
   "categories": [
     {
       "id": "default",
@@ -58,12 +58,6 @@
           "favicon": "https://github.com/fluidicon.png",
           "url": "https://github.com/wu529778790",
           "sort": 7
-        },
-        {
-          "id": "1767457724759",
-          "title": "妖火",
-          "favicon": "https://yaohuo.me/blog/rose.ico",
-          "url": "https://yaohuo.me/"
         }
       ]
     },
