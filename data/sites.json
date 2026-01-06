@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767669788600,
+  "lastModified": 1767669805830,
   "categories": [
     {
       "id": "default",
@@ -41,10 +41,9 @@
         },
         {
           "id": "1767186377033",
-          "title": "IT Tools - Handy online tools for developers",
-          "favicon": "https://it-tools.shenzjd.com/apple-touch-icon.png",
+          "title": "IT Tools",
           "url": "https://it-tools.shenzjd.com/",
-          "sort": 5
+          "favicon": "https://it-tools.shenzjd.com/apple-touch-icon.png"
         },
         {
           "id": "1767186392155",
