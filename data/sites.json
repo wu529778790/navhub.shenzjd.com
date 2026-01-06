@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767678486134,
+  "lastModified": 1767680522013,
   "categories": [
     {
       "id": "default",
@@ -99,6 +99,12 @@
           "title": "Grok",
           "url": "https://grok.com/",
           "favicon": "https://grok.com/images/favicon-light.png"
+        },
+        {
+          "id": "1767680522013",
+          "title": "Kiro: Agentic AI development from prototype to production",
+          "favicon": "https://kiro.dev/apple-icon.png?4cefa8c54a20b098",
+          "url": "https://kiro.dev/"
         }
       ]
     },
