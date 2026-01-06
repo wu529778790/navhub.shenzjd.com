@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767669778846,
+  "lastModified": 1767669788600,
   "categories": [
     {
       "id": "default",
@@ -35,10 +35,9 @@
         },
         {
           "id": "1767186305853",
-          "title": "newshub.shenzjd.com",
-          "favicon": "https://newshub.shenzjd.com/favicon.ico",
+          "title": "newshub",
           "url": "https://newshub.shenzjd.com/",
-          "sort": 4
+          "favicon": "https://newshub.shenzjd.com/favicon.ico"
         },
         {
           "id": "1767186377033",
