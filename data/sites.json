@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767669754136,
+  "lastModified": 1767669768246,
   "categories": [
     {
       "id": "default",
@@ -23,10 +23,9 @@
         },
         {
           "id": "1767186154553",
-          "title": "神族九帝’s blog",
-          "favicon": "https://blog.shenzjd.com/img/favicon.ico",
+          "title": "博客",
           "url": "https://blog.shenzjd.com/",
-          "sort": 2
+          "favicon": "https://blog.shenzjd.com/img/favicon.ico"
         },
         {
           "id": "1767179808902",
