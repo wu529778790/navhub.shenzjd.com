@@ -120,9 +120,6 @@ function SortableCategoryItem({ category, onEdit, onDelete, isGuestMode, allCate
             >
               <IconFolder className="w-5 h-5 text-[var(--primary-600)]" />
               <span>{category.name}</span>
-              <span className="badge badge-neutral text-xs font-normal">
-                {category.sites.length}
-              </span>
             </h3>
           </div>
         </div>
