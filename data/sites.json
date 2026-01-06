@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767678380534,
+  "lastModified": 1767678417784,
   "categories": [
     {
       "id": "default",
@@ -96,6 +96,12 @@
         },
         {
           "id": "1767678299637",
+          "title": "Grok",
+          "favicon": "https://grok.com/images/favicon-light.png",
+          "url": "https://grok.com/"
+        },
+        {
+          "id": "1767678417784",
           "title": "Grok",
           "favicon": "https://grok.com/images/favicon-light.png",
           "url": "https://grok.com/"
