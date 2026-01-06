@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767669620985,
+  "lastModified": 1767669627935,
   "categories": [
     {
       "id": "default",
@@ -118,7 +118,14 @@
       "name": "Skills",
       "icon": "📁",
       "sort": 2,
-      "sites": []
+      "sites": [
+        {
+          "id": "1767669627935",
+          "title": "Agent Skills 市场 - Claude、Codex 和 ChatGPT Skills | SkillsMP",
+          "favicon": "https://skillsmp.com/apple-touch-icon.png",
+          "url": "https://skillsmp.com/zh"
+        }
+      ]
     }
   ]
 }
