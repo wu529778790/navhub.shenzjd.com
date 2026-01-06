@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767678103295,
+  "lastModified": 1767678117184,
   "categories": [
     {
       "id": "default",
@@ -127,7 +127,14 @@
       "name": "服务器",
       "icon": "📁",
       "sort": 3,
-      "sites": []
+      "sites": [
+        {
+          "id": "1767678117184",
+          "title": "腾讯云 - 产业智变 云启未来",
+          "favicon": "https://cloudcache.tencent-cloud.com/qcloud/favicon.ico?t=201902181234",
+          "url": "https://cloud.tencent.com/"
+        }
+      ]
     }
   ]
 }
