@@ -71,6 +71,7 @@ export function AppHeader() {
 
   const confirmForkAndLogin = () => {
     setShowForkModal(false);
+    // 使用 API 路由处理 OAuth 回调
     const redirectUri = encodeURIComponent(`${window.location.origin}/api/auth/callback/github`);
     const scope = encodeURIComponent("repo gist");
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}`;
