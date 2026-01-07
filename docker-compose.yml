@@ -2,7 +2,11 @@ version: '3.8'
 
 services:
   navhub:
-    build: .
+    build:
+      context: .
+      args:
+        - NEXT_PUBLIC_GITHUB_CLIENT_ID=${NEXT_PUBLIC_GITHUB_CLIENT_ID}
+        - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
     ports:
       - "3000:3000"
     environment:

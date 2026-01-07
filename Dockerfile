@@ -12,7 +12,13 @@ RUN npm ci --only=production
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the application with environment variables
+ARG NEXT_PUBLIC_GITHUB_CLIENT_ID
+ARG GITHUB_CLIENT_SECRET
+ENV NEXT_PUBLIC_GITHUB_CLIENT_ID=${NEXT_PUBLIC_GITHUB_CLIENT_ID}
+ENV GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+ENV NODE_ENV=production
+
 RUN npm run build
 
 # Production stage
@@ -28,10 +34,17 @@ RUN addgroup --system nodejs && \
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-COPY --from=builder --chown=nextjs:nodejs /app/next.config.js ./next.config.js 2>/dev/null || true
+COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts ./next.config.ts 2>/dev/null || true
 
 # Install only production dependencies
 RUN npm ci --only=production --ignore-scripts
+
+# Set environment variables for runtime
+ARG NEXT_PUBLIC_GITHUB_CLIENT_ID
+ARG GITHUB_CLIENT_SECRET
+ENV NEXT_PUBLIC_GITHUB_CLIENT_ID=${NEXT_PUBLIC_GITHUB_CLIENT_ID}
+ENV GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+ENV NODE_ENV=production
 
 # Expose port
 EXPOSE 3000
