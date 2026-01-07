@@ -1,4 +1,7 @@
-/**\n * GitHub OAuth 回调 API\n * 处理 GitHub 授权后的回调，交换 code 获取 token\n */
+/**
+ * GitHub OAuth 回调 API
+ * 处理 GitHub 授权后的回调，交换 code 获取 token
+ */
 
 import { NextRequest, NextResponse } from "next/server";
 
