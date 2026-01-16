@@ -3,10 +3,12 @@
  * 管理 localStorage 中的数据
  */
 
+import { STORAGE_CONFIG } from "@/lib/config";
+
 const STORAGE_KEY = "nav_data";
 const LAST_SYNC_KEY = "nav_last_sync";
 const EXPIRY_KEY = "nav_expiry";
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24小时
+const CACHE_DURATION = STORAGE_CONFIG.CACHE_DURATION;
 
 export interface Site {
   id: string;

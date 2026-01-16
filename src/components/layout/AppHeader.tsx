@@ -13,8 +13,9 @@ import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/au
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 import { useSync } from "@/hooks/use-sync";
+import { OAUTH_CONFIG } from "@/lib/config";
 
-const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || "";
+const GITHUB_CLIENT_ID = OAUTH_CONFIG.CLIENT_ID;
 
 export function AppHeader() {
   const { isOnline } = useSites();
@@ -73,7 +74,7 @@ export function AppHeader() {
     setShowForkModal(false);
     // 使用 API 路由处理 OAuth 回调
     const redirectUri = encodeURIComponent(`${window.location.origin}/api/auth/callback/github`);
-    const scope = encodeURIComponent("repo gist");
+    const scope = encodeURIComponent(OAUTH_CONFIG.SCOPE);
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}`;
   };
 
@@ -108,8 +109,9 @@ export function AppHeader() {
       } else {
         showToast(result.error || "同步失败", "error");
       }
-    } catch (error: any) {
-      showToast(error.message || "同步失败", "error");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "同步失败";
+      showToast(errorMessage, "error");
     } finally {
       setIsSyncing(false);
     }

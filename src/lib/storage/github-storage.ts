@@ -5,11 +5,12 @@
 
 import { Octokit } from "@octokit/rest";
 import type { NavData } from "./local-storage";
+import { GITHUB_CONFIG, SYNC_CONFIG } from "@/lib/config";
 
-// 你的 GitHub 仓库信息（硬编码）
-const ORIGINAL_OWNER = "wu529778790";
-const ORIGINAL_REPO = "navhub.shenzjd.com";
-const DATA_FILE_PATH = "data/sites.json";
+// 使用配置中的仓库信息
+const ORIGINAL_OWNER = GITHUB_CONFIG.ORIGINAL_OWNER;
+const ORIGINAL_REPO = GITHUB_CONFIG.ORIGINAL_REPO;
+const DATA_FILE_PATH = GITHUB_CONFIG.DATA_FILE_PATH;
 
 /**
  * 获取 Octokit 实例
@@ -41,12 +42,12 @@ export async function ensureForked(token: string): Promise<void> {
           repo: ORIGINAL_REPO,
         });
         // 等待 fork 完成
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, SYNC_CONFIG.FORK_WAIT_MS));
       } catch (forkError: unknown) {
         if ((forkError as { status?: number; message?: string })?.status === 403 &&
             (forkError as { message?: string })?.message?.includes("already being forked")) {
           // 正在 fork 中，等待
-          await new Promise((resolve) => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, SYNC_CONFIG.FORK_WAIT_MS));
           // 重新检查
           try {
             await octokit.repos.get({

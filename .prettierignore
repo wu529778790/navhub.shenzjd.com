@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+build
+dist
+*.min.js
+*.min.css
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+.DS_Store
+.env
+.env.local
+.env.production
+coverage
+.vercel

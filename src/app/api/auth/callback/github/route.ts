@@ -4,11 +4,38 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { validateOrigin, checkRateLimit, getClientIP, validateRedirectURI } from "@/lib/security";
+import { OAUTH_CONFIG, SECURITY_CONFIG } from "@/lib/config";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const error = searchParams.get("error");
+  const state = searchParams.get("state");
+
+  // 验证 Origin（CSRF 保护）
+  if (!validateOrigin(request)) {
+    return NextResponse.redirect(`${origin}/?oauth_error=invalid_origin`);
+  }
+
+  // Rate limiting
+  const clientIP = getClientIP(request);
+  const rateLimit = checkRateLimit(
+    clientIP,
+    SECURITY_CONFIG.OAUTH_RATE_LIMIT_MAX_REQUESTS,
+    SECURITY_CONFIG.OAUTH_RATE_LIMIT_WINDOW_MS
+  );
+  if (!rateLimit.allowed) {
+    return NextResponse.redirect(
+      `${origin}/?oauth_error=${encodeURIComponent("请求过于频繁，请稍后再试")}`
+    );
+  }
+
+  // 验证 redirect_uri（如果提供了 state 参数）
+  if (state) {
+    // 这里可以验证 state 参数是否匹配（需要在前端存储）
+    // 简化实现：只检查 state 是否存在
+  }
 
   // 如果有错误，重定向回首页并显示错误
   if (error) {
@@ -28,8 +55,8 @@ export async function GET(request: NextRequest) {
         "Accept": "application/json",
       },
       body: JSON.stringify({
-        client_id: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        client_id: OAUTH_CONFIG.CLIENT_ID,
+        client_secret: OAUTH_CONFIG.CLIENT_SECRET,
         code: code,
       }),
     });

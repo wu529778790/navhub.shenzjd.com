@@ -3,6 +3,8 @@
  * 使用 Microlink API 自动获取网站的 title 和 favicon
  */
 
+import { URL_PARSER_CONFIG } from "@/lib/config";
+
 interface ParsedURL {
   title: string;
   favicon: string;
@@ -19,9 +21,9 @@ export async function parseURL(url: string): Promise<ParsedURL> {
   new URL(url);
 
   // 使用 Microlink API
-  const apiUrl = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
+  const apiUrl = `${URL_PARSER_CONFIG.API_URL}/?url=${encodeURIComponent(url)}`;
   const response = await fetch(apiUrl, {
-    signal: AbortSignal.timeout(10000),
+    signal: AbortSignal.timeout(URL_PARSER_CONFIG.TIMEOUT_MS),
   });
 
   if (!response.ok) {

@@ -4,15 +4,13 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense, lazy } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Edit2, GripVertical, Keyboard } from "lucide-react";
 import { IconFolder, IconSearch, IconBook } from "@/components/icons";
-import { SortableSites } from "@/components/SortableSites";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { AddCategoryDialog } from "@/components/AddCategoryDialog";
 import { SearchBar, SearchStatus, CategoryFilter, ViewToggle } from "@/components/SearchBar";
 import {
   Dialog,
@@ -22,6 +20,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+
+// 懒加载大型组件
+const SortableSites = lazy(() => import("@/components/SortableSites").then(module => ({ default: module.SortableSites })));
+const AddCategoryDialog = lazy(() => import("@/components/AddCategoryDialog").then(module => ({ default: module.AddCategoryDialog })));
 
 // DnD Kit imports for category sorting
 import {
@@ -155,12 +157,14 @@ function SortableCategoryItem({ category, onEdit, onDelete, isGuestMode, allCate
       </div>
 
       {/* 站点列表 */}
-      <SortableSites
-        category={category}
-        allCategories={allCategories}
-        onSiteChange={onSiteChange}
-        view={viewMode}
-      />
+      <Suspense fallback={<div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2"><div className="w-[100px] h-[100px] bg-[var(--muted)] rounded-[var(--radius-md)] animate-pulse" /></div>}>
+        <SortableSites
+          category={category}
+          allCategories={allCategories}
+          onSiteChange={onSiteChange}
+          view={viewMode}
+        />
+      </Suspense>
     </div>
   );
 }
@@ -452,18 +456,20 @@ export default function Home() {
 
       {/* 添加分类对话框 */}
       {showAddCategoryDialog && (
-        <AddCategoryDialog
-          onClose={() => setShowAddCategoryDialog(false)}
-          onConfirm={(name) => {
-            addCategory({
-              id: `cat_${Date.now()}`,
-              name: name.trim(),
-              sort: categories.length,
-              sites: [],
-            });
-            setShowAddCategoryDialog(false);
-          }}
-        />
+        <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"><div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" /></div>}>
+          <AddCategoryDialog
+            onClose={() => setShowAddCategoryDialog(false)}
+            onConfirm={(name) => {
+              addCategory({
+                id: `cat_${Date.now()}`,
+                name: name.trim(),
+                sort: categories.length,
+                sites: [],
+              });
+              setShowAddCategoryDialog(false);
+            }}
+          />
+        </Suspense>
       )}
 
       {/* 编辑分类对话框 */}

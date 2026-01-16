@@ -12,7 +12,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEffect, useState, useCallback } from "react";
-import { z } from "zod";
 import { useSites } from "@/contexts/SitesContext";
 import { parseURL } from "@/lib/services/url-parser";
 import type { Site } from "@/lib/storage/local-storage";
@@ -21,8 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Clipboard, Link as LinkIcon, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-
-const urlSchema = z.string().url("请输入有效的URL");
+import { urlSchema, siteTitleSchema, validateAndSanitizeUrl, escapeHtml } from "@/lib/validation";
 
 interface AddSiteDialogProps {
   activeCategory: string;
@@ -269,10 +267,10 @@ export function AddSiteDialog({
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-[var(--foreground)] truncate">
-            {editedTitle || siteInfo?.title || "未命名网站"}
+            {escapeHtml(editedTitle || siteInfo?.title || "未命名网站")}
           </p>
           <p className="text-xs text-[var(--muted-foreground)] truncate mt-0.5">
-            {siteInfo?.url}
+            {escapeHtml(siteInfo?.url || "")}
           </p>
         </div>
       </div>

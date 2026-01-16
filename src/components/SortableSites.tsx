@@ -55,7 +55,7 @@ interface SortableSitesProps {
       sort?: number;
     }>;
   };
-  allCategories: any[];
+  allCategories: Category[];
   onSiteChange: () => void;
   view?: 'grid' | 'list';
 }

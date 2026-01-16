@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SitesProvider } from "@/contexts/SitesContext";
 import { ToastProvider } from "@/components/ui/toast";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   title: "NavHub",
@@ -16,11 +17,13 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="antialiased">
-        <SitesProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </SitesProvider>
+        <ErrorBoundary>
+          <SitesProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </SitesProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

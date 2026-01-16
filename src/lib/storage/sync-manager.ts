@@ -232,9 +232,10 @@ export class SyncManager {
    */
   private debounceSync(): void {
     if (this.timer) clearTimeout(this.timer);
+    const { STORAGE_CONFIG } = require("@/lib/config");
     this.timer = setTimeout(() => {
       this.processQueue();
-    }, 3000);
+    }, STORAGE_CONFIG.SYNC_DEBOUNCE_MS);
   }
 
   /**
@@ -295,11 +296,12 @@ export class SyncManager {
    * 重试同步
    */
   private retrySync(data: NavData): void {
-    // 延迟 5 秒后重试
+    const { SYNC_CONFIG } = require("@/lib/config");
+    // 延迟后重试
     setTimeout(() => {
       this.queue.push(data);
       this.processQueue();
-    }, 5000);
+    }, SYNC_CONFIG.RETRY_DELAY_MS);
   }
 
   /**
