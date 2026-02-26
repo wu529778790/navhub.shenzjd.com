@@ -24,12 +24,31 @@ export interface SyncResult {
   error?: string;
 }
 
+export type SyncStep = "prepare" | "fetching" | "comparing" | "uploading" | "downloading" | "merging" | "done";
+
+export interface SyncStepInfo {
+  step: SyncStep;
+  label: string;
+  progress: number; // 0-100
+}
+
 interface SyncOptions {
   token?: string;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
   onStatusChange?: (status: SyncStatus) => void;
+  onStepChange?: (step: SyncStepInfo) => void;
 }
+
+const SYNC_STEPS: Record<SyncStep, string> = {
+  prepare: "准备同步...",
+  fetching: "获取远程数据...",
+  comparing: "比较数据差异...",
+  uploading: "上传数据到 GitHub...",
+  downloading: "下载数据到本地...",
+  merging: "合并数据...",
+  done: "完成",
+};
 
 /**
  * 同步管理器类
@@ -84,6 +103,17 @@ export class SyncManager {
   }
 
   /**
+   * 更新同步步骤
+   */
+  private updateStep(step: SyncStep, progress: number = 0): void {
+    this.options.onStepChange?.({
+      step,
+      label: SYNC_STEPS[step],
+      progress,
+    });
+  }
+
+  /**
    * 双向同步（上传 + 下载 + 冲突检测）
    * 这是用户手动点击"同步"按钮时调用的方法
    */
@@ -102,18 +132,26 @@ export class SyncManager {
     this.updateStatus(SyncStatus.SYNCING);
 
     try {
-      // 1. 获取本地数据
+      // 1. 准备同步
+      this.updateStep("prepare", 10);
+
+      // 2. 获取本地数据
+      this.updateStep("fetching", 30);
       const localData = loadFromLocalStorage();
 
-      // 2. 获取 GitHub 数据
-      this.updateStatus(SyncStatus.DOWNLOADING);
+      // 3. 获取 GitHub 数据
       const githubData = await getDataFromGitHub(this.options.token!);
+      this.updateStep("fetching", 50);
 
-      // 3. 检测冲突并解决
+      // 4. 比较数据
+      this.updateStep("comparing", 60);
+
+      // 5. 检测冲突并解决
       const result = await this.resolveConflict(localData, githubData);
 
-      // 4. 更新状态
+      // 6. 更新状态
       if (result.success) {
+        this.updateStep("done", 100);
         this.updateStatus(SyncStatus.IDLE);
         this.options.onSuccess?.();
       } else {
@@ -152,7 +190,9 @@ export class SyncManager {
     // 情况 1: 本地为空（或只有默认分类），GitHub 有数据 → 下载
     if (isLocalEmpty && githubData) {
       this.updateStatus(SyncStatus.DOWNLOADING);
+      this.updateStep("downloading", 70);
       saveToLocalStorage(githubData);
+      this.updateStep("merging", 90);
       setLastSyncTime();
       return {
         success: true,
@@ -164,7 +204,9 @@ export class SyncManager {
     // 情况 2: GitHub 为空，本地有有效数据 → 上传
     if (githubData === null && !isLocalEmpty && localData) {
       this.updateStatus(SyncStatus.UPLOADING);
+      this.updateStep("uploading", 70);
       await saveDataToGitHub(this.options.token!, localData, `[skip ci] Upload ${new Date().toISOString()}`);
+      this.updateStep("merging", 90);
       setLastSyncTime();
       return {
         success: true,
@@ -191,7 +233,9 @@ export class SyncManager {
       if (localTime > githubTime) {
         // 本地更新，上传
         this.updateStatus(SyncStatus.UPLOADING);
+        this.updateStep("uploading", 70);
         await saveDataToGitHub(this.options.token!, localData, `[skip ci] Sync ${new Date().toISOString()}`);
+        this.updateStep("merging", 90);
         setLastSyncTime();
         return {
           success: true,
@@ -201,7 +245,9 @@ export class SyncManager {
       } else if (githubTime > localTime) {
         // GitHub 更新，下载
         this.updateStatus(SyncStatus.DOWNLOADING);
+        this.updateStep("downloading", 70);
         saveToLocalStorage(githubData);
+        this.updateStep("merging", 90);
         setLastSyncTime();
         return {
           success: true,

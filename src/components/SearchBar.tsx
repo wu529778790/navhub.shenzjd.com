@@ -17,10 +17,10 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
   const [showShortcutHint, setShowShortcutHint] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 监听 Ctrl/Cmd + K 快捷键
+  // 监听 Ctrl/Cmd + / 快捷键
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      if ((e.ctrlKey || e.metaKey) && e.key === "/") {
         e.preventDefault();
         inputRef.current?.focus();
         setShowShortcutHint(true);
@@ -83,7 +83,7 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[var(--muted-foreground)] text-xs">
             <span className="kbd">Ctrl</span>
             <span>+</span>
-            <span className="kbd">K</span>
+            <span className="kbd">/</span>
           </div>
         )}
       </div>

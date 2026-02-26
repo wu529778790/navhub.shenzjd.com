@@ -20,7 +20,7 @@ const GITHUB_CLIENT_ID = OAUTH_CONFIG.CLIENT_ID;
 export function AppHeader() {
   const { isOnline } = useSites();
   const { showToast } = useToast();
-  const { manualSync } = useSync();
+  const { manualSync, syncStep } = useSync();
 
   const [session, setSession] = useState<{ user: { id: string; name: string; avatar: string }; token: string } | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -39,7 +39,7 @@ export function AppHeader() {
     const oauthError = params.get("oauth_error");
 
     if (oauthError) {
-      alert(`登录失败: ${oauthError}`);
+      showToast(`登录失败: ${oauthError}`, "error");
       window.history.replaceState({}, "", window.location.pathname);
       return;
     }
@@ -64,7 +64,7 @@ export function AppHeader() {
   // GitHub OAuth 登录
   const handleGitHubLogin = () => {
     if (!GITHUB_CLIENT_ID) {
-      alert("请配置 NEXT_PUBLIC_GITHUB_CLIENT_ID 环境变量");
+      showToast("请配置 NEXT_PUBLIC_GITHUB_CLIENT_ID 环境变量", "error");
       return;
     }
     setShowForkModal(true);
@@ -142,6 +142,29 @@ export function AppHeader() {
 
   return (
     <>
+      {/* 同步进度条 */}
+      {syncStep && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)]/95 backdrop-blur-sm border-b border-[var(--border)] px-4 py-3 shadow-lg">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="flex items-center gap-3">
+              <RefreshCw className="w-5 h-5 text-[var(--primary-600)] animate-spin" />
+              <div className="flex-1">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-[var(--foreground)]">{syncStep.label}</span>
+                  <span className="text-xs text-[var(--muted-foreground)]">{syncStep.progress}%</span>
+                </div>
+                <div className="h-1.5 bg-[var(--muted)] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-[var(--primary-500)] to-[var(--primary-600)] transition-all duration-300 ease-out"
+                    style={{ width: `${syncStep.progress}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 离线提示 */}
       {!isOnline && (
         <div className="bg-warning/10 text-warning border-b border-warning/20 px-4 py-2 text-sm text-center">
@@ -150,7 +173,7 @@ export function AppHeader() {
       )}
 
       {/* 头部 */}
-      <header className="sticky top-0 z-40 glass bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)] w-full">
+      <header className="sticky top-0 z-40 glass bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)] w-full transition-all duration-300" style={{ marginTop: syncStep ? '60px' : '0px' }}>
         <div className="h-16 flex items-center justify-between max-w-[1200px] mx-auto px-4 md:px-6">
           {/* 左侧：Logo */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.location.href = "/"}>

@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { SyncManager, SyncStatus, initialSync, manualSync as manualSyncFn, type SyncResult } from "@/lib/storage/sync-manager";
+import { SyncManager, SyncStatus, initialSync, manualSync as manualSyncFn, type SyncResult, type SyncStepInfo } from "@/lib/storage/sync-manager";
 import type { NavData } from "@/lib/storage/local-storage";
 import { getAuthState } from "@/lib/auth";
 
@@ -11,6 +11,7 @@ interface UseSyncReturn {
   status: SyncStatus;
   isOnline: boolean;
   lastSync: Date | null;
+  syncStep: SyncStepInfo | null;
   sync: (data: NavData) => void;
   syncNow: (data: NavData) => Promise<void>;
   manualSync: () => Promise<SyncResult>;  // 返回同步结果
@@ -25,6 +26,7 @@ export function useSync(token?: string): UseSyncReturn {
   const [status, setStatus] = useState<SyncStatus>(SyncStatus.IDLE);
   const [isOnline, setIsOnline] = useState(true);
   const [lastSync, setLastSync] = useState<Date | null>(null);
+  const [syncStep, setSyncStep] = useState<SyncStepInfo | null>(null);
   const [syncManager, setSyncManager] = useState<SyncManager | null>(null);
   const [currentToken, setCurrentToken] = useState<string | undefined>(token);
 
@@ -46,12 +48,17 @@ export function useSync(token?: string): UseSyncReturn {
       token: currentToken,
       onSuccess: () => {
         setLastSync(new Date());
+        setSyncStep(null);
       },
       onError: (error) => {
         console.error("Sync error:", error);
+        setSyncStep(null);
       },
       onStatusChange: (newStatus) => {
         setStatus(newStatus);
+      },
+      onStepChange: (stepInfo) => {
+        setSyncStep(stepInfo);
       },
     });
 
@@ -199,6 +206,7 @@ export function useSync(token?: string): UseSyncReturn {
     status,
     isOnline,
     lastSync,
+    syncStep,
     sync,
     syncNow,
     manualSync: handleManualSync,

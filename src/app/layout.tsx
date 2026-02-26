@@ -3,6 +3,7 @@ import "./globals.css";
 import { SitesProvider } from "@/contexts/SitesContext";
 import { ToastProvider } from "@/components/ui/toast";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 
 export const metadata: Metadata = {
   title: "NavHub",
@@ -20,6 +21,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <SitesProvider>
             <ToastProvider>
+              <ServiceWorkerRegister />
               {children}
             </ToastProvider>
           </SitesProvider>
