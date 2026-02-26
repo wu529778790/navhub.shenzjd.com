@@ -227,7 +227,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       }
       setLoading(false);
     }
-  }, [refresh]);
+  }, []);
 
   // 组件挂载时加载数据
   useEffect(() => {

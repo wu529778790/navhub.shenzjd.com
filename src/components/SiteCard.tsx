@@ -299,13 +299,24 @@ export function SiteCard({
         <div
           ref={cardRef}
           key={id}
+          role="button"
+          tabIndex={0}
+          aria-label={`${initialTitle} - 点击打开链接${!isGuestMode ? "，按 Enter 或 Space 显示菜单" : ""}`}
+          aria-haspopup={!isGuestMode}
+          aria-expanded={isContextMenuOpen}
           onClick={handleCardClick}
           onContextMenu={handleContextMenu}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onTouchMove={handleTouchMove}
+          onKeyDown={(e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && !isGuestMode) {
+              e.preventDefault();
+              setIsContextMenuOpen(!isContextMenuOpen);
+            }
+          }}
           className={cn("site-card cursor-pointer", isContextMenuOpen && "z-[9999]")}
-          title={isGuestMode ? "点击打开链接" : "点击打开链接，右键或长按显示菜单"}
+          title={isGuestMode ? "点击打开链接" : "点击打开链接，按 Enter 显示菜单"}
         >
           {/* 图标 */}
           <div className="site-icon-wrapper">
@@ -335,6 +346,8 @@ export function SiteCard({
           {!isGuestMode && isContextMenuOpen && (
             <div
               ref={contextMenuRef}
+              role="menu"
+              aria-label="站点操作菜单"
               className={cn(
                 "absolute top-full mt-2 left-0 z-[9999] w-auto",
                 "bg-[var(--background)]/95 backdrop-blur-xl",
@@ -345,6 +358,7 @@ export function SiteCard({
               )}
             >
               <button
+                role="menuitem"
                 onClick={handleEditClick}
                 className={cn(
                   "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
@@ -352,6 +366,7 @@ export function SiteCard({
                   "text-sm font-medium transition-all active:scale-95",
                   "group relative overflow-hidden whitespace-nowrap cursor-pointer"
                 )}
+                aria-label={`编辑 ${initialTitle}`}
               >
                 <div className={cn(
                   "w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center",
@@ -362,6 +377,7 @@ export function SiteCard({
                 <span>编辑站点</span>
               </button>
               <button
+                role="menuitem"
                 onClick={handleDeleteClick}
                 className={cn(
                   "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
@@ -369,6 +385,7 @@ export function SiteCard({
                   "text-sm font-medium transition-all active:scale-95 mt-0.5",
                   "group relative overflow-hidden whitespace-nowrap cursor-pointer"
                 )}
+                aria-label={`删除 ${initialTitle}`}
               >
                 <div className={cn(
                   "w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center",

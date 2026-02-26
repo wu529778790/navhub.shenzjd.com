@@ -5,8 +5,10 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useState } from "react";
-import { AddSiteDialog } from "./AddSiteDialog";
+import { useState, Suspense, lazy } from "react";
+
+// 懒加载添加站点对话框
+const AddSiteDialog = lazy(() => import("./AddSiteDialog").then(m => ({ default: m.AddSiteDialog })));
 
 interface AddSiteCardProps {
   activeCategory: string;
@@ -32,12 +34,14 @@ export function AddSiteCard({ activeCategory, onSuccess, view = 'grid' }: AddSit
           <span className="site-title text-[var(--muted-foreground)]">添加站点</span>
         </div>
 
-        <AddSiteDialog
-          open={isAddDialogOpen}
-          onOpenChange={setIsAddDialogOpen}
-          activeCategory={activeCategory}
-          onSuccess={onSuccess}
-        />
+        <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"><div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" /></div>}>
+          <AddSiteDialog
+            open={isAddDialogOpen}
+            onOpenChange={setIsAddDialogOpen}
+            activeCategory={activeCategory}
+            onSuccess={onSuccess}
+          />
+        </Suspense>
       </>
     );
   }
@@ -59,12 +63,14 @@ export function AddSiteCard({ activeCategory, onSuccess, view = 'grid' }: AddSit
         </div>
       </div>
 
-      <AddSiteDialog
-        open={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
-        activeCategory={activeCategory}
-        onSuccess={onSuccess}
-      />
+      <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"><div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" /></div>}>
+        <AddSiteDialog
+          open={isAddDialogOpen}
+          onOpenChange={setIsAddDialogOpen}
+          activeCategory={activeCategory}
+          onSuccess={onSuccess}
+        />
+      </Suspense>
     </>
   );
 }

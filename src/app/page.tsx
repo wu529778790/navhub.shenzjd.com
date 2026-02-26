@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import type { Category, Site } from "@/lib/storage/local-storage";
 
 // 懒加载大型组件
 const SortableSites = lazy(() => import("@/components/SortableSites").then(module => ({ default: module.SortableSites })));
@@ -44,28 +45,12 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-interface SimpleSite {
-  id: string;
-  title: string;
-  url: string;
-  favicon: string;
-  sort?: number;
-}
-
-interface SimpleCategory {
-  id: string;
-  name: string;
-  icon?: string;
-  sort: number;
-  sites: SimpleSite[];
-}
-
 interface SortableCategoryItemProps {
-  category: SimpleCategory;
-  onEdit: (category: SimpleCategory) => void;
+  category: Category;
+  onEdit: (category: Category) => void;
   onDelete: (id: string) => void;
   isGuestMode: boolean;
-  allCategories: SimpleCategory[];
+  allCategories: Category[];
   onSiteChange: () => void;
   viewMode: 'grid' | 'list';
 }
@@ -182,7 +167,7 @@ export default function Home() {
 
   // UI 状态
   const [showAddCategoryDialog, setShowAddCategoryDialog] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<SimpleCategory | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<string | null>(null);
 
   // 搜索状态
@@ -218,12 +203,12 @@ export default function Home() {
 
   // 搜索逻辑 - 仅按搜索词过滤
   const filteredCategories = useMemo(() => {
-    let result = categories as SimpleCategory[];
+    let result = categories as Category[];
 
     // 按搜索词过滤
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      const filtered: SimpleCategory[] = [];
+      const filtered: Category[] = [];
 
       for (const category of result) {
         // 检查分类名称

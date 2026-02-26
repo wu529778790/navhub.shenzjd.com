@@ -48,7 +48,7 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
   };
 
   return (
-    <div className="relative w-full ">
+    <div className="relative w-full" role="search">
       {/* 搜索输入框 */}
       <div className="relative group">
         <input
@@ -60,10 +60,13 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
           className="search-input w-full pl-11 pr-10 py-3 bg-[var(--background)] border-[var(--border)] rounded-[var(--radius-lg)]
                      focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent
                      transition-all duration-200 shadow-sm"
+          aria-label="搜索站点"
+          aria-describedby="search-description"
+          autoComplete="off"
         />
 
         {/* 搜索图标 */}
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] group-focus-within:text-[var(--primary-600)] transition-colors">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] group-focus-within:text-[var(--primary-600)] transition-colors" aria-hidden="true">
           <Search className="w-5 h-5" />
         </div>
 
@@ -73,6 +76,7 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
             onClick={handleClear}
             className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-[var(--muted)] text-[var(--muted-foreground)] transition-colors cursor-pointer"
             aria-label="清除搜索"
+            type="button"
           >
             <X className="w-4 h-4" />
           </button>
@@ -80,7 +84,7 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
 
         {/* 快捷键提示 - 右下角 */}
         {!query && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[var(--muted-foreground)] text-xs">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[var(--muted-foreground)] text-xs" aria-hidden="true">
             <span className="kbd">Ctrl</span>
             <span>+</span>
             <span className="kbd">/</span>
@@ -90,7 +94,7 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
 
       {/* 快捷键提示动画 */}
       {showShortcutHint && (
-        <div className="absolute -bottom-10 left-0 right-0 text-center">
+        <div className="absolute -bottom-10 left-0 right-0 text-center" role="status" aria-live="polite">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[var(--primary-600)] text-white rounded-[var(--radius-md)] text-sm shadow-lg animate-in fade-in slide-in-from-top-2">
             <Keyboard className="w-4 h-4" />
             <span>搜索快捷键已激活</span>
@@ -100,10 +104,10 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
 
       {/* 搜索结果提示 */}
       {query && (
-        <div className="mt-2 text-xs text-[var(--foreground-secondary)] flex items-center gap-2">
+        <div id="search-description" className="mt-2 text-xs text-[var(--foreground-secondary)] flex items-center gap-2">
           <span className="inline-flex items-center gap-1">
-            <span className="kbd">Enter</span>
-            <span>跳转到第一个结果</span>
+            <span className="kbd">Esc</span>
+            <span>清除搜索</span>
           </span>
         </div>
       )}

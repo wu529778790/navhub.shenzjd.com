@@ -6,6 +6,14 @@
 import { Octokit } from "@octokit/rest";
 import type { NavData } from "./local-storage";
 import { GITHUB_CONFIG, SYNC_CONFIG } from "@/lib/config";
+import {
+  AuthError,
+  NetworkError,
+  RateLimitError,
+  RepositoryError,
+  ParseError,
+  classifyError,
+} from "@/lib/errors";
 
 // 使用配置中的仓库信息
 const ORIGINAL_OWNER = GITHUB_CONFIG.ORIGINAL_OWNER;
@@ -34,7 +42,9 @@ export async function ensureForked(token: string): Promise<void> {
     });
     return;
   } catch (error: unknown) {
-    if ((error as { status?: number })?.status === 404) {
+    const err = classifyError(error);
+
+    if (err instanceof RepositoryError && err.statusCode === 404) {
       // 未 fork，创建 fork
       try {
         await octokit.repos.createFork({
@@ -44,8 +54,8 @@ export async function ensureForked(token: string): Promise<void> {
         // 等待 fork 完成
         await new Promise((resolve) => setTimeout(resolve, SYNC_CONFIG.FORK_WAIT_MS));
       } catch (forkError: unknown) {
-        if ((forkError as { status?: number; message?: string })?.status === 403 &&
-            (forkError as { message?: string })?.message?.includes("already being forked")) {
+        const forkErr = forkError as { status?: number; message?: string };
+        if (forkErr?.status === 403 && forkErr?.message?.includes("already being forked")) {
           // 正在 fork 中，等待
           await new Promise((resolve) => setTimeout(resolve, SYNC_CONFIG.FORK_WAIT_MS));
           // 重新检查
@@ -56,13 +66,17 @@ export async function ensureForked(token: string): Promise<void> {
             });
             return;
           } catch {
-            throw new Error("Fork 失败");
+            throw new RepositoryError("Fork 失败，请手动 Fork 仓库");
           }
         }
-        throw new Error("创建 Fork 失败");
+        throw new RepositoryError("创建 Fork 失败", undefined, forkError);
       }
+    } else if (err instanceof AuthError) {
+      throw err;
+    } else if (err instanceof NetworkError) {
+      throw err;
     } else {
-      throw error;
+      throw new RepositoryError("仓库检查失败", undefined, error);
     }
   }
 }
@@ -83,11 +97,19 @@ export async function getDataFromGitHub(token: string): Promise<NavData | null> 
 
     if ("content" in response.data) {
       const content = Buffer.from(response.data.content, "base64").toString("utf-8");
-      return JSON.parse(content);
+      try {
+        return JSON.parse(content);
+      } catch (parseError) {
+        throw new ParseError("数据格式错误，请检查文件内容", parseError);
+      }
     }
 
     return null;
   } catch (error) {
+    const err = classifyError(error);
+    if (err instanceof AuthError || err instanceof NetworkError || err instanceof RateLimitError) {
+      throw err;
+    }
     console.error("读取 GitHub 数据失败:", error);
     return null;
   }
@@ -179,8 +201,14 @@ export async function saveDataToGitHub(token: string, data: NavData, message?: s
       sha,
     });
   } catch (error) {
-    console.error("保存到 GitHub 失败:", error);
-    throw new Error("同步到 GitHub 失败");
+    const err = classifyError(error);
+    if (err instanceof AuthError || err instanceof RateLimitError) {
+      throw err;
+    }
+    if (err instanceof NetworkError) {
+      throw new NetworkError("保存失败：网络连接错误", error);
+    }
+    throw new RepositoryError("保存到 GitHub 失败", undefined, error);
   }
 }
 

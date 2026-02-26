@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { validateOrigin, checkRateLimit, getClientIP, validateRedirectURI } from "@/lib/security";
+import { validateOrigin, checkRateLimit, getClientIP, validateRedirectURI, validateOAuthState } from "@/lib/security";
 import { OAUTH_CONFIG, SECURITY_CONFIG } from "@/lib/config";
 
 export async function GET(request: NextRequest) {
@@ -33,8 +33,10 @@ export async function GET(request: NextRequest) {
 
   // 验证 redirect_uri（如果提供了 state 参数）
   if (state) {
-    // 这里可以验证 state 参数是否匹配（需要在前端存储）
-    // 简化实现：只检查 state 是否存在
+    // 验证 OAuth state 参数（CSRF 保护）
+    if (!validateOAuthState(state)) {
+      return NextResponse.redirect(`${origin}/?oauth_error=${encodeURIComponent("Invalid state parameter")}`);
+    }
   }
 
   // 如果有错误，重定向回首页并显示错误

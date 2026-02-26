@@ -152,7 +152,7 @@ export function validateAndSanitizeUrl(url: string): string {
     return urlObj.toString();
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(error.errors[0]?.message || "URL 验证失败");
+      throw new Error(error.issues[0]?.message || "URL 验证失败");
     }
     throw error;
   }

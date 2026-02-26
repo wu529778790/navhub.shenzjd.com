@@ -14,7 +14,7 @@ export interface Site {
   id: string;
   title: string;
   url: string;
-  favicon: string;
+  favicon?: string;
   description?: string;
   sort?: number;
   createdAt?: string;

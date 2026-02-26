@@ -24,22 +24,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useSites } from "@/contexts/SitesContext";
 import { SiteCard } from "@/components/SiteCard";
 import { AddSiteCard } from "@/components/AddSiteCard";
-
-interface Site {
-  id: string;
-  title: string;
-  url: string;
-  favicon?: string;
-  sort?: number;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  icon?: string;
-  sort: number;
-  sites: Site[];
-}
+import type { Category } from "@/lib/storage/local-storage";
 
 interface SortableSitesProps {
   category: {
