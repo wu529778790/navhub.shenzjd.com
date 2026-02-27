@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772186100602,
+  "lastModified": 1772186116639,
   "categories": [
     {
       "id": "default",
@@ -420,6 +420,12 @@
           "title": "Toolfk",
           "favicon": "https://icons.duckduckgo.com/ip3/www.toolfk.com.ico",
           "url": "https://www.toolfk.com/zh-cn/"
+        },
+        {
+          "id": "1772186116639",
+          "title": "Excalidraw",
+          "favicon": "https://icons.duckduckgo.com/ip3/excalidraw.com.ico",
+          "url": "https://excalidraw.com/"
         }
       ]
     }
