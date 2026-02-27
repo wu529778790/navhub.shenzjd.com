@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772187536217,
+  "lastModified": 1772187580347,
   "categories": [
     {
       "id": "default",
@@ -505,6 +505,12 @@
           "title": "老左笔记 - 关注SEM搜索引擎营销和便宜VPS服务器优惠评测",
           "favicon": "https://www.laozuo.org/favicon.ico",
           "url": "https://www.laozuo.org/"
+        },
+        {
+          "id": "1772187580347",
+          "title": "面条实验室",
+          "favicon": "https://miantiao.me/favicon.ico",
+          "url": "https://miantiao.me/blog/"
         }
       ]
     }
