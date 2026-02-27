@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772187389434,
+  "lastModified": 1772187411166,
   "categories": [
     {
       "id": "default",
@@ -463,6 +463,12 @@
           "title": "AlloyTeam|腾讯全端 AlloyTeam 团队",
           "favicon": "http://www.alloyteam.com/favicon.ico",
           "url": "http://www.alloyteam.com/"
+        },
+        {
+          "id": "1772187411165",
+          "title": "老D博客",
+          "favicon": "https://laod.cn/wp-content/uploads/2021/03/favicon.ico",
+          "url": "https://laod.cn/"
         }
       ]
     }
