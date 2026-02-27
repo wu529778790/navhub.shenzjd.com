@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772187485482,
+  "lastModified": 1772187519664,
   "categories": [
     {
       "id": "default",
@@ -493,6 +493,12 @@
           "favicon": "https://liaoxuefeng.com/favicon.ico",
           "url": "https://liaoxuefeng.com/index.html?src=redirect",
           "sort": 5
+        },
+        {
+          "id": "1772187519664",
+          "title": "Server酱·Turbo版 | 一个请求通过API将消息推送到个人微信、企业微信、手机客户端和钉钉群、飞书群",
+          "favicon": "https://the7.ft07.com/sct/images/favicon.png",
+          "url": "https://sct.ftqq.com/"
         }
       ]
     }
