@@ -1,43 +1,42 @@
 /**
  * URL 解析服务
- * 使用 Microlink API 自动获取网站的 title 和 favicon
+ * 通过本地 API 做多提供方兜底，提升稳定性
  */
-
-import { URL_PARSER_CONFIG } from "@/lib/config";
 
 interface ParsedURL {
   title: string;
   favicon: string;
 }
 
+interface ParseApiResponse extends ParsedURL {
+  source?: "microlink" | "noembed" | "fallback";
+}
+
 /**
  * 解析 URL 获取 title 和 favicon
- * 使用 Microlink API
- * @param url - 要解析的 URL
- * @returns Promise<ParsedURL>
+ * 优先请求本地 API（服务端多源兜底）
  */
 export async function parseURL(url: string): Promise<ParsedURL> {
-  // 验证 URL 格式
-  new URL(url);
+  const parsed = new URL(url);
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    throw new Error("只支持 http/https 协议");
+  }
 
-  // 使用 Microlink API
-  const apiUrl = `${URL_PARSER_CONFIG.API_URL}/?url=${encodeURIComponent(url)}`;
-  const response = await fetch(apiUrl, {
-    signal: AbortSignal.timeout(URL_PARSER_CONFIG.TIMEOUT_MS),
+  const response = await fetch(`/api/url/parse?url=${encodeURIComponent(parsed.toString())}`, {
+    signal: AbortSignal.timeout(10000),
+    cache: "no-store",
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+    throw new Error(`解析失败: HTTP ${response.status}`);
   }
 
-  const data = await response.json();
+  const data = (await response.json()) as ParseApiResponse;
 
-  // 从 Microlink 返回的数据中提取 title 和 favicon
-  // Microlink 返回 data.data.title 和 data.data.logo.url
-  const title = data.data?.title || "";
-  const favicon = data.data?.logo?.url || "";
-
-  return { title, favicon };
+  return {
+    title: data.title || getDomain(parsed.toString()),
+    favicon: data.favicon || `https://www.google.com/s2/favicons?domain=${encodeURIComponent(parsed.hostname)}&sz=64`,
+  };
 }
 
 /**
