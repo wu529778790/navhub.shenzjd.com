@@ -155,6 +155,8 @@ const SYNC_STEPS: Record<SyncStep, string> = {
 export class SyncManager {
   private queue: NavData[] = [];
   private timer: NodeJS.Timeout | null = null;
+  private retryCountMap = new Map<string, number>();
+  private retryTimers = new Set<NodeJS.Timeout>();
   private isSyncing = false;
   private status: SyncStatus = SyncStatus.IDLE;
   private options: SyncOptions = {};
@@ -188,7 +190,7 @@ export class SyncManager {
     this.queue = [];
 
     // 立即执行同步
-    await this.processQueue();
+    await this.processQueueImmediate(data);
   }
 
   /**
@@ -353,6 +355,7 @@ export class SyncManager {
 
       // 更新最后同步时间
       setLastSyncTime();
+      this.retryCountMap.clear();
 
       this.updateStatus(SyncStatus.IDLE);
       this.options.onSuccess?.();
@@ -363,7 +366,6 @@ export class SyncManager {
       this.updateStatus(SyncStatus.ERROR);
       this.options.onError?.(error as Error);
 
-      // 加入重试队列
       this.retrySync(data);
     } finally {
       this.isSyncing = false;
@@ -374,11 +376,30 @@ export class SyncManager {
    * 重试同步
    */
   private retrySync(data: NavData): void {
-    // 延迟后重试
-    setTimeout(() => {
+    const retryKey = String(data.lastModified);
+    const currentRetryCount = this.retryCountMap.get(retryKey) ?? 0;
+
+    if (currentRetryCount >= SYNC_CONFIG.MAX_RETRIES) {
+      console.error(`❌ 同步重试超过上限(${SYNC_CONFIG.MAX_RETRIES})，停止自动重试`);
+      this.retryCountMap.delete(retryKey);
+      return;
+    }
+
+    const nextRetryCount = currentRetryCount + 1;
+    this.retryCountMap.set(retryKey, nextRetryCount);
+
+    // 指数退避 + 抖动，避免请求风暴
+    const exponentialDelay = SYNC_CONFIG.RETRY_DELAY_MS * (2 ** (nextRetryCount - 1));
+    const jitter = Math.floor(Math.random() * 500);
+    const delay = exponentialDelay + jitter;
+
+    const retryTimer = setTimeout(() => {
+      this.retryTimers.delete(retryTimer);
       this.queue.push(data);
       this.processQueue();
-    }, SYNC_CONFIG.RETRY_DELAY_MS);
+    }, delay);
+
+    this.retryTimers.add(retryTimer);
   }
 
   /**
@@ -404,6 +425,12 @@ export class SyncManager {
       clearTimeout(this.timer);
       this.timer = null;
     }
+
+    for (const retryTimer of this.retryTimers) {
+      clearTimeout(retryTimer);
+    }
+    this.retryTimers.clear();
+    this.retryCountMap.clear();
   }
 }
 

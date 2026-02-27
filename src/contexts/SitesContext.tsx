@@ -22,7 +22,7 @@ import {
   type Site,
 } from "@/lib/storage/local-storage";
 import { getAuthState } from "@/lib/auth";
-import { getDataFromGitHub, getYourDataFromGitHub, saveDataToGitHub } from "@/lib/storage/github-storage";
+import { getDataFromGitHub, getYourDataFromGitHub } from "@/lib/storage/github-storage";
 import type { SyncStepInfo } from "@/lib/storage/sync-manager";
 
 interface SitesContextType {
@@ -58,41 +58,36 @@ export function SitesProvider({ children }: { children: ReactNode }) {
   // 这个 effect 会在组件挂载时运行，并且监听 storage 变化以响应登录状态更新
   useEffect(() => {
     const checkAuth = () => {
-      const auth = getAuthState();
-      if (auth.token) {
-        setGithubToken(auth.token);
-        setIsGuestMode(false);
-      } else {
-        // 未登录，使用访客模式（只读你的数据，无需 token）
-        setIsGuestMode(true);
-      }
+      void (async () => {
+        const auth = await getAuthState(true);
+        if (auth.token) {
+          setGithubToken(auth.token);
+          setIsGuestMode(false);
+        } else {
+          // 未登录，使用访客模式（只读你的数据，无需 token）
+          setGithubToken(undefined);
+          setIsGuestMode(true);
+        }
+      })();
     };
 
     // 初始检查
     checkAuth();
 
     // 监听 storage 变化（用于响应登录/登出）
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'github_token' || e.key === 'github_user') {
-        checkAuth();
-      }
-    };
-
     // 监听自定义事件（用于登录后的页面刷新）
     const handleAuthUpdate = () => {
       checkAuth();
     };
 
-    window.addEventListener('storage', handleStorageChange);
     window.addEventListener('auth-update', handleAuthUpdate);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('auth-update', handleAuthUpdate);
     };
   }, []);
 
-  const { status: syncStatus, syncStep, isOnline, lastSync, sync, manualSync: runManualSync } = useSync(githubToken);
+  const { status: syncStatus, syncStep, isOnline, lastSync, sync, syncNow, manualSync: runManualSync } = useSync(githubToken);
 
   // 包装 manualSync 以在同步后刷新数据
   const manualSync = useCallback(async () => {
@@ -125,7 +120,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       setError(null);
 
       // 每次都重新检查认证状态
-      const auth = getAuthState();
+      const auth = await getAuthState(true);
       const currentToken = auth.token;
 
       if (currentToken) {
@@ -264,11 +259,9 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       const navData = loadFromLocalStorage();
       if (navData) {
         if (immediateSync) {
-          // 立即同步（用于删除/修改操作，防止数据不一致）
+          // 关键操作走统一同步入口，避免和防抖同步逻辑分叉
           try {
-            await saveDataToGitHub(githubToken, navData, `[skip ci] Immediate sync ${new Date().toISOString()}`);
-            // 更新最后同步时间到 localStorage
-            localStorage.setItem("nav_last_sync", Date.now().toString());
+            await syncNow(navData);
           } catch (error) {
             console.error("立即同步失败:", error);
             // 同步失败时，使用防抖同步作为 fallback
@@ -280,7 +273,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         }
       }
     }
-  }, [githubToken, sync, isGuestMode]);
+  }, [githubToken, sync, syncNow, isGuestMode]);
 
   const addSite = async (categoryId: string, site: Site) => {
     if (isGuestMode) {

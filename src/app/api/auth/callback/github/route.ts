@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // 交换 code 获取 access token
-    const response = await fetch("https://github.com/login/oauth/access_token", {
+    const tokenResponse = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -66,11 +66,11 @@ export async function GET(request: NextRequest) {
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    if (!tokenResponse.ok) {
+      throw new Error(`HTTP ${tokenResponse.status}: ${tokenResponse.statusText}`);
     }
 
-    const data = await response.json();
+    const data = await tokenResponse.json();
 
     if (data.error) {
       return NextResponse.redirect(
@@ -100,50 +100,36 @@ export async function GET(request: NextRequest) {
 
     const userData = await userResponse.json();
 
-    const authPayload = {
-      token,
-      user: {
-        id: String(userData.id),
-        name: String(userData.name || userData.login),
-        avatar: String(userData.avatar_url),
-      },
+    const user = {
+      id: String(userData.id),
+      name: String(userData.name || userData.login),
+      avatar: String(userData.avatar_url),
     };
 
-    // 避免 URL query 暴露 token：返回一个中间页脚本写入 storage 后跳回首页
-    const payloadJson = JSON.stringify(authPayload).replace(/</g, "\\u003c");
-    const html = `<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>登录处理中</title>
-  </head>
-  <body>
-    <p>登录处理中，请稍候...</p>
-    <script>
-      (function () {
-        const payload = ${payloadJson};
-        try {
-          localStorage.setItem("github_token", payload.token);
-          localStorage.setItem("github_user", JSON.stringify(payload.user));
-          sessionStorage.setItem("github_token", payload.token);
-          sessionStorage.setItem("github_user", JSON.stringify(payload.user));
-        } catch (e) {}
-        window.location.replace("/?oauth_success=1");
-      })();
-    </script>
-  </body>
-</html>`;
-
-    const htmlResponse = new NextResponse(html, {
-      status: 200,
-      headers: {
-        "content-type": "text/html; charset=utf-8",
-        "cache-control": "no-store",
-      },
+    const redirectResponse = NextResponse.redirect(`${origin}/?oauth_success=1`);
+    redirectResponse.cookies.set("github_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
+      path: "/",
     });
-    htmlResponse.cookies.set("oauth_state", "", { path: "/", maxAge: 0 });
-    return htmlResponse;
+    redirectResponse.cookies.set("github_user", Buffer.from(JSON.stringify(user), "utf-8").toString("base64url"), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
+      path: "/",
+    });
+    redirectResponse.cookies.set("oauth_state", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+      path: "/",
+    });
+
+    return redirectResponse;
 
   } catch (error) {
     console.error("OAuth callback error:", error);

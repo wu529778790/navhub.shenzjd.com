@@ -51,6 +51,9 @@ export const SECURITY_CONFIG = {
 export const URL_PARSER_CONFIG = {
   TIMEOUT_MS: 10000, // 10秒
   API_URL: "https://api.microlink.io",
+  CACHE_MAX_ENTRIES: 1000,
+  RATE_LIMIT_MAX_REQUESTS: 60,
+  RATE_LIMIT_WINDOW_MS: 60000, // 1分钟
 } as const;
 
 /**

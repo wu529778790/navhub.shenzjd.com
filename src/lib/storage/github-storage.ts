@@ -1,222 +1,92 @@
 /**
- * GitHub 存储管理器
- * 管理 GitHub 仓库的 fork、读写操作
+ * GitHub 存储管理器（前端）
+ * 通过内部 API 访问 GitHub，token 仅保存在 HttpOnly Cookie。
  */
 
-import { Octokit } from "@octokit/rest";
 import type { NavData } from "./local-storage";
-import { GITHUB_CONFIG, SYNC_CONFIG } from "@/lib/config";
-import {
-  AuthError,
-  NetworkError,
-  RateLimitError,
-  RepositoryError,
-  ParseError,
-  classifyError,
-} from "@/lib/errors";
+import { GITHUB_CONFIG } from "@/lib/config";
 
-// 使用配置中的仓库信息
 const ORIGINAL_OWNER = GITHUB_CONFIG.ORIGINAL_OWNER;
 const ORIGINAL_REPO = GITHUB_CONFIG.ORIGINAL_REPO;
 const DATA_FILE_PATH = GITHUB_CONFIG.DATA_FILE_PATH;
 
-/**
- * 获取 Octokit 实例
- */
-export async function getOctokit(token: string): Promise<Octokit> {
-  return new Octokit({ auth: token });
+export async function getDataFromGitHub(_token?: string): Promise<NavData | null> {
+  void _token;
+  const response = await fetch("/api/github/data", {
+    method: "GET",
+    credentials: "same-origin",
+    cache: "no-store",
+  });
+
+  if (response.status === 401) {
+    throw new Error("未认证用户");
+  }
+  if (!response.ok) {
+    throw new Error("读取 GitHub 数据失败");
+  }
+
+  const payload = await response.json() as { data: NavData | null };
+  return payload.data;
 }
 
-/**
- * 检查并确保用户已 fork 仓库
- */
-export async function ensureForked(token: string): Promise<void> {
-  const octokit = await getOctokit(token);
-  const login = await getUserName(token);
+export async function saveDataToGitHub(_token: string, data: NavData, message?: string): Promise<void> {
+  void _token;
+  const response = await fetch("/api/github/data", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ data, message }),
+  });
 
-  try {
-    // 检查是否已经 fork
-    await octokit.repos.get({
-      owner: login,
-      repo: ORIGINAL_REPO,
-    });
-    return;
-  } catch (error: unknown) {
-    const err = classifyError(error);
-
-    if (err instanceof RepositoryError && err.statusCode === 404) {
-      // 未 fork，创建 fork
-      try {
-        await octokit.repos.createFork({
-          owner: ORIGINAL_OWNER,
-          repo: ORIGINAL_REPO,
-        });
-        // 等待 fork 完成
-        await new Promise((resolve) => setTimeout(resolve, SYNC_CONFIG.FORK_WAIT_MS));
-      } catch (forkError: unknown) {
-        const forkErr = forkError as { status?: number; message?: string };
-        if (forkErr?.status === 403 && forkErr?.message?.includes("already being forked")) {
-          // 正在 fork 中，等待
-          await new Promise((resolve) => setTimeout(resolve, SYNC_CONFIG.FORK_WAIT_MS));
-          // 重新检查
-          try {
-            await octokit.repos.get({
-              owner: login,
-              repo: ORIGINAL_REPO,
-            });
-            return;
-          } catch {
-            throw new RepositoryError("Fork 失败，请手动 Fork 仓库");
-          }
-        }
-        throw new RepositoryError("创建 Fork 失败", undefined, forkError);
-      }
-    } else if (err instanceof AuthError) {
-      throw err;
-    } else if (err instanceof NetworkError) {
-      throw err;
-    } else {
-      throw new RepositoryError("仓库检查失败", undefined, error);
-    }
+  if (response.status === 401) {
+    throw new Error("未认证用户");
+  }
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({ error: "保存到 GitHub 失败" })) as { error?: string };
+    throw new Error(payload.error || "保存到 GitHub 失败");
   }
 }
 
-/**
- * 读取数据文件（已登录用户 - 读取自己的仓库）
- */
-export async function getDataFromGitHub(token: string): Promise<NavData | null> {
-  try {
-    const octokit = await getOctokit(token);
-    const login = await getUserName(token);
-
-    const response = await octokit.repos.getContent({
-      owner: login,
-      repo: ORIGINAL_REPO,
-      path: DATA_FILE_PATH,
-    });
-
-    if ("content" in response.data) {
-      const content = Buffer.from(response.data.content, "base64").toString("utf-8");
-      try {
-        return JSON.parse(content);
-      } catch (parseError) {
-        throw new ParseError("数据格式错误，请检查文件内容", parseError);
-      }
-    }
-
-    return null;
-  } catch (error) {
-    const err = classifyError(error);
-    if (err instanceof AuthError || err instanceof NetworkError || err instanceof RateLimitError) {
-      throw err;
-    }
-    console.error("读取 GitHub 数据失败:", error);
-    return null;
-  }
-}
-
-/**
- * 读取你的仓库数据（访客模式 - 无需 token）
- */
 export async function getYourDataFromGitHub(): Promise<NavData | null> {
   try {
-    // 优先使用 raw.githubusercontent.com（更稳定，无 API 限流）
     const rawUrl = `https://raw.githubusercontent.com/${ORIGINAL_OWNER}/${ORIGINAL_REPO}/main/${DATA_FILE_PATH}`;
-
     const response = await fetch(rawUrl, {
       headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'NavHub-App',
+        Accept: "application/json",
+        "User-Agent": "NavHub-App",
       },
+      cache: "no-store",
     });
 
     if (!response.ok) {
-      console.error("GitHub Raw 请求失败:", response.status, response.statusText);
-
-      // Fallback: 尝试使用 GitHub API
-      console.log("尝试使用 GitHub API 作为 fallback...");
       const apiResponse = await fetch(
         `https://api.github.com/repos/${ORIGINAL_OWNER}/${ORIGINAL_REPO}/contents/${DATA_FILE_PATH}`,
         {
           headers: {
             Accept: "application/vnd.github+json",
-            'User-Agent': 'NavHub-App',
+            "User-Agent": "NavHub-App",
           },
+          cache: "no-store",
         }
       );
 
       if (!apiResponse.ok) {
-        console.error("GitHub API 请求也失败:", apiResponse.status, apiResponse.statusText);
         return null;
       }
 
-      const apiData = await apiResponse.json();
+      const apiData = await apiResponse.json() as { content?: string };
       if (apiData.content) {
-        const content = atob(apiData.content.replace(/\n/g, ''));
-        return JSON.parse(content);
+        const content = atob(apiData.content.replace(/\n/g, ""));
+        return JSON.parse(content) as NavData;
       }
       return null;
     }
 
-    const data = await response.json();
-    return data;
+    return await response.json() as NavData;
   } catch (error) {
     console.error("读取你的 GitHub 数据失败:", error);
     return null;
   }
-}
-
-/**
- * 保存数据到 GitHub
- */
-export async function saveDataToGitHub(token: string, data: NavData, message?: string): Promise<void> {
-  // 确保已 fork
-  await ensureForked(token);
-
-  try {
-    const octokit = await getOctokit(token);
-    const login = await getUserName(token);
-
-    // 先获取当前文件的 sha（如果存在）
-    let sha: string | undefined;
-    try {
-      const existing = await octokit.repos.getContent({
-        owner: login,
-        repo: ORIGINAL_REPO,
-        path: DATA_FILE_PATH,
-      });
-      if ("sha" in existing.data) {
-        sha = existing.data.sha;
-      }
-    } catch {
-      // 文件不存在，sha 为 undefined
-    }
-
-    await octokit.repos.createOrUpdateFileContents({
-      owner: login,
-      repo: ORIGINAL_REPO,
-      path: DATA_FILE_PATH,
-      message: message || `[skip ci] Update ${DATA_FILE_PATH}`,
-      content: Buffer.from(JSON.stringify(data, null, 2)).toString("base64"),
-      sha,
-    });
-  } catch (error) {
-    const err = classifyError(error);
-    if (err instanceof AuthError || err instanceof RateLimitError) {
-      throw err;
-    }
-    if (err instanceof NetworkError) {
-      throw new NetworkError("保存失败：网络连接错误", error);
-    }
-    throw new RepositoryError("保存到 GitHub 失败", undefined, error);
-  }
-}
-
-/**
- * 获取用户名
- */
-async function getUserName(token: string): Promise<string> {
-  const octokit = await getOctokit(token);
-  const { data } = await octokit.users.getAuthenticated();
-  return data.login;
 }

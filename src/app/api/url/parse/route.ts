@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { URL_PARSER_CONFIG } from "@/lib/config";
 
 interface ParsedResult {
   title: string;
@@ -7,7 +8,74 @@ interface ParsedResult {
 }
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const CACHE_MAX_ENTRIES = URL_PARSER_CONFIG.CACHE_MAX_ENTRIES;
 const cache = new Map<string, { data: ParsedResult; expiresAt: number }>();
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+function getClientIp(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const realIp = request.headers.get("x-real-ip");
+
+  if (forwarded) return forwarded.split(",")[0].trim();
+  if (realIp) return realIp;
+  return "unknown";
+}
+
+function checkRateLimit(identifier: string): { allowed: boolean; retryAfterSeconds: number } {
+  const now = Date.now();
+  const maxRequests = URL_PARSER_CONFIG.RATE_LIMIT_MAX_REQUESTS;
+  const windowMs = URL_PARSER_CONFIG.RATE_LIMIT_WINDOW_MS;
+  const record = rateLimitStore.get(identifier);
+
+  if (!record || now > record.resetTime) {
+    rateLimitStore.set(identifier, { count: 1, resetTime: now + windowMs });
+    return { allowed: true, retryAfterSeconds: 0 };
+  }
+
+  if (record.count >= maxRequests) {
+    const retryAfterSeconds = Math.max(1, Math.ceil((record.resetTime - now) / 1000));
+    return { allowed: false, retryAfterSeconds };
+  }
+
+  record.count += 1;
+  rateLimitStore.set(identifier, record);
+  return { allowed: true, retryAfterSeconds: 0 };
+}
+
+function cleanupRateLimitStore(): void {
+  const now = Date.now();
+  for (const [key, value] of rateLimitStore.entries()) {
+    if (now > value.resetTime) {
+      rateLimitStore.delete(key);
+    }
+  }
+}
+
+function cleanupExpiredCache(): void {
+  const now = Date.now();
+  for (const [key, value] of cache.entries()) {
+    if (value.expiresAt <= now) {
+      cache.delete(key);
+    }
+  }
+}
+
+function setBoundedCache(key: string, data: ParsedResult): void {
+  if (cache.has(key)) {
+    cache.delete(key);
+  }
+
+  cache.set(key, {
+    data,
+    expiresAt: Date.now() + CACHE_TTL_MS,
+  });
+
+  while (cache.size > CACHE_MAX_ENTRIES) {
+    const oldestKey = cache.keys().next().value;
+    if (!oldestKey) break;
+    cache.delete(oldestKey);
+  }
+}
 
 function normalizeUrl(input: string): URL {
   const parsed = new URL(input);
@@ -183,6 +251,23 @@ function chooseFavicon(urlObj: URL, fromProvider?: string): string {
 }
 
 export async function GET(request: NextRequest) {
+  cleanupRateLimitStore();
+  cleanupExpiredCache();
+
+  const clientIp = getClientIp(request);
+  const rateLimit = checkRateLimit(clientIp);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "请求过于频繁，请稍后再试" },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfterSeconds),
+        },
+      }
+    );
+  }
+
   const urlParam = request.nextUrl.searchParams.get("url")?.trim();
   if (!urlParam) {
     return NextResponse.json({ error: "缺少 url 参数" }, { status: 400 });
@@ -202,6 +287,9 @@ export async function GET(request: NextRequest) {
   const cached = cache.get(cacheKey);
   if (cached && cached.expiresAt > Date.now()) {
     return NextResponse.json(cached.data);
+  }
+  if (cached && cached.expiresAt <= Date.now()) {
+    cache.delete(cacheKey);
   }
 
   const microlink = await resolveMicrolink(cacheKey);
@@ -240,10 +328,7 @@ export async function GET(request: NextRequest) {
     source,
   };
 
-  cache.set(cacheKey, {
-    data: result,
-    expiresAt: Date.now() + CACHE_TTL_MS,
-  });
+  setBoundedCache(cacheKey, result);
 
   return NextResponse.json(result);
 }

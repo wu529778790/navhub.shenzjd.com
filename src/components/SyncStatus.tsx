@@ -19,9 +19,11 @@ export function SyncStatus() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const auth = getAuthState();
-    setIsLoggedIn(!!auth.token);
-    setMounted(true);
+    void (async () => {
+      const auth = await getAuthState(true);
+      setIsLoggedIn(!!auth.token);
+      setMounted(true);
+    })();
   }, []);
 
   if (!mounted || isGuestMode) {

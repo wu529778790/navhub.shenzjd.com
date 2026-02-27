@@ -28,24 +28,26 @@ export function AppHeader() {
   const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const oauthError = params.get("oauth_error");
-    const oauthSuccess = params.get("oauth_success");
+    void (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const oauthError = params.get("oauth_error");
+      const oauthSuccess = params.get("oauth_success");
 
-    if (oauthError) {
-      showToast(`登录失败: ${oauthError}`, "error");
-      window.history.replaceState({}, "", window.location.pathname);
-    }
-
-    const auth = getAuthState();
-    if (auth.token && auth.user) {
-      setSession({ user: auth.user, token: auth.token });
-      if (oauthSuccess) {
-        showToast("登录成功", "success");
+      if (oauthError) {
+        showToast(`登录失败: ${oauthError}`, "error");
+        window.history.replaceState({}, "", window.location.pathname);
       }
-      window.history.replaceState({}, "", window.location.pathname);
-      window.dispatchEvent(new Event("auth-update"));
-    }
+
+      const auth = await getAuthState(true);
+      if (auth.token && auth.user) {
+        setSession({ user: auth.user, token: auth.token });
+        if (oauthSuccess) {
+          showToast("登录成功", "success");
+        }
+        window.history.replaceState({}, "", window.location.pathname);
+        window.dispatchEvent(new Event("auth-update"));
+      }
+    })();
   }, [showToast]);
 
   const handleGitHubLogin = () => {
@@ -63,9 +65,12 @@ export function AppHeader() {
 
   const handleGitHubLogout = () => {
     if (confirm("确定要退出登录吗？")) {
-      clearAuth();
-      setSession(null);
-      window.location.reload();
+      void (async () => {
+        await clearAuth();
+        setSession(null);
+        window.dispatchEvent(new Event("auth-update"));
+        window.location.reload();
+      })();
     }
   };
 

@@ -1,12 +1,11 @@
 /**
- * GitHub OAuth 回调页面
- * 处理 API 路由重定向后的 token 和用户信息
+ * GitHub OAuth 回调页面（兼容入口）
+ * 认证信息已由服务端写入 HttpOnly Cookie，这里仅做跳转提示。
  */
 
 "use client";
 
 import { useEffect, useState } from "react";
-import { setGitHubToken, setGitHubUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 
 export default function GitHubCallback() {
@@ -14,14 +13,10 @@ export default function GitHubCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    const handleCallback = async () => {
-      // 从 URL 获取 token 和用户信息（由 API 路由重定向传递）
+    const handleCallback = () => {
       const params = new URLSearchParams(window.location.search);
-      const token = params.get("token");
-      const userId = params.get("user_id");
-      const userName = params.get("user_name");
-      const userAvatar = params.get("user_avatar");
       const error = params.get("oauth_error");
+      const success = params.get("oauth_success");
 
       if (error) {
         setStatus(`登录失败: ${error}`);
@@ -29,21 +24,8 @@ export default function GitHubCallback() {
         return;
       }
 
-      if (!token || !userId || !userName || !userAvatar) {
-        setStatus("未找到认证信息");
-        setTimeout(() => router.push("/"), 3000);
-        return;
-      }
-
-      // 存储 token 和用户信息
-      setGitHubToken(token);
-      setGitHubUser({
-        id: userId,
-        name: userName,
-        avatar: userAvatar,
-      });
-
-      setStatus("登录成功！正在跳转...");
+      setStatus(success ? "登录成功！正在跳转..." : "认证处理中，正在返回首页...");
+      window.dispatchEvent(new Event("auth-update"));
 
       // 清除 URL 参数并跳转
       setTimeout(() => {
@@ -51,7 +33,7 @@ export default function GitHubCallback() {
       }, 1500);
     };
 
-    void handleCallback();
+    handleCallback();
   }, [router]);
 
   return (
