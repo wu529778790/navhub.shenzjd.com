@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772187605915,
+  "lastModified": 1772187619134,
   "categories": [
     {
       "id": "default",
@@ -58,6 +58,12 @@
           "favicon": "https://github.com/fluidicon.png",
           "url": "https://github.com/wu529778790",
           "sort": 7
+        },
+        {
+          "id": "1772187619134",
+          "title": "资源共享频道",
+          "favicon": "https://wsrv.nl/?w=64&h=64&fit=cover&mask=circle&url=ssl:cdn5.telesco.pe/file/JlnSTvdJlNt2lbJgVKPgPRLh7vuuM7MxQgg_I0XCP5GuRwmXSpG0L-w3dH_80r9TgyoRcuufjWV-ygy_MtL6Q2yInSYBrvFYH-GzyuGvkcEU8cdVEVplHHcww4TwcLxwykLPcpi1JFuIltwEcbzk4q1BxVmXQMRCSTWlQGXNwT0Bc60JJQXXJFiREtHRnPsl5ZD6_eCBaMfL4ifXegb6lZztI0u7hO5DcL-qNqnINDqE0V2u1iRux8ALHUKlhXO3kAmwgSd1cLwvUBguaeovENgA6hK0xRFmX7ebeZqokpAsCx-vmtT9-k7CoI6562Zs4MuBBcHgkFpnun0LXp7piw.jpg",
+          "url": "https://shenzjd.com/"
         }
       ]
     },
