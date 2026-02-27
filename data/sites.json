@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184682431,
+  "lastModified": 1772184722780,
   "categories": [
     {
       "id": "default",
@@ -207,6 +207,12 @@
           "title": "共有产权房",
           "favicon": "https://icons.duckduckgo.com/ip3/zjj.sz.gov.cn.ico",
           "url": "https://zjj.sz.gov.cn/zfxx/gycqzfsq/index.html#/dist/home"
+        },
+        {
+          "id": "1772184722780",
+          "title": "天然气",
+          "favicon": "https://icons.duckduckgo.com/ip3/service.szgas.com.cn.ico",
+          "url": "https://service.szgas.com.cn/"
         }
       ]
     }
