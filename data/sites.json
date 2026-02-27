@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185332611,
+  "lastModified": 1772185361314,
   "categories": [
     {
       "id": "default",
@@ -286,6 +286,12 @@
           "title": "Noisedh",
           "favicon": "https://icons.duckduckgo.com/ip3/www.noisedh.link.ico",
           "url": "https://www.noisedh.link/"
+        },
+        {
+          "id": "1772185361314",
+          "title": "齐心导航",
+          "favicon": "https://icons.duckduckgo.com/ip3/nav.qixinpro.com.ico",
+          "url": "https://nav.qixinpro.com/"
         }
       ]
     }
