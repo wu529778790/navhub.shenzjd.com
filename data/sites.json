@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772186247055,
+  "lastModified": 1772187389434,
   "categories": [
     {
       "id": "default",
@@ -457,6 +457,12 @@
           "title": "微软独立博客",
           "favicon": "https://icons.duckduckgo.com/ip3/windiscover.com.ico",
           "url": "https://windiscover.com/"
+        },
+        {
+          "id": "1772187389433",
+          "title": "AlloyTeam|腾讯全端 AlloyTeam 团队",
+          "favicon": "http://www.alloyteam.com/favicon.ico",
+          "url": "http://www.alloyteam.com/"
         }
       ]
     }
