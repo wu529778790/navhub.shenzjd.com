@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185106012,
+  "lastModified": 1772185157268,
   "categories": [
     {
       "id": "default",
@@ -256,6 +256,12 @@
           "title": "大数据导航",
           "favicon": "https://icons.duckduckgo.com/ip3/hao.199it.com.ico",
           "url": "https://hao.199it.com/"
+        },
+        {
+          "id": "1772185157268",
+          "title": "电子书导航Giffox",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.giffox.com.ico",
+          "url": "https://www.giffox.com/"
         }
       ]
     }
