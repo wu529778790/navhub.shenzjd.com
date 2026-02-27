@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184722780,
+  "lastModified": 1772184729247,
   "categories": [
     {
       "id": "default",
@@ -190,12 +190,6 @@
       "name": "政府",
       "sort": 5,
       "sites": [
-        {
-          "id": "1772184373674",
-          "title": "安居房",
-          "url": "https://zjj.sz.gov.cn/zfxx/ggfw/index.html",
-          "favicon": ""
-        },
         {
           "id": "1772184428201",
           "title": "人才房",
