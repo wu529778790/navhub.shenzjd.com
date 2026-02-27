@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185770841,
+  "lastModified": 1772185784137,
   "categories": [
     {
       "id": "default",
@@ -372,6 +372,12 @@
           "title": "Devtool",
           "favicon": "https://icons.duckduckgo.com/ip3/devtool.tech.ico",
           "url": "https://devtool.tech/"
+        },
+        {
+          "id": "1772185784137",
+          "title": "Tools",
+          "favicon": "https://icons.duckduckgo.com/ip3/tools.fun.ico",
+          "url": "https://tools.fun/"
         }
       ]
     }
