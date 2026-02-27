@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185201590,
+  "lastModified": 1772185233256,
   "categories": [
     {
       "id": "default",
@@ -268,6 +268,12 @@
           "title": "小众技术资源",
           "favicon": "https://icons.duckduckgo.com/ip3/www.xiaozhongjishu.com.ico",
           "url": "https://www.xiaozhongjishu.com/"
+        },
+        {
+          "id": "1772185233256",
+          "title": "小高导航",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.dhw22.com.ico",
+          "url": "https://www.dhw22.com/"
         }
       ]
     }
