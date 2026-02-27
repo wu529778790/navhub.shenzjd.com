@@ -6,12 +6,12 @@
 
 "use client";
 
-import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { FaviconImage } from "@/components/FaviconImage";
 import {
   Dialog,
   DialogContent,
@@ -103,11 +103,6 @@ export function SiteCard({
     } catch {
       return url;
     }
-  };
-
-  // 获取首字母（用于无图标时的占位符）
-  const getInitial = () => {
-    return initialTitle.charAt(0).toUpperCase();
   };
 
   const handleEdit = async () => {
@@ -316,23 +311,15 @@ export function SiteCard({
         >
           {/* 图标 */}
           <div className="site-icon-wrapper">
-            {favicon ? (
-              <Image
-                src={favicon}
-                alt={initialTitle}
-                fill
-                className="object-cover"
-                unoptimized
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.parentElement!.style.display = "none";
-                }}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-50)] text-[var(--primary-700)] font-bold text-lg">
-                {getInitial()}
-              </div>
-            )}
+            <FaviconImage
+              key={`grid-${id}-${favicon || "none"}`}
+              src={favicon}
+              alt={initialTitle}
+              fill
+              imageClassName="object-cover"
+              fallbackClassName="bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-50)] text-[var(--primary-700)]"
+              iconClassName="w-5 h-5"
+            />
           </div>
 
           {/* 标题 */}
@@ -502,23 +489,15 @@ export function SiteCard({
       >
         {/* 图标 */}
         <div className="site-icon-wrapper w-10 h-10 flex-shrink-0">
-          {favicon ? (
-            <Image
-              src={favicon}
-              alt={initialTitle}
-              fill
-              className="object-cover"
-              unoptimized
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.parentElement!.style.display = "none";
-              }}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-50)] text-[var(--primary-700)] font-bold text-sm">
-              {getInitial()}
-            </div>
-          )}
+          <FaviconImage
+            key={`list-${id}-${favicon || "none"}`}
+            src={favicon}
+            alt={initialTitle}
+            fill
+            imageClassName="object-cover"
+            fallbackClassName="bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-50)] text-[var(--primary-700)]"
+            iconClassName="w-4 h-4"
+          />
         </div>
 
         {/* 标题和URL */}

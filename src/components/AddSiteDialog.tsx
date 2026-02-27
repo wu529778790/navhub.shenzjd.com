@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Clipboard, Link as LinkIcon, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import { FaviconImage } from "@/components/FaviconImage";
 import { urlSchema, escapeHtml } from "@/lib/validation";
 
 interface AddSiteDialogProps {
@@ -248,22 +248,14 @@ export function AddSiteDialog({
           "border border-[var(--primary-200)]",
           "shadow-inner"
         )}>
-          {siteInfo?.favicon ? (
-            <Image
-              src={siteInfo.favicon}
-              alt="网站图标"
-              width={36}
-              height={36}
-              className="object-contain"
-              unoptimized
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.parentElement!.style.display = "none";
-              }}
-            />
-          ) : (
-            <span className="text-xs font-bold text-[var(--primary-700)]">URL</span>
-          )}
+          <FaviconImage
+            key={`site-preview-${siteInfo?.favicon || "none"}`}
+            src={siteInfo?.favicon}
+            alt="网站图标"
+            size={36}
+            imageClassName="object-contain"
+            iconClassName="w-4 h-4 text-[var(--primary-700)]"
+          />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-[var(--foreground)] truncate">
@@ -299,17 +291,13 @@ export function AddSiteDialog({
               "flex items-center justify-center flex-shrink-0",
               "hover:scale-105 transition-transform duration-200"
             )}>
-              <Image
+              <FaviconImage
+                key={`favicon-input-preview-${siteInfo.favicon}`}
                 src={siteInfo.favicon}
                 alt="预览"
-                width={36}
-                height={36}
-                className="object-contain"
-                unoptimized
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.parentElement!.style.display = "none";
-                }}
+                size={36}
+                imageClassName="object-contain"
+                iconClassName="w-4 h-4 text-[var(--primary-700)]"
               />
             </div>
           )}

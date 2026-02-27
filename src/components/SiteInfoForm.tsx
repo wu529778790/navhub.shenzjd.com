@@ -7,7 +7,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
+import { FaviconImage } from "@/components/FaviconImage";
 import type { Site } from "@/lib/storage/local-storage";
 
 interface SiteInfoFormProps {
@@ -32,22 +32,14 @@ export function SiteInfoForm({
       {/* 站点预览卡片 */}
       <div className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border)] bg-[var(--background-secondary)]">
         <div className="w-10 h-10 rounded-md bg-[var(--primary-100)] flex items-center justify-center overflow-hidden border border-[var(--primary-200)]">
-          {siteInfo.favicon ? (
-            <Image
-              src={siteInfo.favicon}
-              alt="网站图标"
-              width={32}
-              height={32}
-              className="object-contain"
-              unoptimized
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.parentElement!.style.display = "none";
-              }}
-            />
-          ) : (
-            <span className="text-xs text-[var(--primary-600)] font-bold">URL</span>
-          )}
+          <FaviconImage
+            key={`site-info-${siteInfo.favicon || "none"}`}
+            src={siteInfo.favicon}
+            alt="网站图标"
+            size={32}
+            imageClassName="object-contain"
+            iconClassName="w-4 h-4 text-[var(--primary-600)]"
+          />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-[var(--foreground)] truncate">
@@ -71,17 +63,13 @@ export function SiteInfoForm({
           />
           {siteInfo.favicon && (
             <div className="relative w-8 h-8 rounded-md overflow-hidden border border-[var(--border)] bg-[var(--muted)] flex items-center justify-center flex-shrink-0 cursor-pointer" title="预览图标">
-              <Image
+              <FaviconImage
+                key={`site-info-preview-${siteInfo.favicon}`}
                 src={siteInfo.favicon}
                 alt="预览"
-                width={28}
-                height={28}
-                className="object-contain"
-                unoptimized
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.parentElement!.style.display = "none";
-                }}
+                size={28}
+                imageClassName="object-contain"
+                iconClassName="w-4 h-4 text-[var(--primary-600)]"
               />
             </div>
           )}
