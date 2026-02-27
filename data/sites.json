@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184384625,
+  "lastModified": 1772184428201,
   "categories": [
     {
       "id": "default",
@@ -195,6 +195,12 @@
           "title": "安居房",
           "url": "https://zjj.sz.gov.cn/zfxx/ggfw/index.html",
           "favicon": ""
+        },
+        {
+          "id": "1772184428201",
+          "title": "人才房",
+          "favicon": "",
+          "url": "https://zjj.sz.gov.cn/zfxx/rczfsq/index.html#/dist/home"
         }
       ]
     }
