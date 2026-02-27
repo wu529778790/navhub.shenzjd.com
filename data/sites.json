@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184779930,
+  "lastModified": 1772184797430,
   "categories": [
     {
       "id": "default",
@@ -207,6 +207,12 @@
           "title": "小汽车摇号",
           "favicon": "https://icons.duckduckgo.com/ip3/xqctk.jtys.sz.gov.cn.ico",
           "url": "https://xqctk.jtys.sz.gov.cn/"
+        },
+        {
+          "id": "1772184797430",
+          "title": "家在深圳",
+          "favicon": "https://icons.duckduckgo.com/ip3/bbs.szhome.com.ico",
+          "url": "https://bbs.szhome.com/500070.html"
         }
       ]
     }
