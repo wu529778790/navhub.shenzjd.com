@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772186190019,
+  "lastModified": 1772186204085,
   "categories": [
     {
       "id": "default",
@@ -445,7 +445,14 @@
       "id": "cat_1772186190019",
       "name": "博客",
       "sort": 9,
-      "sites": []
+      "sites": [
+        {
+          "id": "1772186204085",
+          "title": "微软独立博客",
+          "favicon": "https://icons.duckduckgo.com/ip3/windiscover.com.ico",
+          "url": "https://windiscover.com/"
+        }
+      ]
     }
   ]
 }
