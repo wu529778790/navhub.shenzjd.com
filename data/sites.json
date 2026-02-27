@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772186151386,
+  "lastModified": 1772186190019,
   "categories": [
     {
       "id": "default",
@@ -440,6 +440,12 @@
           "url": "https://aliso.cc/"
         }
       ]
+    },
+    {
+      "id": "cat_1772186190019",
+      "name": "博客",
+      "sort": 9,
+      "sites": []
     }
   ]
 }
