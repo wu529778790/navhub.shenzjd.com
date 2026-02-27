@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185632271,
+  "lastModified": 1772185659508,
   "categories": [
     {
       "id": "default",
@@ -353,6 +353,12 @@
           "title": "Mojie",
           "favicon": "https://icons.duckduckgo.com/ip3/mojie.app.ico",
           "url": "https://mojie.app/register?aff=o5bxlJPa"
+        },
+        {
+          "id": "1772185659508",
+          "title": "一元机场",
+          "favicon": "https://icons.duckduckgo.com/ip3/xn--4gq62f52gdss.top.ico",
+          "url": "https://xn--4gq62f52gdss.top/#/register?code=di4JP3zb"
         }
       ]
     }
