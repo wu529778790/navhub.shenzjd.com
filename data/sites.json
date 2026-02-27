@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185971390,
+  "lastModified": 1772186009969,
   "categories": [
     {
       "id": "default",
@@ -408,6 +408,12 @@
           "title": "山炮工具箱",
           "favicon": "https://icons.duckduckgo.com/ip3/tool.wpjam.com.ico",
           "url": "https://tool.wpjam.com/"
+        },
+        {
+          "id": "1772186009969",
+          "title": "小白盘",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.xiaobaipan.com.ico",
+          "url": "https://www.xiaobaipan.com/"
         }
       ]
     }
