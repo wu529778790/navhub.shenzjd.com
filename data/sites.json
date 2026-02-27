@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185420160,
+  "lastModified": 1772185430405,
   "categories": [
     {
       "id": "default",
@@ -305,6 +305,12 @@
           "title": "X",
           "favicon": "https://icons.duckduckgo.com/ip3/x.com.ico",
           "url": "https://x.com/home"
+        },
+        {
+          "id": "1772185430405",
+          "title": "Youtube",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.youtube.com.ico",
+          "url": "https://www.youtube.com/"
         }
       ]
     }
