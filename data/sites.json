@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185512289,
+  "lastModified": 1772185527040,
   "categories": [
     {
       "id": "default",
@@ -304,31 +304,43 @@
           "id": "1772185420159",
           "title": "X",
           "favicon": "https://icons.duckduckgo.com/ip3/x.com.ico",
-          "url": "https://x.com/home"
+          "url": "https://x.com/home",
+          "sort": 0
         },
         {
           "id": "1772185430405",
           "title": "Youtube",
           "favicon": "https://icons.duckduckgo.com/ip3/www.youtube.com.ico",
-          "url": "https://www.youtube.com/"
+          "url": "https://www.youtube.com/",
+          "sort": 1
+        },
+        {
+          "id": "1772185524606",
+          "title": "V2ex",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.v2ex.com.ico",
+          "url": "https://www.v2ex.com/",
+          "sort": 2
         },
         {
           "id": "1772185444205",
           "title": "10beasts",
           "favicon": "https://icons.duckduckgo.com/ip3/10beasts.net.ico",
-          "url": "https://10beasts.net/recommend/"
+          "url": "https://10beasts.net/recommend/",
+          "sort": 3
         },
         {
           "id": "1772185464505",
           "title": "Tgdriver",
           "favicon": "https://icons.duckduckgo.com/ip3/tgdriver.com.ico",
-          "url": "https://tgdriver.com/"
+          "url": "https://tgdriver.com/",
+          "sort": 4
         },
         {
           "id": "1772185512289",
           "title": "Mfsn",
           "favicon": "https://icons.duckduckgo.com/ip3/mfsn.cc.ico",
-          "url": "https://mfsn.cc/"
+          "url": "https://mfsn.cc/",
+          "sort": 5
         }
       ]
     }
