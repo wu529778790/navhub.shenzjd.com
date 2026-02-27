@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { validateOrigin, checkRateLimit, getClientIP, validateRedirectURI, validateOAuthState } from "@/lib/security";
+import { validateOrigin, checkRateLimit, getClientIP } from "@/lib/security";
 import { OAUTH_CONFIG, SECURITY_CONFIG } from "@/lib/config";
 
 export async function GET(request: NextRequest) {
@@ -31,12 +31,15 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // 验证 redirect_uri（如果提供了 state 参数）
-  if (state) {
-    // 验证 OAuth state 参数（CSRF 保护）
-    if (!validateOAuthState(state)) {
-      return NextResponse.redirect(`${origin}/?oauth_error=${encodeURIComponent("Invalid state parameter")}`);
-    }
+  const storedState = request.cookies.get("oauth_state")?.value;
+
+  // 强制验证 OAuth state 参数（CSRF 保护）
+  if (!state || !storedState || state !== storedState) {
+    const response = NextResponse.redirect(
+      `${origin}/?oauth_error=${encodeURIComponent("Invalid state parameter")}`
+    );
+    response.cookies.set("oauth_state", "", { path: "/", maxAge: 0 });
+    return response;
   }
 
   // 如果有错误，重定向回首页并显示错误
@@ -77,6 +80,12 @@ export async function GET(request: NextRequest) {
 
     const token = data.access_token;
 
+    if (!token) {
+      return NextResponse.redirect(
+        `${origin}/?oauth_error=${encodeURIComponent("Missing access token")}`
+      );
+    }
+
     // 获取用户信息
     const userResponse = await fetch("https://api.github.com/user", {
       headers: {
@@ -91,10 +100,50 @@ export async function GET(request: NextRequest) {
 
     const userData = await userResponse.json();
 
-    // 创建重定向 URL，包含 token 和用户信息
-    const redirectUrl = `${origin}/?token=${encodeURIComponent(token)}&user_id=${encodeURIComponent(userData.id.toString())}&user_name=${encodeURIComponent(userData.name || userData.login)}&user_avatar=${encodeURIComponent(userData.avatar_url)}`;
+    const authPayload = {
+      token,
+      user: {
+        id: String(userData.id),
+        name: String(userData.name || userData.login),
+        avatar: String(userData.avatar_url),
+      },
+    };
 
-    return NextResponse.redirect(redirectUrl);
+    // 避免 URL query 暴露 token：返回一个中间页脚本写入 storage 后跳回首页
+    const payloadJson = JSON.stringify(authPayload).replace(/</g, "\\u003c");
+    const html = `<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>登录处理中</title>
+  </head>
+  <body>
+    <p>登录处理中，请稍候...</p>
+    <script>
+      (function () {
+        const payload = ${payloadJson};
+        try {
+          localStorage.setItem("github_token", payload.token);
+          localStorage.setItem("github_user", JSON.stringify(payload.user));
+          sessionStorage.setItem("github_token", payload.token);
+          sessionStorage.setItem("github_user", JSON.stringify(payload.user));
+        } catch (e) {}
+        window.location.replace("/?oauth_success=1");
+      })();
+    </script>
+  </body>
+</html>`;
+
+    const htmlResponse = new NextResponse(html, {
+      status: 200,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    });
+    htmlResponse.cookies.set("oauth_state", "", { path: "/", maxAge: 0 });
+    return htmlResponse;
 
   } catch (error) {
     console.error("OAuth callback error:", error);

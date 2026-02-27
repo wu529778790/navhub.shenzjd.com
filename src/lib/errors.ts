@@ -99,7 +99,10 @@ export function classifyError(error: unknown): GitHubError | Error {
   }
 
   if (error instanceof Error) {
-    const err = error as any;
+    const err = error as Error & {
+      status?: number;
+      headers?: Record<string, string>;
+    };
 
     // 检查网络错误
     if (err.message?.includes("fetch") || err.message?.includes("network")) {
@@ -109,7 +112,8 @@ export function classifyError(error: unknown): GitHubError | Error {
     // 检查 GitHub API 错误
     if (err.status === 401 || err.status === 403) {
       if (err.message?.includes("rate limit")) {
-        const retryAfter = err.headers?.["retry-after"];
+        const retryAfterHeader = err.headers?.["retry-after"];
+        const retryAfter = retryAfterHeader ? Number.parseInt(retryAfterHeader, 10) : undefined;
         return new RateLimitError("API 调用次数超限，请稍后再试", retryAfter);
       }
       if (err.message?.includes("Bad credentials")) {

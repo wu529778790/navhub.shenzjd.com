@@ -1,4 +1,5 @@
 /**\n * 同步状态 Hook\n * 管理同步状态和网络状态\n */
+/* eslint-disable react-hooks/set-state-in-effect */
 
 "use client";
 
@@ -140,10 +141,17 @@ export function useSync(token?: string): UseSyncReturn {
       throw new Error("未认证用户");
     }
 
-    // 使用最新的 token 立即同步
+    // 优先使用当前同步管理器执行立即同步，确保本地最新数据写入远端
+    if (syncManager) {
+      await syncManager.syncNow(data);
+      setLastSync(new Date());
+      return;
+    }
+
+    // 回退到手动同步
     await manualSyncFn(latestToken);
     setLastSync(new Date());
-  }, [isOnline, getLatestToken]);
+  }, [isOnline, getLatestToken, syncManager]);
 
   /**
    * 手动同步 - 双向同步

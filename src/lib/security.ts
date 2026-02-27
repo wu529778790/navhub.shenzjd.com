@@ -4,7 +4,7 @@
  */
 
 import { NextRequest } from "next/server";
-import { cookies } from "next/headers";
+import { randomBytes } from "node:crypto";
 
 // OAuth state 存储（生产环境应使用 Redis）
 const oauthStateStore = new Map<string, { expires: number }>();
@@ -15,8 +15,7 @@ const oauthStateStore = new Map<string, { expires: number }>();
 export function generateCSRFToken(): string {
   if (typeof window === "undefined") {
     // 服务端：使用 crypto
-    const crypto = require("crypto");
-    return crypto.randomBytes(32).toString("hex");
+    return randomBytes(32).toString("hex");
   } else {
     // 客户端：使用 Web Crypto API
     const array = new Uint8Array(32);

@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // 启用 React 严格模式（开发时检测问题）
   reactStrictMode: true,
+  // 允许加载 GitHub 头像
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

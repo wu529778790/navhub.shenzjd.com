@@ -14,45 +14,45 @@ export default function GitHubCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    handleCallback();
-  }, []);
+    const handleCallback = async () => {
+      // 从 URL 获取 token 和用户信息（由 API 路由重定向传递）
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+      const userId = params.get("user_id");
+      const userName = params.get("user_name");
+      const userAvatar = params.get("user_avatar");
+      const error = params.get("oauth_error");
 
-  const handleCallback = async () => {
-    // 从 URL 获取 token 和用户信息（由 API 路由重定向传递）
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    const userId = params.get("user_id");
-    const userName = params.get("user_name");
-    const userAvatar = params.get("user_avatar");
-    const error = params.get("oauth_error");
+      if (error) {
+        setStatus(`登录失败: ${error}`);
+        setTimeout(() => router.push("/"), 3000);
+        return;
+      }
 
-    if (error) {
-      setStatus(`登录失败: ${error}`);
-      setTimeout(() => router.push("/"), 3000);
-      return;
-    }
+      if (!token || !userId || !userName || !userAvatar) {
+        setStatus("未找到认证信息");
+        setTimeout(() => router.push("/"), 3000);
+        return;
+      }
 
-    if (!token || !userId || !userName || !userAvatar) {
-      setStatus("未找到认证信息");
-      setTimeout(() => router.push("/"), 3000);
-      return;
-    }
+      // 存储 token 和用户信息
+      setGitHubToken(token);
+      setGitHubUser({
+        id: userId,
+        name: userName,
+        avatar: userAvatar,
+      });
 
-    // 存储 token 和用户信息
-    setGitHubToken(token);
-    setGitHubUser({
-      id: userId,
-      name: userName,
-      avatar: userAvatar,
-    });
+      setStatus("登录成功！正在跳转...");
 
-    setStatus("登录成功！正在跳转...");
+      // 清除 URL 参数并跳转
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1500);
+    };
 
-    // 清除 URL 参数并跳转
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 1500);
-  };
+    void handleCallback();
+  }, [router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

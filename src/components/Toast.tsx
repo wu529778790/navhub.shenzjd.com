@@ -14,10 +14,6 @@ interface ToastMessage {
   duration?: number;
 }
 
-interface ToastContextType {
-  showToast: (message: string, type?: "success" | "error" | "info", duration?: number) => void;
-}
-
 let showToastCallback: ((message: string, type?: "success" | "error" | "info", duration?: number) => void) | null = null;
 
 export function showToast(message: string, type: "success" | "error" | "info" = "info", duration: number = 3000) {

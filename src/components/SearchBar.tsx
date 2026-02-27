@@ -133,7 +133,7 @@ export function SearchStatus({
       <span>
         找到 <strong className="text-[var(--primary-600)]">{resultsCount}</strong> 个结果
       </span>
-      <span className="text-[var(--muted-foreground)]">for "{query}"</span>
+      <span className="text-[var(--muted-foreground)]">for &quot;{query}&quot;</span>
     </div>
   );
 }
@@ -141,15 +141,7 @@ export function SearchStatus({
 /**
  * 过滤器组件 - 已移除分类过滤，保留为空组件（向后兼容）
  */
-export function CategoryFilter({
-  categories,
-  activeCategory,
-  onCategoryChange
-}: {
-  categories: Array<{ id: string; name: string; icon?: string }>;
-  activeCategory: string | null;
-  onCategoryChange: (categoryId: string | null) => void;
-}) {
+export function CategoryFilter() {
   // 分类过滤已移除，改为锚点跳转
   return null;
 }

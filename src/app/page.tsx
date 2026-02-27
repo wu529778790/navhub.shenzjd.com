@@ -11,7 +11,7 @@ import { Plus, Trash2, Edit2, GripVertical, Keyboard } from "lucide-react";
 import { IconFolder, IconSearch, IconBook } from "@/components/icons";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { SearchBar, SearchStatus, CategoryFilter, ViewToggle } from "@/components/SearchBar";
+import { SearchBar, SearchStatus, ViewToggle } from "@/components/SearchBar";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import type { Category, Site } from "@/lib/storage/local-storage";
+import type { Category } from "@/lib/storage/local-storage";
 
 // 懒加载大型组件
 const SortableSites = lazy(() => import("@/components/SortableSites").then(module => ({ default: module.SortableSites })));

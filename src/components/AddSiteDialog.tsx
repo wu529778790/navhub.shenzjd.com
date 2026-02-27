@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Clipboard, Link as LinkIcon, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { urlSchema, siteTitleSchema, validateAndSanitizeUrl, escapeHtml } from "@/lib/validation";
+import { urlSchema, escapeHtml } from "@/lib/validation";
 
 interface AddSiteDialogProps {
   activeCategory: string;

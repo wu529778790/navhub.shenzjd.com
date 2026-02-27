@@ -3,7 +3,7 @@
  * 支持 JSON、OPML 和浏览器书签格式
  */
 
-import type { NavData, Category, Site } from "@/lib/storage/local-storage";
+import type { NavData, Category } from "@/lib/storage/local-storage";
 
 /**
  * 导出为 JSON 格式

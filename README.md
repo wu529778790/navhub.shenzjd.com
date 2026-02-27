@@ -90,7 +90,7 @@ docker-compose up -d
 
 ## 🛠️ 技术栈
 
-- **框架**: Next.js 14 + TypeScript
+- **框架**: Next.js 16 + TypeScript
 - **UI**: Tailwind CSS + shadcn/ui
 - **拖拽**: @dnd-kit
 - **图标**: Lucide React

@@ -14,9 +14,6 @@ const STATIC_CACHE_URLS = [
   '/manifest.json',
 ];
 
-// 动态资源缓存列表（API 响应）
-const DYNAMIC_CACHE_URLS = [];
-
 // 安装事件 - 缓存静态资源
 self.addEventListener('install', (event) => {
   event.waitUntil(

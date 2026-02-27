@@ -23,6 +23,7 @@ import {
 } from "@/lib/storage/local-storage";
 import { getAuthState } from "@/lib/auth";
 import { getDataFromGitHub, getYourDataFromGitHub, saveDataToGitHub } from "@/lib/storage/github-storage";
+import type { SyncStepInfo } from "@/lib/storage/sync-manager";
 
 interface SitesContextType {
   sites: Category[];
@@ -37,6 +38,7 @@ interface SitesContextType {
   refreshSites: (forceRefresh?: boolean) => Promise<void>;
   updateSites: (sites: Category[]) => Promise<void>;
   syncStatus: string;
+  syncStep: SyncStepInfo | null;
   isOnline: boolean;
   lastSync: Date | null;
   manualSync: () => Promise<{ success: boolean; message?: string; direction: string; error?: string }>;
@@ -90,7 +92,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const { status: syncStatus, isOnline, lastSync, sync, manualSync: useSyncManualSync, refresh } = useSync(githubToken);
+  const { status: syncStatus, syncStep, isOnline, lastSync, sync, manualSync: runManualSync } = useSync(githubToken);
 
   // 包装 manualSync 以在同步后刷新数据
   const manualSync = useCallback(async () => {
@@ -103,7 +105,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       };
     }
 
-    const result = await useSyncManualSync();
+    const result = await runManualSync();
 
     // 同步后刷新数据（无论是上传还是下载）
     if (result.success) {
@@ -114,7 +116,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     }
 
     return result;
-  }, [useSyncManualSync, isGuestMode]);
+  }, [runManualSync, isGuestMode]);
 
   // 初始化：从本地或 GitHub 加载数据
   const fetchSites = useCallback(async (forceRefresh = false) => {
@@ -231,7 +233,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
 
   // 组件挂载时加载数据
   useEffect(() => {
-    fetchSites();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchSites();
   }, [fetchSites]);
 
   // 监听认证状态变化，自动刷新数据
@@ -396,8 +399,9 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         deleteCategory,
         refreshSites: fetchSites,
         updateSites,
-        syncStatus,
-        isOnline,
+    syncStatus,
+    syncStep,
+    isOnline,
         lastSync,
         manualSync,
         isGuestMode,

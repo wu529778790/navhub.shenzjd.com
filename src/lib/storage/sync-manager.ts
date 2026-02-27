@@ -5,6 +5,7 @@
 
 import { saveToLocalStorage, loadFromLocalStorage, setLastSyncTime, type NavData } from "./local-storage";
 import { saveDataToGitHub, getDataFromGitHub } from "./github-storage";
+import { STORAGE_CONFIG, SYNC_CONFIG } from "@/lib/config";
 
 /**
  * 检查本地数据是否为空（只有默认分类）
@@ -310,7 +311,6 @@ export class SyncManager {
    */
   private debounceSync(): void {
     if (this.timer) clearTimeout(this.timer);
-    const { STORAGE_CONFIG } = require("@/lib/config");
     this.timer = setTimeout(() => {
       this.processQueue();
     }, STORAGE_CONFIG.SYNC_DEBOUNCE_MS);
@@ -374,7 +374,6 @@ export class SyncManager {
    * 重试同步
    */
   private retrySync(data: NavData): void {
-    const { SYNC_CONFIG } = require("@/lib/config");
     // 延迟后重试
     setTimeout(() => {
       this.queue.push(data);

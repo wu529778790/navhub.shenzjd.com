@@ -9,18 +9,17 @@ import { useSites } from "@/contexts/SitesContext";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
 import { LogOut, Github, Star, ChevronDown, Settings, RefreshCw } from "lucide-react";
-import { getAuthState, clearAuth, setGitHubToken, setGitHubUser } from "@/lib/auth";
+import { getAuthState, clearAuth } from "@/lib/auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
-import { useSync } from "@/hooks/use-sync";
 import { OAUTH_CONFIG } from "@/lib/config";
+import Image from "next/image";
 
 const GITHUB_CLIENT_ID = OAUTH_CONFIG.CLIENT_ID;
 
 export function AppHeader() {
-  const { isOnline } = useSites();
+  const { isOnline, manualSync, syncStep } = useSites();
   const { showToast } = useToast();
-  const { manualSync, syncStep } = useSync();
 
   const [session, setSession] = useState<{ user: { id: string; name: string; avatar: string }; token: string } | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -32,34 +31,24 @@ export function AppHeader() {
   useEffect(() => {
     // 检查 URL 参数（OAuth 回调传递的数据）
     const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    const userId = params.get("user_id");
-    const userName = params.get("user_name");
-    const userAvatar = params.get("user_avatar");
     const oauthError = params.get("oauth_error");
+    const oauthSuccess = params.get("oauth_success");
 
     if (oauthError) {
       showToast(`登录失败: ${oauthError}`, "error");
       window.history.replaceState({}, "", window.location.pathname);
-      return;
-    }
-
-    if (token && userId && userName && userAvatar) {
-      setGitHubToken(token);
-      setGitHubUser({ id: userId, name: userName, avatar: userAvatar });
-      setSession({ user: { id: userId, name: userName, avatar: userAvatar }, token });
-      window.history.replaceState({}, "", window.location.pathname);
-      // 触发自定义事件通知其他组件认证状态已更新
-      window.dispatchEvent(new Event('auth-update'));
-      setTimeout(() => window.location.reload(), 100);
-      return;
     }
 
     const auth = getAuthState();
     if (auth.token && auth.user) {
       setSession({ user: auth.user, token: auth.token });
+      if (oauthSuccess) {
+        showToast("登录成功", "success");
+      }
+      window.history.replaceState({}, "", window.location.pathname);
+      window.dispatchEvent(new Event('auth-update'));
     }
-  }, []);
+  }, [showToast]);
 
   // GitHub OAuth 登录
   const handleGitHubLogin = () => {
@@ -72,10 +61,7 @@ export function AppHeader() {
 
   const confirmForkAndLogin = () => {
     setShowForkModal(false);
-    // 使用 API 路由处理 OAuth 回调
-    const redirectUri = encodeURIComponent(`${window.location.origin}/api/auth/callback/github`);
-    const scope = encodeURIComponent(OAUTH_CONFIG.SCOPE);
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}`;
+    window.location.href = "/api/auth/github/login";
   };
 
   // 退出登录
@@ -206,10 +192,12 @@ export function AppHeader() {
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-md)] hover:bg-[var(--muted)] transition-all duration-200 border border-[var(--border)] cursor-pointer"
                 >
-                  <img
+                  <Image
                     src={session.user.avatar}
                     alt={session.user.name}
                     className="w-7 h-7 rounded-[var(--radius-sm)]"
+                    width={28}
+                    height={28}
                   />
                   <ChevronDown className={`w-4 h-4 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
                 </button>
@@ -295,10 +283,12 @@ export function AppHeader() {
               {session ? (
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-[var(--background-secondary)] border border-[var(--border)]">
-                    <img
+                    <Image
                       src={session.user.avatar}
                       alt={session.user.name}
                       className="w-10 h-10 rounded-full"
+                      width={40}
+                      height={40}
                     />
                     <div className="flex-1">
                       <div className="font-medium">{session.user.name}</div>

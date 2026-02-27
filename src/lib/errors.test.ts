@@ -2,14 +2,12 @@
  * 错误处理模块测试
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   AuthError,
   NetworkError,
   RateLimitError,
   RepositoryError,
-  ParseError,
-  PermissionError,
   GuestModeError,
   classifyError,
   getErrorMessage,

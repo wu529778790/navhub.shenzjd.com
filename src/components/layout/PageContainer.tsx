@@ -15,8 +15,6 @@ interface PageContainerProps {
 
 export function PageContainer({
   children,
-  title,
-  description,
   action,
   className = "",
 }: PageContainerProps) {

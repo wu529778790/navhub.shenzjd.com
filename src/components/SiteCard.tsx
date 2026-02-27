@@ -17,7 +17,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -25,7 +24,6 @@ import {
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
@@ -37,7 +35,6 @@ interface SiteCardProps {
   url: string;
   favicon?: string;
   categoryId: string;
-  index: number;
   onSiteChange?: () => void;
   view?: 'grid' | 'list';
 }
@@ -48,7 +45,6 @@ export function SiteCard({
   url,
   favicon = "",
   categoryId,
-  index,
   onSiteChange,
   view = 'grid',
 }: SiteCardProps) {

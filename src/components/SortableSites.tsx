@@ -105,13 +105,11 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
     newSites.splice(newIndex, 0, removed);
 
     // 更新排序索引
-    newSites.forEach((site, index) => {
-      site.sort = index;
-    });
+    const sortedSites = newSites.map((site, index) => ({ ...site, sort: index }));
 
     // 更新分类数据
     const newCategories = allCategories.map((c) =>
-      c.id === category.id ? { ...c, sites: newSites } : c
+      c.id === category.id ? { ...c, sites: sortedSites } : c
     );
 
     await updateSites(newCategories);
@@ -139,7 +137,6 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
                   url={site.url}
                   favicon={site.favicon}
                   categoryId={category.id}
-                  index={category.sites.findIndex((s) => s.id === site.id)}
                   onSiteChange={onSiteChange}
                   view="grid"
                 />
@@ -182,7 +179,6 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
                 url={site.url}
                 favicon={site.favicon}
                 categoryId={category.id}
-                index={category.sites.findIndex((s) => s.id === site.id)}
                 onSiteChange={onSiteChange}
                 view="list"
               />

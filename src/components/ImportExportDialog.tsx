@@ -23,7 +23,7 @@ import {
   readFile,
 } from "@/lib/utils/import-export";
 import { loadFromLocalStorage } from "@/lib/storage/local-storage";
-import { Download, Upload, FileJson, FileText, BookOpen, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Download, Upload, FileJson, FileText, BookOpen, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 
 interface ImportExportDialogProps {
