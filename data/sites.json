@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772186116639,
+  "lastModified": 1772186127622,
   "categories": [
     {
       "id": "default",
@@ -426,6 +426,12 @@
           "title": "Excalidraw",
           "favicon": "https://icons.duckduckgo.com/ip3/excalidraw.com.ico",
           "url": "https://excalidraw.com/"
+        },
+        {
+          "id": "1772186127622",
+          "title": "Tools",
+          "favicon": "https://icons.duckduckgo.com/ip3/tools.pdf24.org.ico",
+          "url": "https://tools.pdf24.org/zh/pdf-to-word"
         }
       ]
     }
