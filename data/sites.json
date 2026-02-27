@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772171118322,
+  "lastModified": 1772184428201,
   "categories": [
     {
       "id": "default",
@@ -133,7 +133,7 @@
           "url": "https://claudemarketplaces.com/"
         },
         {
-          "id": "1772171118322",
+          "id": "1772184152559",
           "title": "The Agent Skills Directory",
           "favicon": "https://skills.sh/favicon.ico?favicon.0b3bf435.ico?dpl=dpl_7pE2jbo6iMJz9ZnJtqNTmTUubgyp",
           "url": "https://skills.sh/"
@@ -189,7 +189,20 @@
       "id": "cat_1767701405774",
       "name": "政府",
       "sort": 5,
-      "sites": []
+      "sites": [
+        {
+          "id": "1772184373674",
+          "title": "安居房",
+          "url": "https://zjj.sz.gov.cn/zfxx/ggfw/index.html",
+          "favicon": ""
+        },
+        {
+          "id": "1772184428201",
+          "title": "人才房",
+          "favicon": "",
+          "url": "https://zjj.sz.gov.cn/zfxx/rczfsq/index.html#/dist/home"
+        }
+      ]
     }
   ]
 }
