@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185947820,
+  "lastModified": 1772185971390,
   "categories": [
     {
       "id": "default",
@@ -292,6 +292,12 @@
           "title": "齐心导航",
           "favicon": "https://icons.duckduckgo.com/ip3/nav.qixinpro.com.ico",
           "url": "https://nav.qixinpro.com/"
+        },
+        {
+          "id": "1772185971390",
+          "title": "超能搜",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.chaonengsou.com.ico",
+          "url": "https://www.chaonengsou.com/"
         }
       ]
     },
