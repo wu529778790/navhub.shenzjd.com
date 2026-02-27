@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184732516,
+  "lastModified": 1772184779930,
   "categories": [
     {
       "id": "default",
@@ -201,6 +201,12 @@
           "title": "天然气",
           "favicon": "https://icons.duckduckgo.com/ip3/service.szgas.com.cn.ico",
           "url": "https://service.szgas.com.cn/"
+        },
+        {
+          "id": "1772184779930",
+          "title": "小汽车摇号",
+          "favicon": "https://icons.duckduckgo.com/ip3/xqctk.jtys.sz.gov.cn.ico",
+          "url": "https://xqctk.jtys.sz.gov.cn/"
         }
       ]
     }
