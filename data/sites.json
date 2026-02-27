@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185763321,
+  "lastModified": 1772185770841,
   "categories": [
     {
       "id": "default",
@@ -366,7 +366,14 @@
       "id": "cat_1772185763321",
       "name": "工具",
       "sort": 8,
-      "sites": []
+      "sites": [
+        {
+          "id": "1772185770841",
+          "title": "Devtool",
+          "favicon": "https://icons.duckduckgo.com/ip3/devtool.tech.ico",
+          "url": "https://devtool.tech/"
+        }
+      ]
     }
   ]
 }
