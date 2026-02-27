@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185464505,
+  "lastModified": 1772185512289,
   "categories": [
     {
       "id": "default",
@@ -323,6 +323,12 @@
           "title": "Tgdriver",
           "favicon": "https://icons.duckduckgo.com/ip3/tgdriver.com.ico",
           "url": "https://tgdriver.com/"
+        },
+        {
+          "id": "1772185512289",
+          "title": "Mfsn",
+          "favicon": "https://icons.duckduckgo.com/ip3/mfsn.cc.ico",
+          "url": "https://mfsn.cc/"
         }
       ]
     }
