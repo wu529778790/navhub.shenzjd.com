@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184812083,
+  "lastModified": 1772184838380,
   "categories": [
     {
       "id": "default",
@@ -219,6 +219,12 @@
           "title": "社保局",
           "favicon": "https://icons.duckduckgo.com/ip3/sipub.sz.gov.cn.ico",
           "url": "https://sipub.sz.gov.cn/hspms/logonDialog.jsp"
+        },
+        {
+          "id": "1772184838380",
+          "title": "学位锁定查询",
+          "favicon": "https://icons.duckduckgo.com/ip3/zs.baoan.edu.cn.ico",
+          "url": "https://zs.baoan.edu.cn/visitbagbxyxqfcx"
         }
       ]
     }
