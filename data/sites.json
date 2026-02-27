@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772186204085,
+  "lastModified": 1772186247055,
   "categories": [
     {
       "id": "default",
@@ -438,6 +438,12 @@
           "title": "Aliso",
           "favicon": "https://icons.duckduckgo.com/ip3/aliso.cc.ico",
           "url": "https://aliso.cc/"
+        },
+        {
+          "id": "1772186247055",
+          "title": "MIUI ROM",
+          "favicon": "https://icons.duckduckgo.com/ip3/hyperos.fans.ico",
+          "url": "https://hyperos.fans/"
         }
       ]
     },
