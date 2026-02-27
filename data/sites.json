@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184152559,
+  "lastModified": 1772184373674,
   "categories": [
     {
       "id": "default",
@@ -189,7 +189,14 @@
       "id": "cat_1767701405774",
       "name": "政府",
       "sort": 5,
-      "sites": []
+      "sites": [
+        {
+          "id": "1772184373674",
+          "title": "首页 - 广东政务服务网",
+          "favicon": "",
+          "url": "https://zjj.sz.gov.cn/zfxx/ggfw/index.html"
+        }
+      ]
     }
   ]
 }
