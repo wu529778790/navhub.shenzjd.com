@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185784137,
+  "lastModified": 1772185793774,
   "categories": [
     {
       "id": "default",
@@ -378,6 +378,12 @@
           "title": "Tools",
           "favicon": "https://icons.duckduckgo.com/ip3/tools.fun.ico",
           "url": "https://tools.fun/"
+        },
+        {
+          "id": "1772185793774",
+          "title": "Tool",
+          "favicon": "https://icons.duckduckgo.com/ip3/tool.browser.qq.com.ico",
+          "url": "https://tool.browser.qq.com/"
         }
       ]
     }
