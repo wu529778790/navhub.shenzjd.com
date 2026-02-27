@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772187624947,
+  "lastModified": 1772187626963,
   "categories": [
     {
       "id": "default",
@@ -9,34 +9,46 @@
       "sort": 0,
       "sites": [
         {
+          "id": "1772187619134",
+          "title": "资源共享频道",
+          "favicon": "https://wsrv.nl/?w=64&h=64&fit=cover&mask=circle&url=ssl:cdn5.telesco.pe/file/JlnSTvdJlNt2lbJgVKPgPRLh7vuuM7MxQgg_I0XCP5GuRwmXSpG0L-w3dH_80r9TgyoRcuufjWV-ygy_MtL6Q2yInSYBrvFYH-GzyuGvkcEU8cdVEVplHHcww4TwcLxwykLPcpi1JFuIltwEcbzk4q1BxVmXQMRCSTWlQGXNwT0Bc60JJQXXJFiREtHRnPsl5ZD6_eCBaMfL4ifXegb6lZztI0u7hO5DcL-qNqnINDqE0V2u1iRux8ALHUKlhXO3kAmwgSd1cLwvUBguaeovENgA6hK0xRFmX7ebeZqokpAsCx-vmtT9-k7CoI6562Zs4MuBBcHgkFpnun0LXp7piw.jpg",
+          "url": "https://shenzjd.com/",
+          "sort": 0
+        },
+        {
           "id": "1767186266401",
           "title": "云盘 alist",
           "url": "https://alist.shenzjd.com/",
-          "favicon": "https://blog.shenzjd.com/img/logo.png"
+          "favicon": "https://blog.shenzjd.com/img/logo.png",
+          "sort": 1
         },
         {
           "id": "1767186154553",
           "title": "博客",
           "url": "https://blog.shenzjd.com/",
-          "favicon": "https://blog.shenzjd.com/img/favicon.ico"
+          "favicon": "https://blog.shenzjd.com/img/favicon.ico",
+          "sort": 2
         },
         {
           "id": "1767179808902",
           "title": "PanHub",
           "url": "https://panhub.shenzjd.com/",
-          "favicon": "https://panhub.shenzjd.com/favicon.ico"
+          "favicon": "https://panhub.shenzjd.com/favicon.ico",
+          "sort": 3
         },
         {
           "id": "1767186305853",
           "title": "newshub",
           "url": "https://newshub.shenzjd.com/",
-          "favicon": "https://newshub.shenzjd.com/favicon.ico"
+          "favicon": "https://newshub.shenzjd.com/favicon.ico",
+          "sort": 4
         },
         {
           "id": "1767186377033",
           "title": "IT Tools",
           "url": "https://it-tools.shenzjd.com/",
-          "favicon": "https://it-tools.shenzjd.com/apple-touch-icon.png"
+          "favicon": "https://it-tools.shenzjd.com/apple-touch-icon.png",
+          "sort": 5
         },
         {
           "id": "1767186392155",
@@ -51,12 +63,6 @@
           "favicon": "https://github.com/fluidicon.png",
           "url": "https://github.com/wu529778790",
           "sort": 7
-        },
-        {
-          "id": "1772187619134",
-          "title": "资源共享频道",
-          "favicon": "https://wsrv.nl/?w=64&h=64&fit=cover&mask=circle&url=ssl:cdn5.telesco.pe/file/JlnSTvdJlNt2lbJgVKPgPRLh7vuuM7MxQgg_I0XCP5GuRwmXSpG0L-w3dH_80r9TgyoRcuufjWV-ygy_MtL6Q2yInSYBrvFYH-GzyuGvkcEU8cdVEVplHHcww4TwcLxwykLPcpi1JFuIltwEcbzk4q1BxVmXQMRCSTWlQGXNwT0Bc60JJQXXJFiREtHRnPsl5ZD6_eCBaMfL4ifXegb6lZztI0u7hO5DcL-qNqnINDqE0V2u1iRux8ALHUKlhXO3kAmwgSd1cLwvUBguaeovENgA6hK0xRFmX7ebeZqokpAsCx-vmtT9-k7CoI6562Zs4MuBBcHgkFpnun0LXp7piw.jpg",
-          "url": "https://shenzjd.com/"
         }
       ]
     },
