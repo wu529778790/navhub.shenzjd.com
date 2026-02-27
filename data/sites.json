@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185157268,
+  "lastModified": 1772185201590,
   "categories": [
     {
       "id": "default",
@@ -262,6 +262,12 @@
           "title": "电子书导航Giffox",
           "favicon": "https://icons.duckduckgo.com/ip3/www.giffox.com.ico",
           "url": "https://www.giffox.com/"
+        },
+        {
+          "id": "1772185201590",
+          "title": "小众技术资源",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.xiaozhongjishu.com.ico",
+          "url": "https://www.xiaozhongjishu.com/"
         }
       ]
     }
