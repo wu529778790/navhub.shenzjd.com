@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185550989,
+  "lastModified": 1772185632271,
   "categories": [
     {
       "id": "default",
@@ -347,6 +347,12 @@
           "title": "Freedidi",
           "favicon": "https://icons.duckduckgo.com/ip3/www.freedidi.com.ico",
           "url": "https://www.freedidi.com/"
+        },
+        {
+          "id": "1772185632271",
+          "title": "Mojie",
+          "favicon": "https://icons.duckduckgo.com/ip3/mojie.app.ico",
+          "url": "https://mojie.app/register?aff=o5bxlJPa"
         }
       ]
     }
