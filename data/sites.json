@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185072361,
+  "lastModified": 1772185106012,
   "categories": [
     {
       "id": "default",
@@ -250,6 +250,12 @@
           "title": "虫部落",
           "favicon": "https://icons.duckduckgo.com/ip3/search.chongbuluo.com.ico",
           "url": "https://search.chongbuluo.com/"
+        },
+        {
+          "id": "1772185106012",
+          "title": "大数据导航",
+          "favicon": "https://icons.duckduckgo.com/ip3/hao.199it.com.ico",
+          "url": "https://hao.199it.com/"
         }
       ]
     }
