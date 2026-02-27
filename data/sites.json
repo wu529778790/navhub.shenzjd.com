@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772186009969,
+  "lastModified": 1772186100602,
   "categories": [
     {
       "id": "default",
@@ -414,6 +414,12 @@
           "title": "小白盘",
           "favicon": "https://icons.duckduckgo.com/ip3/www.xiaobaipan.com.ico",
           "url": "https://www.xiaobaipan.com/"
+        },
+        {
+          "id": "1772186100602",
+          "title": "Toolfk",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.toolfk.com.ico",
+          "url": "https://www.toolfk.com/zh-cn/"
         }
       ]
     }
