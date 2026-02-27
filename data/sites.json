@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184978942,
+  "lastModified": 1772184995996,
   "categories": [
     {
       "id": "default",
@@ -238,7 +238,14 @@
       "id": "cat_1772184978941",
       "name": "导航",
       "sort": 6,
-      "sites": []
+      "sites": [
+        {
+          "id": "1772184995996",
+          "title": "Jubt11",
+          "favicon": "https://icons.duckduckgo.com/ip3/jubt11.xyz.ico",
+          "url": "https://jubt11.xyz/cn/"
+        }
+      ]
     }
   ]
 }
