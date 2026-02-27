@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185902604,
+  "lastModified": 1772185947820,
   "categories": [
     {
       "id": "default",
@@ -396,6 +396,12 @@
           "title": "爱资料工具",
           "favicon": "https://icons.duckduckgo.com/ip3/www.toolnb.com.ico",
           "url": "https://www.toolnb.com/"
+        },
+        {
+          "id": "1772185947820",
+          "title": "山炮工具箱",
+          "favicon": "https://icons.duckduckgo.com/ip3/tool.wpjam.com.ico",
+          "url": "https://tool.wpjam.com/"
         }
       ]
     }
