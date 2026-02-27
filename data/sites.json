@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772171118322,
+  "lastModified": 1772184141127,
   "categories": [
     {
       "id": "default",
@@ -131,12 +131,6 @@
           "title": "Claude Code Plugin Marketplace | AI Tools & Extensions",
           "favicon": "https://claudemarketplaces.com/favicon/apple-touch-icon.png",
           "url": "https://claudemarketplaces.com/"
-        },
-        {
-          "id": "1772171118322",
-          "title": "The Agent Skills Directory",
-          "favicon": "https://skills.sh/favicon.ico?favicon.0b3bf435.ico?dpl=dpl_7pE2jbo6iMJz9ZnJtqNTmTUubgyp",
-          "url": "https://skills.sh/"
         }
       ]
     },
