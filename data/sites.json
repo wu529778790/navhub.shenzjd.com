@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185281611,
+  "lastModified": 1772185332611,
   "categories": [
     {
       "id": "default",
@@ -280,6 +280,12 @@
           "title": "Aixuanfeng",
           "favicon": "https://icons.duckduckgo.com/ip3/www.aixuanfeng.com.ico",
           "url": "https://www.aixuanfeng.com/"
+        },
+        {
+          "id": "1772185332610",
+          "title": "Noisedh",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.noisedh.link.ico",
+          "url": "https://www.noisedh.link/"
         }
       ]
     }
