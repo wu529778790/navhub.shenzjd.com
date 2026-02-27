@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1767701405774,
+  "lastModified": 1772171120722,
   "categories": [
     {
       "id": "default",
@@ -115,22 +115,32 @@
       "sort": 2,
       "sites": [
         {
+          "id": "1772171118322",
+          "title": "The Agent Skills Directory",
+          "favicon": "https://skills.sh/favicon.ico?favicon.0b3bf435.ico?dpl=dpl_7pE2jbo6iMJz9ZnJtqNTmTUubgyp",
+          "url": "https://skills.sh/",
+          "sort": 0
+        },
+        {
           "id": "1767669627935",
           "title": "Agent Skills 市场 - Claude、Codex 和 ChatGPT Skills | SkillsMP",
           "favicon": "https://skillsmp.com/apple-touch-icon.png",
-          "url": "https://skillsmp.com/zh"
+          "url": "https://skillsmp.com/zh",
+          "sort": 1
         },
         {
           "id": "1767669681064",
           "title": "Claude Code Templates - Supercharge Your AI Development with Anthropic Claude",
           "favicon": "https://www.aitmpl.com/static/favicon/android-chrome-512x512.png",
-          "url": "https://www.aitmpl.com/skills"
+          "url": "https://www.aitmpl.com/skills",
+          "sort": 2
         },
         {
           "id": "1767669720431",
           "title": "Claude Code Plugin Marketplace | AI Tools & Extensions",
           "favicon": "https://claudemarketplaces.com/favicon/apple-touch-icon.png",
-          "url": "https://claudemarketplaces.com/"
+          "url": "https://claudemarketplaces.com/",
+          "sort": 3
         }
       ]
     },
