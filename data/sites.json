@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772187580347,
+  "lastModified": 1772187602213,
   "categories": [
     {
       "id": "default",
@@ -444,6 +444,12 @@
           "title": "MIUI ROM",
           "favicon": "https://icons.duckduckgo.com/ip3/hyperos.fans.ico",
           "url": "https://hyperos.fans/"
+        },
+        {
+          "id": "1772187602213",
+          "title": "帮小忙，腾讯QQ浏览器在线工具箱平台",
+          "favicon": "https://tool.browser.qq.com/favicon.ico",
+          "url": "https://tool.browser.qq.com/"
         }
       ]
     },
