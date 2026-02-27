@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185659508,
+  "lastModified": 1772185763321,
   "categories": [
     {
       "id": "default",
@@ -361,6 +361,12 @@
           "url": "https://xn--4gq62f52gdss.top/#/register?code=di4JP3zb"
         }
       ]
+    },
+    {
+      "id": "cat_1772185763321",
+      "name": "工具",
+      "sort": 8,
+      "sites": []
     }
   ]
 }
