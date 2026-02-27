@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185361314,
+  "lastModified": 1772185403393,
   "categories": [
     {
       "id": "default",
@@ -294,6 +294,12 @@
           "url": "https://nav.qixinpro.com/"
         }
       ]
+    },
+    {
+      "id": "cat_1772185403393",
+      "name": "富强",
+      "sort": 7,
+      "sites": []
     }
   ]
 }
