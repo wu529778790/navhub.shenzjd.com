@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772187482218,
+  "lastModified": 1772187487848,
   "categories": [
     {
       "id": "default",
@@ -453,40 +453,46 @@
       "sort": 9,
       "sites": [
         {
-          "id": "1772186204085",
-          "title": "微软独立博客",
-          "favicon": "https://icons.duckduckgo.com/ip3/windiscover.com.ico",
-          "url": "https://windiscover.com/"
-        },
-        {
-          "id": "1772187389433",
-          "title": "AlloyTeam|腾讯全端 AlloyTeam 团队",
-          "favicon": "http://www.alloyteam.com/favicon.ico",
-          "url": "http://www.alloyteam.com/"
-        },
-        {
-          "id": "1772187411165",
-          "title": "老D博客",
-          "favicon": "https://laod.cn/wp-content/uploads/2021/03/favicon.ico",
-          "url": "https://laod.cn/"
-        },
-        {
           "id": "1772187420932",
           "title": "阮一峰的网络日志",
           "favicon": "https://www.ruanyifeng.com/favicon.ico",
-          "url": "https://www.ruanyifeng.com/blog/"
-        },
-        {
-          "id": "1772187448814",
-          "title": "山月的琐碎博客记录 | 山月行",
-          "favicon": "https://shanyue.tech/astropaper-og.jpg",
-          "url": "https://shanyue.tech/"
+          "url": "https://www.ruanyifeng.com/blog/",
+          "sort": 0
         },
         {
           "id": "1772187482218",
           "title": "首页 - 廖雪峰的官方网站",
           "favicon": "https://liaoxuefeng.com/favicon.ico",
-          "url": "https://liaoxuefeng.com/index.html?src=redirect"
+          "url": "https://liaoxuefeng.com/index.html?src=redirect",
+          "sort": 1
+        },
+        {
+          "id": "1772186204085",
+          "title": "微软独立博客",
+          "favicon": "https://icons.duckduckgo.com/ip3/windiscover.com.ico",
+          "url": "https://windiscover.com/",
+          "sort": 2
+        },
+        {
+          "id": "1772187389433",
+          "title": "AlloyTeam|腾讯全端 AlloyTeam 团队",
+          "favicon": "http://www.alloyteam.com/favicon.ico",
+          "url": "http://www.alloyteam.com/",
+          "sort": 3
+        },
+        {
+          "id": "1772187411165",
+          "title": "老D博客",
+          "favicon": "https://laod.cn/wp-content/uploads/2021/03/favicon.ico",
+          "url": "https://laod.cn/",
+          "sort": 4
+        },
+        {
+          "id": "1772187448814",
+          "title": "山月的琐碎博客记录 | 山月行",
+          "favicon": "https://shanyue.tech/astropaper-og.jpg",
+          "url": "https://shanyue.tech/",
+          "sort": 5
         }
       ]
     }
