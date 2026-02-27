@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184995996,
+  "lastModified": 1772185072361,
   "categories": [
     {
       "id": "default",
@@ -244,6 +244,12 @@
           "title": "Jubt11",
           "favicon": "https://icons.duckduckgo.com/ip3/jubt11.xyz.ico",
           "url": "https://jubt11.xyz/cn/"
+        },
+        {
+          "id": "1772185072361",
+          "title": "虫部落",
+          "favicon": "https://icons.duckduckgo.com/ip3/search.chongbuluo.com.ico",
+          "url": "https://search.chongbuluo.com/"
         }
       ]
     }
