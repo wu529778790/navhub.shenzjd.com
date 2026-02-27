@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185403393,
+  "lastModified": 1772185420160,
   "categories": [
     {
       "id": "default",
@@ -299,7 +299,14 @@
       "id": "cat_1772185403393",
       "name": "富强",
       "sort": 7,
-      "sites": []
+      "sites": [
+        {
+          "id": "1772185420159",
+          "title": "X",
+          "favicon": "https://icons.duckduckgo.com/ip3/x.com.ico",
+          "url": "https://x.com/home"
+        }
+      ]
     }
   ]
 }
