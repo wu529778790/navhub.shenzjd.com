@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185430405,
+  "lastModified": 1772185444205,
   "categories": [
     {
       "id": "default",
@@ -311,6 +311,12 @@
           "title": "Youtube",
           "favicon": "https://icons.duckduckgo.com/ip3/www.youtube.com.ico",
           "url": "https://www.youtube.com/"
+        },
+        {
+          "id": "1772185444205",
+          "title": "10beasts",
+          "favicon": "https://icons.duckduckgo.com/ip3/10beasts.net.ico",
+          "url": "https://10beasts.net/recommend/"
         }
       ]
     }
