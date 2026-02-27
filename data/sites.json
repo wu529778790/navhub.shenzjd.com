@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184729247,
+  "lastModified": 1772184732516,
   "categories": [
     {
       "id": "default",
@@ -190,12 +190,6 @@
       "name": "政府",
       "sort": 5,
       "sites": [
-        {
-          "id": "1772184428201",
-          "title": "人才房",
-          "favicon": "",
-          "url": "https://zjj.sz.gov.cn/zfxx/rczfsq/index.html#/dist/home"
-        },
         {
           "id": "1772184682431",
           "title": "共有产权房",
