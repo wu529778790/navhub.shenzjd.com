@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185793774,
+  "lastModified": 1772185840387,
   "categories": [
     {
       "id": "default",
@@ -384,6 +384,12 @@
           "title": "Tool",
           "favicon": "https://icons.duckduckgo.com/ip3/tool.browser.qq.com.ico",
           "url": "https://tool.browser.qq.com/"
+        },
+        {
+          "id": "1772185840387",
+          "title": "网页配色",
+          "favicon": "https://icons.duckduckgo.com/ip3/hao.uisdc.com.ico",
+          "url": "https://hao.uisdc.com/color/"
         }
       ]
     }
