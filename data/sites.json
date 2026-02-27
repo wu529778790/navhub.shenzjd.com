@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185233256,
+  "lastModified": 1772185281611,
   "categories": [
     {
       "id": "default",
@@ -274,6 +274,12 @@
           "title": "小高导航",
           "favicon": "https://icons.duckduckgo.com/ip3/www.dhw22.com.ico",
           "url": "https://www.dhw22.com/"
+        },
+        {
+          "id": "1772185281611",
+          "title": "Aixuanfeng",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.aixuanfeng.com.ico",
+          "url": "https://www.aixuanfeng.com/"
         }
       ]
     }
