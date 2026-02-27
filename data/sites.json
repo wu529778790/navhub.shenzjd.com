@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184797430,
+  "lastModified": 1772184812083,
   "categories": [
     {
       "id": "default",
@@ -213,6 +213,12 @@
           "title": "家在深圳",
           "favicon": "https://icons.duckduckgo.com/ip3/bbs.szhome.com.ico",
           "url": "https://bbs.szhome.com/500070.html"
+        },
+        {
+          "id": "1772184812083",
+          "title": "社保局",
+          "favicon": "https://icons.duckduckgo.com/ip3/sipub.sz.gov.cn.ico",
+          "url": "https://sipub.sz.gov.cn/hspms/logonDialog.jsp"
         }
       ]
     }
