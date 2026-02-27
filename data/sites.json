@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772187420932,
+  "lastModified": 1772187448814,
   "categories": [
     {
       "id": "default",
@@ -475,6 +475,12 @@
           "title": "阮一峰的网络日志",
           "favicon": "https://www.ruanyifeng.com/favicon.ico",
           "url": "https://www.ruanyifeng.com/blog/"
+        },
+        {
+          "id": "1772187448814",
+          "title": "山月的琐碎博客记录 | 山月行",
+          "favicon": "https://shanyue.tech/astropaper-og.jpg",
+          "url": "https://shanyue.tech/"
         }
       ]
     }
