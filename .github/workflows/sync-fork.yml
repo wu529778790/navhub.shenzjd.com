@@ -118,11 +118,15 @@ jobs:
         run: |
           echo "💡 提示：如果使用 Docker 部署，请重新构建镜像"
           echo ""
-          echo "方法 1: 使用 Docker Hub"
-          echo "  docker pull wu529778790/navhub:main"
+          echo "方法 1: 使用 Docker Hub（镜像名与项目名一致）"
+          echo "  docker pull <dockerhub-username>/${{ github.event.repository.name }}:main"
           echo "  docker-compose up -d"
           echo ""
-          echo "方法 2: 重新构建"
+          echo "方法 2: 使用 GHCR"
+          echo "  docker pull ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:main"
+          echo "  docker-compose up -d"
+          echo ""
+          echo "方法 3: 重新构建"
           echo "  docker-compose build --no-cache"
           echo "  docker-compose up -d"
 

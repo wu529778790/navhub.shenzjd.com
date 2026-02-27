@@ -22,8 +22,8 @@ docker-compose logs -f navhub
 ### 2. 使用 Docker 直接运行
 
 ```bash
-# 从 Docker Hub 拉取镜像
-docker pull wu529778790/navhub:main
+# 从 Docker Hub 拉取镜像（<dockerhub-username>/<project-name>）
+docker pull <dockerhub-username>/navhub.shenzjd.com:main
 
 # 运行容器
 docker run -d \
@@ -33,14 +33,14 @@ docker run -d \
   -e NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id \
   -v navhub_data:/app/data \
   --restart unless-stopped \
-  wu529778790/navhub:main
+  <dockerhub-username>/navhub.shenzjd.com:main
 ```
 
 ### 3. 从 GitHub Container Registry 拉取
 
 ```bash
 # 从 GHCR 拉取镜像
-docker pull ghcr.io/wu529778790/navhub:main
+docker pull ghcr.io/<github-owner>/navhub.shenzjd.com:main
 
 # 运行容器
 docker run -d \
@@ -50,22 +50,27 @@ docker run -d \
   -e NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id \
   -v navhub_data:/app/data \
   --restart unless-stopped \
-  ghcr.io/wu529778790/navhub:main
+  ghcr.io/<github-owner>/navhub.shenzjd.com:main
 ```
 
 ## 镜像仓库
 
 本项目自动构建并发布到以下镜像仓库：
 
+命名规则（与 CI 一致）：
+- Docker Hub: `<DOCKER_HUB_USERNAME>/<project-name>`
+- GHCR: `ghcr.io/<repository-owner>/<project-name>`
+- `project-name` 自动取 GitHub 仓库名（`github.event.repository.name`）
+
 ### Docker Hub
-- **仓库**: `wu529778790/navhub`
+- **仓库**: `<dockerhub-username>/navhub.shenzjd.com`
 - **标签**:
   - `main` - 最新开发版本
   - `v1.0.0` - 特定版本
   - `sha-abc123` - SHA 提交哈希
 
 ### GitHub Container Registry (GHCR)
-- **仓库**: `ghcr.io/wu529778790/navhub`
+- **仓库**: `ghcr.io/<github-owner>/navhub.shenzjd.com`
 - **标签**: 同上
 
 ## 环境变量
@@ -123,7 +128,7 @@ docker stop navhub
 docker rm navhub
 
 # 拉取最新镜像
-docker pull wu529778790/navhub:main
+docker pull <dockerhub-username>/navhub.shenzjd.com:main
 
 # 重新运行
 docker run -d ... (同上)

@@ -1,22 +1,22 @@
-# NavHub - 个人导航网站
+# navhub.shenzjd.com - 个人导航网站
 
 一个支持**双向同步**的个人导航网站，数据存储在 GitHub，支持离线使用。
 
 > 每天少找 10 分钟链接，一年多出 60+ 小时有效时间。
 >
-> **NavHub** 专为高频上网工作流设计：
+> **navhub.shenzjd.com** 专为高频上网工作流设计：
 > - 入口统一：告别“收藏夹 + 标签页 + 聊天记录”三地找链接
 > - 上手即用：登录 GitHub 后即可开启双向同步
 > - 长期可用：数据在你自己仓库，换设备、换环境都不丢资产
 
-## 🚀 为什么选择 NavHub
+## 🚀 为什么选择 navhub.shenzjd.com
 
 - **直接降本增效**：减少重复搜索，提升任务切换速度
 - **降低迁移风险**：不依赖封闭平台，数据结构清晰可导出
 - **提升留存体验**：离线可用 + 自动同步，跨设备体验稳定
 - **快速完成激活**：配置简单，首次使用即可形成价值感
 
-如果你需要一个“今天就能提效、长期还能沉淀数字资产”的导航方案，NavHub 就是为此而生。
+如果你需要一个“今天就能提效、长期还能沉淀数字资产”的导航方案，`navhub.shenzjd.com` 就是为此而生。
 
 ## ✨ 核心功能
 
@@ -60,13 +60,13 @@ pnpm dev
 ### 快速运行
 
 ```bash
-# 从 Docker Hub 拉取
-docker pull wu529778790/navhub:main
+# 从 Docker Hub 拉取（<dockerhub-username>/<project-name>）
+docker pull <dockerhub-username>/navhub.shenzjd.com:main
 
 # 运行
 docker run -d -p 3000:3000 \
   -e NEXT_PUBLIC_GITHUB_CLIENT_ID=your_id \
-  wu529778790/navhub:main
+  <dockerhub-username>/navhub.shenzjd.com:main
 ```
 
 ### 使用 Docker Compose
@@ -137,6 +137,7 @@ your_username/navhub.shenzjd.com
 ## 🚀 CI/CD
 
 自动部署到 Docker Hub 和 GHCR，并通过 SSH 自动更新服务器。
+镜像名自动使用仓库名（`github.event.repository.name`），无需手动维护。
 
 详细配置：[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 

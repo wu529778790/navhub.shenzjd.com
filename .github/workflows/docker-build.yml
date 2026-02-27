@@ -7,13 +7,13 @@ on:
       - 'v*'
   workflow_dispatch:
 
-env:
-  REGISTRY_DOCKER_HUB: wu529778790/navhub
-  REGISTRY_GHCR: ghcr.io/wu529778790/navhub
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      PROJECT_NAME: ${{ github.event.repository.name }}
+      REGISTRY_DOCKER_HUB: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}
+      REGISTRY_GHCR: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
     permissions:
       contents: read
       packages: write
@@ -67,6 +67,8 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    env:
+      REGISTRY_DOCKER_HUB: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}
 
     steps:
       - name: Deploy to server via SSH

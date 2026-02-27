@@ -186,7 +186,7 @@ cd /opt/navhub
 git pull origin main
 
 # 3. 拉取最新镜像
-docker pull wu529778790/navhub:main
+docker pull <dockerhub-username>/navhub.shenzjd.com:main
 
 # 4. 停止旧服务
 docker-compose down
@@ -211,10 +211,10 @@ docker-compose ps
 cd /opt/navhub
 
 # 拉取之前的镜像版本
-docker pull wu529778790/navhub:sha-旧版本哈希
+docker pull <dockerhub-username>/navhub.shenzjd.com:sha-旧版本哈希
 
 # 修改 docker-compose.yml 使用特定版本
-# image: wu529778790/navhub:sha-旧版本哈希
+# image: <dockerhub-username>/navhub.shenzjd.com:sha-旧版本哈希
 
 # 重启服务
 docker-compose down && docker-compose up -d
@@ -282,6 +282,12 @@ docker stats
   run: |
     ssh user@prod-server "cd /opt/navhub && ..."
 ```
+
+## 镜像命名规则（与 CI 一致）
+
+- Docker Hub 镜像名：`${DOCKER_HUB_USERNAME}/${{ github.event.repository.name }}`
+- GHCR 镜像名：`ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}`
+- 其中 `${{ github.event.repository.name }}` 会自动取当前项目仓库名，无需手动修改。
 
 ### 多服务器部署
 
