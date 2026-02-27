@@ -2,10 +2,27 @@
 
 一个支持**双向同步**的个人导航网站，数据存储在 GitHub，支持离线使用。
 
+> 每天少找 10 分钟链接，一年多出 60+ 小时有效时间。
+>
+> **NavHub** 专为高频上网工作流设计：
+> - 入口统一：告别“收藏夹 + 标签页 + 聊天记录”三地找链接
+> - 上手即用：登录 GitHub 后即可开启双向同步
+> - 长期可用：数据在你自己仓库，换设备、换环境都不丢资产
+
+## 🚀 为什么选择 NavHub
+
+- **直接降本增效**：减少重复搜索，提升任务切换速度
+- **降低迁移风险**：不依赖封闭平台，数据结构清晰可导出
+- **提升留存体验**：离线可用 + 自动同步，跨设备体验稳定
+- **快速完成激活**：配置简单，首次使用即可形成价值感
+
+如果你需要一个“今天就能提效、长期还能沉淀数字资产”的导航方案，NavHub 就是为此而生。
+
 ## ✨ 核心功能
 
 - **🔄 双向同步**：操作立即生效，数据自动同步到 GitHub
 - **🔐 GitHub 集成**：OAuth 登录，自动 Fork 仓库
+- **🛡️ 安全登录态**：Token 仅存于服务端 HttpOnly Cookie，前端不落地明文 Token
 - **📱 离线支持**：无网络时可正常使用，恢复后自动同步
 - **⚡ 即时响应**：所有操作立即反馈，无需等待
 
@@ -63,7 +80,7 @@ docker-compose up -d
 ## 🔄 同步机制
 
 ```
-用户操作 → localStorage (即时) → UI 更新 → 3秒防抖 → GitHub API
+用户操作 → localStorage (即时) → UI 更新 → 3秒防抖 → 内部 API → GitHub API
 ```
 
 **同步方向判断：**
@@ -77,6 +94,12 @@ docker-compose up -d
 1. **访问网站** → 点击登录
 2. **确认 Fork** → 授权 GitHub
 3. **开始使用** → 数据自动同步
+
+## 📣 立即体验
+
+1. 本地启动：`pnpm dev`
+2. GitHub 登录：1 分钟完成授权
+3. 新增你的常用站点：立刻获得可同步、可离线的统一导航入口
 
 ### 状态图标
 
@@ -94,7 +117,13 @@ docker-compose up -d
 - **UI**: Tailwind CSS + shadcn/ui
 - **拖拽**: @dnd-kit
 - **图标**: Lucide React
-- **存储**: localStorage + GitHub API
+- **存储**: localStorage + Next.js API Route + GitHub API
+
+## 🔐 安全说明
+
+- OAuth 回调由服务端写入 `HttpOnly` Cookie（`github_token` / `github_user`）。
+- 浏览器端通过 `/api/auth/session` 获取登录态，不直接接触真实 Token。
+- 同步读写通过 `/api/github/data` 代理完成，避免前端直连 GitHub 携带凭证。
 
 ## 📦 数据存储
 
@@ -139,6 +168,12 @@ pnpm start
 
 # 类型检查
 pnpm type-check
+
+# 代码检查
+pnpm lint
+
+# 单元测试
+pnpm test --run
 
 # 代码格式化
 pnpm format
