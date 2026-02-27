@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772184838380,
+  "lastModified": 1772184875435,
   "categories": [
     {
       "id": "default",
@@ -225,6 +225,12 @@
           "title": "学位锁定查询",
           "favicon": "https://icons.duckduckgo.com/ip3/zs.baoan.edu.cn.ico",
           "url": "https://zs.baoan.edu.cn/visitbagbxyxqfcx"
+        },
+        {
+          "id": "1772184875435",
+          "title": "宝安区义务教育报名",
+          "favicon": "https://icons.duckduckgo.com/ip3/zs.baoan.edu.cn.ico",
+          "url": "https://zs.baoan.edu.cn/"
         }
       ]
     }
