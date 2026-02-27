@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772186127622,
+  "lastModified": 1772186151386,
   "categories": [
     {
       "id": "default",
@@ -432,6 +432,12 @@
           "title": "Tools",
           "favicon": "https://icons.duckduckgo.com/ip3/tools.pdf24.org.ico",
           "url": "https://tools.pdf24.org/zh/pdf-to-word"
+        },
+        {
+          "id": "1772186151386",
+          "title": "Aliso",
+          "favicon": "https://icons.duckduckgo.com/ip3/aliso.cc.ico",
+          "url": "https://aliso.cc/"
         }
       ]
     }
