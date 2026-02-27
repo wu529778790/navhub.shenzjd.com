@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772187411166,
+  "lastModified": 1772187420932,
   "categories": [
     {
       "id": "default",
@@ -469,6 +469,12 @@
           "title": "老D博客",
           "favicon": "https://laod.cn/wp-content/uploads/2021/03/favicon.ico",
           "url": "https://laod.cn/"
+        },
+        {
+          "id": "1772187420932",
+          "title": "阮一峰的网络日志",
+          "favicon": "https://www.ruanyifeng.com/favicon.ico",
+          "url": "https://www.ruanyifeng.com/blog/"
         }
       ]
     }
