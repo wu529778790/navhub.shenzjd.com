@@ -23,7 +23,7 @@ import {
   readFile,
 } from "@/lib/utils/import-export";
 import { loadFromLocalStorage } from "@/lib/storage/local-storage";
-import { Download, Upload, FileJson, FileText, BookOpen, AlertCircle } from "lucide-react";
+import { Download, Upload, FileJson, FileText, BookOpen, AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 
 interface ImportExportDialogProps {
@@ -37,7 +37,6 @@ export function ImportExportDialog({ open, onOpenChange }: ImportExportDialogPro
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
 
-  // 导出为 JSON
   const handleExportJSON = () => {
     try {
       const data = loadFromLocalStorage();
@@ -55,7 +54,6 @@ export function ImportExportDialog({ open, onOpenChange }: ImportExportDialogPro
     }
   };
 
-  // 导出为 OPML
   const handleExportOPML = () => {
     try {
       const data = loadFromLocalStorage();
@@ -73,7 +71,6 @@ export function ImportExportDialog({ open, onOpenChange }: ImportExportDialogPro
     }
   };
 
-  // 从 JSON 导入
   const handleImportJSON = async (file: File) => {
     setIsImporting(true);
     setImportError(null);
@@ -93,7 +90,6 @@ export function ImportExportDialog({ open, onOpenChange }: ImportExportDialogPro
     }
   };
 
-  // 从书签导入
   const handleImportBookmarks = async (file: File) => {
     setIsImporting(true);
     setImportError(null);
@@ -118,51 +114,39 @@ export function ImportExportDialog({ open, onOpenChange }: ImportExportDialogPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>导入/导出数据</DialogTitle>
-          <DialogDescription>备份或恢复你的导航数据</DialogDescription>
+          <DialogTitle className="text-2xl font-bold">导入/导出数据</DialogTitle>
+          <DialogDescription>备份、迁移或恢复你的导航数据</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* 导出部分 */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-sm text-[var(--foreground-secondary)] flex items-center gap-2">
-              <Download className="w-4 h-4" />
+        <div className="space-y-5 py-4">
+          <section className="card space-y-3 p-4">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground-secondary)]">
+              <Download className="h-4 w-4 text-[var(--primary-700)]" />
               导出数据
             </h3>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                onClick={handleExportJSON}
-                variant="outline"
-                className="gap-2"
-                disabled={sites.length === 0}
-              >
-                <FileJson className="w-4 h-4" />
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <Button onClick={handleExportJSON} variant="outline" className="h-11 gap-2" disabled={sites.length === 0}>
+                <FileJson className="h-4 w-4" />
                 JSON 格式
               </Button>
-              <Button
-                onClick={handleExportOPML}
-                variant="outline"
-                className="gap-2"
-                disabled={sites.length === 0}
-              >
-                <FileText className="w-4 h-4" />
+              <Button onClick={handleExportOPML} variant="outline" className="h-11 gap-2" disabled={sites.length === 0}>
+                <FileText className="h-4 w-4" />
                 OPML 格式
               </Button>
             </div>
-          </div>
+          </section>
 
-          {/* 导入部分 */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-sm text-[var(--foreground-secondary)] flex items-center gap-2">
-              <Upload className="w-4 h-4" />
+          <section className="card space-y-3 p-4">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground-secondary)]">
+              <Upload className="h-4 w-4 text-[var(--primary-700)]" />
               导入数据
             </h3>
 
             {importError && (
-              <div className="flex items-start gap-2 p-3 rounded-lg bg-[var(--error)]/10 border border-[var(--error)]/20">
-                <AlertCircle className="w-4 h-4 text-[var(--error)] flex-shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 rounded-[var(--radius-lg)] border border-[var(--error)]/25 bg-[var(--error)]/10 p-3">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--error)]" />
                 <p className="text-sm text-[var(--error)]">{importError}</p>
               </div>
             )}
@@ -181,14 +165,9 @@ export function ImportExportDialog({ open, onOpenChange }: ImportExportDialogPro
                   className="hidden"
                   disabled={isImporting}
                 />
-                <Button
-                  variant="outline"
-                  className="w-full gap-2"
-                  asChild
-                  disabled={isImporting}
-                >
+                <Button variant="outline" className="h-11 w-full justify-start gap-2" asChild disabled={isImporting}>
                   <span>
-                    <FileJson className="w-4 h-4" />
+                    <FileJson className="h-4 w-4" />
                     从 JSON 导入
                   </span>
                 </Button>
@@ -207,14 +186,9 @@ export function ImportExportDialog({ open, onOpenChange }: ImportExportDialogPro
                   className="hidden"
                   disabled={isImporting}
                 />
-                <Button
-                  variant="outline"
-                  className="w-full gap-2"
-                  asChild
-                  disabled={isImporting}
-                >
+                <Button variant="outline" className="h-11 w-full justify-start gap-2" asChild disabled={isImporting}>
                   <span>
-                    <BookOpen className="w-4 h-4" />
+                    <BookOpen className="h-4 w-4" />
                     从浏览器书签导入
                   </span>
                 </Button>
@@ -223,21 +197,16 @@ export function ImportExportDialog({ open, onOpenChange }: ImportExportDialogPro
 
             {isImporting && (
               <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                <div className="w-4 h-4 border-2 border-[var(--primary-600)] border-t-transparent rounded-full animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin text-[var(--primary-600)]" />
                 正在导入...
               </div>
             )}
-          </div>
+          </section>
 
-          {/* 提示信息 */}
-          <div className="p-3 rounded-lg bg-[var(--background-secondary)] border border-[var(--border)] text-xs text-[var(--muted-foreground)]">
-            <p className="font-medium mb-1">提示：</p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>导出数据会包含所有分类和站点</li>
-              <li>导入数据会替换当前所有数据</li>
-              <li>建议在导入前先导出备份</li>
-            </ul>
-          </div>
+          <section className="rounded-[var(--radius-lg)] border border-[var(--warning)]/30 bg-[var(--warning)]/10 p-3 text-xs text-[var(--foreground-secondary)]">
+            <p className="mb-1 font-semibold">提示</p>
+            <p>导出会包含全部分类和站点。导入会替换当前数据，建议先导出备份。</p>
+          </section>
         </div>
       </DialogContent>
     </Dialog>

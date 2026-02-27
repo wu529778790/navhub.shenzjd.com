@@ -306,7 +306,7 @@ export function SiteCard({
               setIsContextMenuOpen(!isContextMenuOpen);
             }
           }}
-          className={cn("site-card cursor-pointer", isContextMenuOpen && "z-[9999]")}
+          className={cn("site-card group cursor-pointer bg-[var(--background-secondary)]/85", isContextMenuOpen && "z-[9999]")}
           title={isGuestMode ? "点击打开链接" : "点击打开链接，按 Enter 显示菜单"}
         >
           {/* 图标 */}
@@ -316,14 +316,14 @@ export function SiteCard({
               src={favicon}
               alt={initialTitle}
               fill
-              imageClassName="object-cover"
+              imageClassName="object-contain p-[1px]"
               fallbackClassName="bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-50)] text-[var(--primary-700)]"
-              iconClassName="w-5 h-5"
+              iconClassName="w-4 h-4"
             />
           </div>
 
           {/* 标题 */}
-          <span className="site-title">{initialTitle}</span>
+          <span className="site-title transition-colors group-hover:text-[var(--primary-700)]">{initialTitle}</span>
 
           {/* 右键菜单 - 仅在非访客模式 */}
           {!isGuestMode && isContextMenuOpen && (
@@ -333,9 +333,9 @@ export function SiteCard({
               aria-label="站点操作菜单"
               className={cn(
                 "absolute top-full mt-2 left-0 z-[9999] w-auto",
-                "bg-[var(--background)]/95 backdrop-blur-xl",
+                "bg-[var(--background-secondary)]/95 backdrop-blur-xl",
                 "border border-[var(--border)] rounded-[var(--radius-xl)]",
-                "shadow-[0_10px_40px_-12px_rgba(0,0,0,0.15)]",
+                "shadow-[0_16px_36px_-14px_rgba(8,41,50,0.35)]",
                 "p-1.5 animate-in fade-in zoom-in-95",
                 "overflow-hidden"
               )}
@@ -345,7 +345,7 @@ export function SiteCard({
                 onClick={handleEditClick}
                 className={cn(
                   "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
-                  "hover:bg-[var(--primary-50)] text-[var(--foreground)]",
+                  "hover:bg-[var(--primary-50)] text-[var(--foreground-secondary)] hover:text-[var(--foreground)]",
                   "text-sm font-medium transition-all active:scale-95",
                   "group relative overflow-hidden whitespace-nowrap cursor-pointer"
                 )}
@@ -484,7 +484,7 @@ export function SiteCard({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
-        className={cn("flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)] transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1 cursor-pointer", isContextMenuOpen && "z-[9999]")}
+        className={cn("relative flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)]/90 transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1 cursor-pointer", isContextMenuOpen && "z-[9999]")}
         title={isGuestMode ? "点击打开链接" : "点击打开链接，右键或长按显示菜单"}
       >
         {/* 图标 */}
@@ -494,7 +494,7 @@ export function SiteCard({
             src={favicon}
             alt={initialTitle}
             fill
-            imageClassName="object-cover"
+            imageClassName="object-contain p-0.5"
             fallbackClassName="bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-50)] text-[var(--primary-700)]"
             iconClassName="w-4 h-4"
           />
@@ -515,9 +515,9 @@ export function SiteCard({
             ref={contextMenuRef}
             className={cn(
               "absolute left-4 top-1/2 -translate-y-1/2 z-[9999] w-auto",
-              "bg-[var(--background)]/95 backdrop-blur-xl",
+              "bg-[var(--background-secondary)]/95 backdrop-blur-xl",
               "border border-[var(--border)] rounded-[var(--radius-xl)]",
-              "shadow-[0_10px_40px_-12px_rgba(0,0,0,0.15)]",
+              "shadow-[0_16px_36px_-14px_rgba(8,41,50,0.35)]",
               "p-1.5 animate-in fade-in zoom-in-95",
               "overflow-hidden"
             )}
@@ -526,7 +526,7 @@ export function SiteCard({
               onClick={handleEditClick}
               className={cn(
                 "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
-                "hover:bg-[var(--primary-50)] text-[var(--foreground)]",
+                "hover:bg-[var(--primary-50)] text-[var(--foreground-secondary)] hover:text-[var(--foreground)]",
                 "text-sm font-medium transition-all active:scale-95",
                 "group relative overflow-hidden whitespace-nowrap cursor-pointer"
               )}

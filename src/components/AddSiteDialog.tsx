@@ -1,5 +1,5 @@
 /**
- * 添加站点对话框 - 现代化玻璃拟态设计
+ * 添加站点对话框 - 分步流程设计
  */
 
 "use client";
@@ -17,7 +17,15 @@ import { parseURL } from "@/lib/services/url-parser";
 import type { Site } from "@/lib/storage/local-storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Clipboard, Link as LinkIcon, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import {
+  Clipboard,
+  Link as LinkIcon,
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+  ArrowLeft,
+  WandSparkles,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FaviconImage } from "@/components/FaviconImage";
 import { urlSchema, escapeHtml } from "@/lib/validation";
@@ -44,16 +52,25 @@ export function AddSiteDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
+  const currentStep = siteInfo ? 2 : 1;
+
+  const resetToUrlStep = () => {
+    setSiteInfo(null);
+    setEditedTitle("");
+    setError("");
+    setShowSuccess(false);
+  };
+
   const handleParse = useCallback(
     async (urlToCheck?: string) => {
       try {
-        const urlToValidate = urlToCheck || link;
+        const urlToValidate = (urlToCheck || link).trim();
         urlSchema.parse(urlToValidate);
+
         setLoading(true);
         setError("");
         setIsSubmitting(false);
 
-        // 使用 URL 解析服务获取网站信息
         const { title, favicon } = await parseURL(urlToValidate);
 
         setSiteInfo({
@@ -63,19 +80,18 @@ export function AddSiteDialog({
           url: urlToValidate,
         });
         setEditedTitle(title);
-        setLoading(false);
         setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 2000);
+        setTimeout(() => setShowSuccess(false), 1600);
       } catch (err) {
-        // 如果发生错误，创建一个基本的siteInfo对象
         setSiteInfo({
           id: Date.now().toString(),
           title: "",
           favicon: "",
-          url: link,
+          url: (urlToCheck || link).trim(),
         });
         setEditedTitle("");
         setError(err instanceof Error ? err.message : "发生未知错误");
+      } finally {
         setLoading(false);
         setIsSubmitting(false);
       }
@@ -94,10 +110,10 @@ export function AddSiteDialog({
           setLink(text);
           handleParse(text);
         } catch {
-          console.log("剪贴板内容不是有效URL");
+          // ignore invalid clipboard content
         }
-      } catch (err) {
-        console.log("无法访问剪贴板:", err);
+      } catch {
+        // clipboard read can fail in unsupported contexts
       }
     };
 
@@ -116,24 +132,40 @@ export function AddSiteDialog({
         url: siteInfo.url,
       });
 
-      // 重置状态
       setLink("");
       setSiteInfo(null);
       setEditedTitle("");
+      setError("");
       onOpenChange?.(false);
-
-      // 调用成功回调函数
       onSuccess?.();
-    } catch (error) {
-      console.error("添加站点失败:", error);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "添加站点失败");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // URL输入阶段组件
+  const renderStepIndicator = () => (
+    <div className="flex items-center gap-2 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--background-secondary)]/75 p-2 text-xs">
+      <div className={cn("flex items-center gap-1.5 rounded-md px-2 py-1", currentStep === 1 ? "bg-[var(--primary-100)] text-[var(--primary-700)]" : "text-[var(--muted-foreground)]")}>
+        <span className="kbd">1</span>
+        <span>输入链接</span>
+      </div>
+      <span className="text-[var(--muted-foreground)]">→</span>
+      <div className={cn("flex items-center gap-1.5 rounded-md px-2 py-1", currentStep === 2 ? "bg-[var(--primary-100)] text-[var(--primary-700)]" : "text-[var(--muted-foreground)]")}>
+        <span className="kbd">2</span>
+        <span>确认信息</span>
+      </div>
+    </div>
+  );
+
   const renderUrlInputSection = () => (
-    <div className="space-y-3">
+    <div className="slide-up space-y-3">
+      <div className="flex items-center gap-2 text-sm font-medium text-[var(--foreground-secondary)]">
+        <WandSparkles className="h-4 w-4 text-[var(--accent-600)]" />
+        粘贴链接后自动解析标题与图标
+      </div>
+
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Input
@@ -142,44 +174,34 @@ export function AddSiteDialog({
             onChange={(e) => setLink(e.target.value)}
             disabled={loading}
             className={cn(
-              "pr-12 h-12 text-base rounded-[var(--radius-lg)]",
-              "bg-[var(--background)]/80 backdrop-blur-sm",
-              "border-[var(--border)] hover:border-[var(--primary-400)]",
-              "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20",
-              "transition-all duration-200",
+              "h-12 rounded-[var(--radius-lg)] pr-12 text-base",
+              "bg-[var(--background-secondary)]/85 backdrop-blur-sm",
               loading && "opacity-70"
             )}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && link) {
+              if (e.key === "Enter" && link.trim()) {
                 e.preventDefault();
                 handleParse();
               }
             }}
           />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
-            {/* 剪贴板按钮 */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2">
             <button
               className={cn(
-                "p-1.5 rounded-[var(--radius-md)] cursor-pointer",
-                "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
-                "hover:bg-[var(--muted)] transition-all duration-200",
-                "focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)]",
-                "active:scale-95",
-                loading && "opacity-50 cursor-not-allowed"
+                "rounded-[var(--radius-md)] p-1.5",
+                "text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]",
+                "transition-all duration-200 active:scale-95",
+                loading && "cursor-not-allowed opacity-50"
               )}
               onClick={async () => {
                 if (loading) return;
                 try {
                   const text = await navigator.clipboard.readText();
-                  try {
-                    urlSchema.parse(text);
-                    setLink(text);
-                    handleParse(text);
-                  } catch {
-                    console.log("剪贴板内容不是有效URL");
-                  }
-                } catch (err) {
-                  console.log("无法访问剪贴板:", err);
+                  urlSchema.parse(text);
+                  setLink(text);
+                  handleParse(text);
+                } catch {
+                  setError("剪贴板内容不是有效 URL");
                 }
               }}
               disabled={loading}
@@ -190,16 +212,11 @@ export function AddSiteDialog({
             </button>
           </div>
         </div>
+
         <Button
           onClick={() => handleParse()}
-          disabled={loading || !link}
-          className={cn(
-            "h-12 px-5 rounded-[var(--radius-lg)] cursor-pointer",
-            "bg-[var(--primary-600)] hover:bg-[var(--primary-700)]",
-            "text-white font-medium shadow-lg shadow-[var(--primary-500)]/20",
-            "transition-all duration-200 active:scale-95",
-            "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
-          )}
+          disabled={loading || !link.trim()}
+          className="h-12 rounded-[var(--radius-lg)] px-5"
         >
           {loading ? (
             <span className="flex items-center gap-2">
@@ -215,39 +232,23 @@ export function AddSiteDialog({
         </Button>
       </div>
 
-      {/* 状态提示 */}
-      <div className="flex items-center gap-2 text-xs text-[var(--muted-foreground)] min-h-[1.25rem]">
-        {showSuccess && (
-          <span className="flex items-center gap-1 text-[var(--success)] animate-in fade-in slide-in-from-left-2">
+      <div className="min-h-[1.25rem] text-xs text-[var(--muted-foreground)]">
+        {showSuccess ? (
+          <span className="fade-in inline-flex items-center gap-1 text-[var(--success)]">
             <CheckCircle2 className="h-3.5 w-3.5" />
-            解析成功
+            解析成功，进入下一步
           </span>
-        )}
-        {!showSuccess && !loading && (
-          <span>支持自动读取剪贴板，或手动输入后解析</span>
+        ) : (
+          <span>支持读取剪贴板，也可手动输入</span>
         )}
       </div>
     </div>
   );
 
-  // 站点信息表单组件
   const renderSiteInfoForm = () => (
-    <div className="space-y-4 pt-2">
-      {/* 站点预览卡片 - 玻璃拟态设计 */}
-      <div className={cn(
-        "flex items-center gap-3 p-4 rounded-[var(--radius-xl)]",
-        "bg-[var(--background-secondary)]/80 backdrop-blur-sm",
-        "border border-[var(--border)]",
-        "hover:border-[var(--primary-400)] transition-all duration-200",
-        "shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
-      )}>
-        <div className={cn(
-          "w-12 h-12 rounded-[var(--radius-lg)]",
-          "bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-50)]",
-          "flex items-center justify-center overflow-hidden",
-          "border border-[var(--primary-200)]",
-          "shadow-inner"
-        )}>
+    <div className="slide-up space-y-4 pt-1">
+      <div className="card flex items-center gap-3 p-4">
+        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-[var(--radius-lg)] border border-[var(--primary-200)] bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-50)]">
           <FaviconImage
             key={`site-preview-${siteInfo?.favicon || "none"}`}
             src={siteInfo?.favicon}
@@ -257,127 +258,102 @@ export function AddSiteDialog({
             iconClassName="w-4 h-4 text-[var(--primary-700)]"
           />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-[var(--foreground)] truncate">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-[var(--foreground)]">
             {escapeHtml(editedTitle || siteInfo?.title || "未命名网站")}
           </p>
-          <p className="text-xs text-[var(--muted-foreground)] truncate mt-0.5">
+          <p className="mt-0.5 truncate text-xs text-[var(--muted-foreground)]">
             {escapeHtml(siteInfo?.url || "")}
           </p>
         </div>
       </div>
 
-      {/* 编辑表单 */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Input
-            placeholder="图标URL (可选)"
-            value={siteInfo?.favicon || ""}
-            onChange={(e) =>
-              setSiteInfo((prev) => (prev ? { ...prev, favicon: e.target.value } : null))
-            }
-            disabled={isSubmitting}
-            className={cn(
-              "h-11 text-sm flex-1",
-              "bg-[var(--background)]/80 backdrop-blur-sm",
-              "border-[var(--border)] hover:border-[var(--primary-400)]",
-              "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
-            )}
-          />
-          {siteInfo?.favicon && (
-            <div className={cn(
-              "relative w-10 h-10 rounded-[var(--radius-md)] overflow-hidden cursor-pointer",
-              "border border-[var(--border)] bg-[var(--muted)]",
-              "flex items-center justify-center flex-shrink-0",
-              "hover:scale-105 transition-transform duration-200"
-            )}>
-              <FaviconImage
-                key={`favicon-input-preview-${siteInfo.favicon}`}
-                src={siteInfo.favicon}
-                alt="预览"
-                size={36}
-                imageClassName="object-contain"
-                iconClassName="w-4 h-4 text-[var(--primary-700)]"
-              />
-            </div>
-          )}
-        </div>
         <Input
           placeholder="网站标题"
           value={editedTitle}
           onChange={(e) => setEditedTitle(e.target.value)}
           disabled={isSubmitting}
-          className={cn(
-            "h-12 text-base font-medium",
-            "bg-[var(--background)]/80 backdrop-blur-sm",
-            "border-[var(--border)] hover:border-[var(--primary-400)]",
-            "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
-          )}
+          className="h-12 text-base font-medium"
           onKeyDown={(e) => {
             if (e.key === "Enter") handleConfirm();
           }}
         />
+        <Input
+          placeholder="图标URL (可选)"
+          value={siteInfo?.favicon || ""}
+          onChange={(e) =>
+            setSiteInfo((prev) => (prev ? { ...prev, favicon: e.target.value } : null))
+          }
+          disabled={isSubmitting}
+          className="h-11 text-sm"
+        />
       </div>
 
-      {/* 提交按钮 */}
-      <Button
-        onClick={handleConfirm}
-        disabled={isSubmitting}
-        className={cn(
-          "w-full h-12 text-base font-semibold rounded-[var(--radius-lg)] cursor-pointer",
-          "bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-500)]",
-          "hover:from-[var(--primary-700)] hover:to-[var(--primary-600)]",
-          "text-white shadow-lg shadow-[var(--primary-500)]/30",
-          "transition-all duration-200 active:scale-95",
-          "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
-        )}
-      >
-        {isSubmitting ? (
-          <span className="flex items-center gap-2">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            正在添加...
-          </span>
-        ) : (
-          <span className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5" />
-            确认添加
-          </span>
-        )}
-      </Button>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Button
+          variant="outline"
+          onClick={resetToUrlStep}
+          disabled={isSubmitting}
+          className="h-11 gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          重新输入链接
+        </Button>
+
+        <Button onClick={handleConfirm} disabled={isSubmitting} className="h-11 gap-2">
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              正在添加...
+            </>
+          ) : (
+            <>
+              <CheckCircle2 className="h-4 w-4" />
+              确认添加
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          setError("");
+          setShowSuccess(false);
+        }
+        onOpenChange?.(nextOpen);
+      }}
+    >
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             {siteInfo ? "确认站点信息" : "添加新链接"}
           </DialogTitle>
-          <DialogDescription className="text-[var(--foreground-secondary)] text-sm">
+          <DialogDescription className="text-sm text-[var(--foreground-secondary)]">
             {siteInfo
-              ? "检查并编辑站点信息，然后添加到导航"
-              : "输入网址并自动获取网站信息，快速添加到导航栏"}
+              ? "检查信息后添加到当前分类"
+              : "输入网址并自动获取网站信息"}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-4 space-y-6">
-          {/* 错误提示 */}
+        <div className="space-y-5 py-4">
+          {renderStepIndicator()}
+
           {error && (
-            <div className={cn(
-              "flex items-start gap-3 p-3 rounded-[var(--radius-lg)]",
-              "bg-[var(--error)]/10 border border-[var(--error)]/20",
-              "animate-in fade-in slide-in-from-top-2"
-            )}>
-              <AlertCircle className="h-5 w-5 text-[var(--error)] flex-shrink-0 mt-0.5" />
+            <div className="fade-in flex items-start gap-3 rounded-[var(--radius-lg)] border border-[var(--error)]/25 bg-[var(--error)]/10 p-3">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--error)]" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-[var(--error)]">解析失败</p>
-                <p className="text-xs text-[var(--error)]/80 mt-1">{error}</p>
+                <p className="text-sm font-medium text-[var(--error)]">解析提示</p>
+                <p className="mt-1 text-xs text-[var(--error)]/85">{error}</p>
               </div>
             </div>
           )}
 
-          {/* 主要内容区域 */}
           {!siteInfo ? renderUrlInputSection() : renderSiteInfoForm()}
         </div>
       </DialogContent>

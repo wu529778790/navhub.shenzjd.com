@@ -5,28 +5,21 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  // 基础样式 - 现代化按钮
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-md)] text-sm font-medium transition-all duration-200 ease-out active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-500)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-md)] text-sm font-semibold transition-all duration-200 ease-out active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-500)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        // 主按钮 - 渐变阴影效果
-        default: "bg-[var(--primary-600)] text-white shadow-lg hover:bg-[var(--primary-700)] hover:shadow-xl",
-
-        // 危险按钮
-        destructive: "bg-[var(--error)] text-white shadow-lg hover:bg-red-600 hover:shadow-xl",
-
-        // 轮廓按钮
-        outline: "border-2 border-[var(--primary-500)] text-[var(--primary-600)] bg-transparent hover:bg-[var(--primary-50)] hover:border-[var(--primary-600)]",
-
-        // 次要按钮
-        secondary: "bg-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--neutral-200)]",
-
-        // 幽灵按钮
-        ghost: "text-[var(--foreground-secondary)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]",
-
-        // 链接按钮
-        link: "text-[var(--primary-600)] underline-offset-4 hover:underline",
+        default:
+          "bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-700)] text-white shadow-[0_14px_24px_-14px_rgba(15,108,97,0.9)] hover:brightness-110",
+        destructive:
+          "bg-[var(--error)] text-white shadow-[0_14px_24px_-14px_rgba(217,74,74,0.9)] hover:brightness-110",
+        outline:
+          "border border-[var(--primary-300)] bg-[var(--background-secondary)] text-[var(--primary-700)] hover:bg-[var(--primary-50)]",
+        secondary:
+          "bg-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--neutral-200)]",
+        ghost:
+          "text-[var(--foreground-secondary)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]",
+        link: "text-[var(--primary-700)] underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",

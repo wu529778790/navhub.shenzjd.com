@@ -13,13 +13,15 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex flex-col">
+    <div className="relative min-h-screen overflow-x-hidden">
+      <div className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute -left-20 top-16 h-72 w-72 rounded-full bg-[var(--primary-300)]/20 blur-3xl" />
+        <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-[var(--accent-500)]/15 blur-3xl" />
+      </div>
+
       <AppHeader />
 
-      {/* 主内容 */}
-      <main className="flex-1 flex flex-col">
-        {children}
-      </main>
+      <main className="flex flex-1 flex-col pb-8">{children}</main>
     </div>
   );
 }

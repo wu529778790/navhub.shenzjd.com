@@ -5,7 +5,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, X, Keyboard } from "lucide-react";
+import { Search, X, Keyboard, LayoutGrid, List } from "lucide-react";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -17,26 +17,29 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
   const [showShortcutHint, setShowShortcutHint] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 监听 Ctrl/Cmd + / 快捷键
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "/") {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         inputRef.current?.focus();
         setShowShortcutHint(true);
-        setTimeout(() => setShowShortcutHint(false), 2000);
+        setTimeout(() => setShowShortcutHint(false), 1800);
+      }
+
+      if (e.key === "Escape" && document.activeElement === inputRef.current) {
+        setQuery("");
+        onSearch("");
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [onSearch]);
 
-  // 触发搜索
   useEffect(() => {
     const timer = setTimeout(() => {
       onSearch(query);
-    }, 300);
+    }, 260);
 
     return () => clearTimeout(timer);
   }, [query, onSearch]);
@@ -49,62 +52,52 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
 
   return (
     <div className="relative w-full" role="search">
-      {/* 搜索输入框 */}
-      <div className="relative group">
+      <div className="group relative">
         <input
           ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
-          className="search-input w-full pl-11 pr-10 py-3 bg-[var(--background)] border-[var(--border)] rounded-[var(--radius-lg)]
-                     focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent
-                     transition-all duration-200 shadow-sm"
+          className="search-input w-full border-[var(--input-border)] bg-[var(--background-secondary)] pl-11 pr-24"
           aria-label="搜索站点"
           aria-describedby="search-description"
           autoComplete="off"
         />
 
-        {/* 搜索图标 */}
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] group-focus-within:text-[var(--primary-600)] transition-colors" aria-hidden="true">
-          <Search className="w-5 h-5" />
+        <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary-600)]" aria-hidden="true">
+          <Search className="h-5 w-5" />
         </div>
 
-        {/* 清除按钮 */}
-        {query && (
+        {query ? (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-[var(--muted)] text-[var(--muted-foreground)] transition-colors cursor-pointer"
+            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer rounded-full p-1 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
             aria-label="清除搜索"
             type="button"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
-        )}
-
-        {/* 快捷键提示 - 右下角 */}
-        {!query && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[var(--muted-foreground)] text-xs" aria-hidden="true">
+        ) : (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--muted-foreground)]" aria-hidden="true">
             <span className="kbd">Ctrl</span>
-            <span>+</span>
-            <span className="kbd">/</span>
+            <span className="mx-1">+</span>
+            <span className="kbd">K</span>
           </div>
         )}
       </div>
 
-      {/* 快捷键提示动画 */}
       {showShortcutHint && (
         <div className="absolute -bottom-10 left-0 right-0 text-center" role="status" aria-live="polite">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[var(--primary-600)] text-white rounded-[var(--radius-md)] text-sm shadow-lg animate-in fade-in slide-in-from-top-2">
-            <Keyboard className="w-4 h-4" />
+          <div className="fade-in inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--primary-600)] px-3 py-1.5 text-sm text-white shadow-lg">
+            <Keyboard className="h-4 w-4" />
             <span>搜索快捷键已激活</span>
           </div>
         </div>
       )}
 
-      {/* 搜索结果提示 */}
       {query && (
-        <div id="search-description" className="mt-2 text-xs text-[var(--foreground-secondary)] flex items-center gap-2">
+        <div id="search-description" className="mt-2 flex items-center gap-2 text-xs text-[var(--foreground-secondary)]">
           <span className="inline-flex items-center gap-1">
             <span className="kbd">Esc</span>
             <span>清除搜索</span>
@@ -115,12 +108,9 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
   );
 }
 
-/**
- * 搜索状态显示组件
- */
 export function SearchStatus({
   query,
-  resultsCount
+  resultsCount,
 }: {
   query: string;
   resultsCount: number;
@@ -128,59 +118,52 @@ export function SearchStatus({
   if (!query) return null;
 
   return (
-    <div className="flex items-center gap-2 text-sm text-[var(--foreground-secondary)] bg-[var(--background-secondary)] px-3 py-2 rounded-[var(--radius-md)] border border-[var(--border)]">
-      <Search className="w-4 h-4" />
+    <div className="flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)] px-3 py-2 text-sm text-[var(--foreground-secondary)]">
+      <Search className="h-4 w-4 text-[var(--primary-600)]" />
       <span>
-        找到 <strong className="text-[var(--primary-600)]">{resultsCount}</strong> 个结果
+        找到 <strong className="text-[var(--primary-700)]">{resultsCount}</strong> 个结果
       </span>
       <span className="text-[var(--muted-foreground)]">for &quot;{query}&quot;</span>
     </div>
   );
 }
 
-/**
- * 过滤器组件 - 已移除分类过滤，保留为空组件（向后兼容）
- */
 export function CategoryFilter() {
-  // 分类过滤已移除，改为锚点跳转
   return null;
 }
 
-/**
- * 视图切换器 - 切换不同的展示方式
- */
 export function ViewToggle({
   view,
-  onViewChange
+  onViewChange,
 }: {
-  view: 'grid' | 'list';
-  onViewChange: (view: 'grid' | 'list') => void;
+  view: "grid" | "list";
+  onViewChange: (view: "grid" | "list") => void;
 }) {
   return (
-    <div className="flex items-center gap-1 bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-md)] p-1">
+    <div className="flex items-center gap-1 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)] p-1 shadow-sm">
       <button
         onClick={() => onViewChange("grid")}
-        className={`px-3 py-1.5 rounded-[var(--radius-sm)] text-sm transition-all duration-200 cursor-pointer
-                   ${view === "grid"
-                     ? 'bg-[var(--primary-600)] text-white shadow-sm'
-                     : 'text-[var(--foreground-secondary)] hover:bg-[var(--muted)]'
-                   }`}
+        className={`rounded-[var(--radius-sm)] p-2 transition-all duration-200 cursor-pointer ${
+          view === "grid"
+            ? "bg-[var(--primary-600)] text-white shadow"
+            : "text-[var(--foreground-secondary)] hover:bg-[var(--muted)]"
+        }`}
         aria-label="网格视图"
         title="网格视图"
       >
-        <span className="font-mono">⊞</span>
+        <LayoutGrid className="h-4 w-4" />
       </button>
       <button
         onClick={() => onViewChange("list")}
-        className={`px-3 py-1.5 rounded-[var(--radius-sm)] text-sm transition-all duration-200 cursor-pointer
-                   ${view === "list"
-                     ? 'bg-[var(--primary-600)] text-white shadow-sm'
-                     : 'text-[var(--foreground-secondary)] hover:bg-[var(--muted)]'
-                   }`}
+        className={`rounded-[var(--radius-sm)] p-2 transition-all duration-200 cursor-pointer ${
+          view === "list"
+            ? "bg-[var(--primary-600)] text-white shadow"
+            : "text-[var(--foreground-secondary)] hover:bg-[var(--muted)]"
+        }`}
         aria-label="列表视图"
         title="列表视图"
       >
-        <span className="font-mono">☰</span>
+        <List className="h-4 w-4" />
       </button>
     </div>
   );

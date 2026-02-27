@@ -16,9 +16,7 @@ const AlertDialogOverlay = React.forwardRef<
   <AlertDialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      // Skills 规范: 高对比度遮罩，确保弹窗清晰可见
-      "fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm",
-      // 流畅的淡入动画
+      "fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm",
       "data-[state=open]:animate-in data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
@@ -37,21 +35,13 @@ const AlertDialogContent = React.forwardRef<
     <AlertDialogPrimitive.Content
       ref={ref}
       className={cn(
-        // Skills 规范: 移动端优化 - 全宽，底部圆角
         "fixed left-0 bottom-0 w-full z-[100]",
-        "bg-[var(--background)] border-t border-[var(--border)]",
+        "bg-[var(--background-secondary)] border-t border-[var(--border)]",
         "rounded-t-[var(--radius-2xl)] p-4",
-
-        // 桌面端: 居中，限制宽度
         "sm:left-[50%] sm:top-[50%] sm:bottom-auto sm:w-full sm:max-w-lg",
         "sm:translate-x-[-50%] sm:translate-y-[-50%]",
         "sm:rounded-[var(--radius-xl)] sm:border sm:border-[var(--border)]",
-        "sm:shadow-2xl",
-
-        // 增强的阴影系统 - 红色警示风格 (Skills 风格)
-        "sm:shadow-[0_20px_50px_-12px_rgba(239,68,68,0.25),0_8px_16px_-8px_rgba(0,0,0,0.2)]",
-
-        // 流畅动画 - 从下方滑入 (移动端) / 从上方滑入 (桌面端)
+        "sm:shadow-[0_24px_48px_-20px_rgba(8,41,50,0.35)]",
         "duration-300 ease-out",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -59,9 +49,7 @@ const AlertDialogContent = React.forwardRef<
         "data-[state=closed]:slide-out-to-bottom-100 data-[state=open]:slide-in-from-bottom-100",
         "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
 
-        // 深色模式适配
         "dark:bg-[var(--background)]/95 dark:border-[var(--border-strong)]",
-
         className
       )}
       {...props}
@@ -76,7 +64,6 @@ const AlertDialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      // Skills 规范: 清晰的视觉层次 + 警示图标布局
       "flex flex-col space-y-3 text-left",
       "pb-3 border-b border-[var(--border)]",
       className
@@ -92,9 +79,7 @@ const AlertDialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      // Skills 规范: 移动端垂直排列，桌面端水平排列
       "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-      // 移动端顶部边框分隔
       "pt-4 mt-4 border-t border-[var(--border)]",
       className
     )}
@@ -110,9 +95,8 @@ const AlertDialogTitle = React.forwardRef<
   <AlertDialogPrimitive.Title
     ref={ref}
     className={cn(
-      // Skills 规范: 警告标题 - 强烈的红色渐变
       "text-xl font-bold leading-tight tracking-tight",
-      "bg-gradient-to-r from-[var(--error)] to-red-600",
+      "bg-gradient-to-r from-[var(--foreground)] to-[var(--foreground-secondary)]",
       "bg-clip-text text-transparent",
       className
     )}
@@ -128,7 +112,6 @@ const AlertDialogDescription = React.forwardRef<
   <AlertDialogPrimitive.Description
     ref={ref}
     className={cn(
-      // Skills 规范: 清晰的描述文本
       "text-[var(--foreground-secondary)] text-sm leading-relaxed",
       "dark:text-[var(--muted-foreground)]",
       className
