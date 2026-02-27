@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772185840387,
+  "lastModified": 1772185902604,
   "categories": [
     {
       "id": "default",
@@ -390,6 +390,12 @@
           "title": "网页配色",
           "favicon": "https://icons.duckduckgo.com/ip3/hao.uisdc.com.ico",
           "url": "https://hao.uisdc.com/color/"
+        },
+        {
+          "id": "1772185902604",
+          "title": "爱资料工具",
+          "favicon": "https://icons.duckduckgo.com/ip3/www.toolnb.com.ico",
+          "url": "https://www.toolnb.com/"
         }
       ]
     }
