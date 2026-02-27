@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772187519664,
+  "lastModified": 1772187536217,
   "categories": [
     {
       "id": "default",
@@ -499,6 +499,12 @@
           "title": "Server酱·Turbo版 | 一个请求通过API将消息推送到个人微信、企业微信、手机客户端和钉钉群、飞书群",
           "favicon": "https://the7.ft07.com/sct/images/favicon.png",
           "url": "https://sct.ftqq.com/"
+        },
+        {
+          "id": "1772187536217",
+          "title": "老左笔记 - 关注SEM搜索引擎营销和便宜VPS服务器优惠评测",
+          "favicon": "https://www.laozuo.org/favicon.ico",
+          "url": "https://www.laozuo.org/"
         }
       ]
     }
