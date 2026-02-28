@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772196500438,
+  "lastModified": 1772282877129,
   "categories": [
     {
       "id": "default",
@@ -197,6 +197,12 @@
           "title": "V2EX",
           "favicon": "https://www.v2ex.com/static/icon-192.png",
           "url": "https://www.v2ex.com/"
+        },
+        {
+          "id": "1772282877129",
+          "title": "HomeAssistant论坛 | HomeKit论坛 | Node-Red论坛 | ESPHome论坛-『瀚思彼岸』» 智能家居技术论坛！ - Powered by Discuz!",
+          "favicon": "https://bbs.hassbian.com/favicon.ico",
+          "url": "https://bbs.hassbian.com/forum.php"
         }
       ]
     },
