@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772282877129,
+  "lastModified": 1772331648772,
   "categories": [
     {
       "id": "default",
@@ -465,6 +465,12 @@
           "title": "帮小忙，腾讯QQ浏览器在线工具箱平台",
           "favicon": "https://tool.browser.qq.com/favicon.ico",
           "url": "https://tool.browser.qq.com/"
+        },
+        {
+          "id": "1772331648772",
+          "title": "AtomGit | GitCode - 全球开发者的开源社区,开源代码托管平台",
+          "favicon": "https://cdn-static.gitcode.host/static/images/logo-favicon.png",
+          "url": "https://gitcode.com/"
         }
       ]
     },
