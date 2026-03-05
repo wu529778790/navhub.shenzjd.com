@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772593108916,
+  "lastModified": 1772680808700,
   "categories": [
     {
       "id": "default",
@@ -152,6 +152,12 @@
           "favicon": "https://claudemarketplaces.com/favicon/apple-touch-icon.png",
           "url": "https://claudemarketplaces.com/",
           "sort": 3
+        },
+        {
+          "id": "1772680808700",
+          "title": "ClawHub",
+          "favicon": "https://clawhub.ai/og.png",
+          "url": "https://clawhub.ai/"
         }
       ]
     },
