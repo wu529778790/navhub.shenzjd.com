@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1772680812433,
+  "lastModified": 1773036536789,
   "categories": [
     {
       "id": "default",
@@ -393,6 +393,12 @@
           "title": "一元机场",
           "favicon": "https://icons.duckduckgo.com/ip3/xn--4gq62f52gdss.top.ico",
           "url": "https://xn--4gq62f52gdss.top/#/register?code=di4JP3zb"
+        },
+        {
+          "id": "1773036536789",
+          "title": "Nolock",
+          "favicon": "https://www.nolock.io/favicon.ico",
+          "url": "https://www.nolock.io/aff.php?aff=1245"
         }
       ]
     },
