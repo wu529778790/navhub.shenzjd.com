@@ -85,13 +85,40 @@ function normalizeUrl(input: string): URL {
   return parsed;
 }
 
+const BLOCKED_HOSTNAMES: readonly RegExp[] = [
+  /^127\./,
+  /^0\./,
+  /^10\./,
+  /^172\.(1[6-9]|2\d|3[01])\./,
+  /^192\.168\./,
+  /^169\.254\./,
+  /^::1$/,
+  /^fc/,
+  /^fd/,
+  /^fe80:/,
+  /^localhost$/i,
+  /^metadata\.google\.internal$/i,
+];
+
+function isBlockedHostname(hostname: string): boolean {
+  return BLOCKED_HOSTNAMES.some((re) => re.test(hostname));
+}
+
+function assertSafeUrl(parsed: URL): void {
+  if (isBlockedHostname(parsed.hostname)) {
+    throw new Error("不允许访问该地址");
+  }
+}
+
 function titleFromHostname(hostname: string): string {
   const base = hostname.replace(/^www\./i, "").split(".")[0] || "website";
-  return base
-    .replace(/[-_]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (c) => c.toUpperCase()) || "未命名网站";
+  return (
+    base
+      .replace(/[-_]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\b\w/g, (c) => c.toUpperCase()) || "未命名网站"
+  );
 }
 
 function googleS2(hostname: string): string {
@@ -113,8 +140,14 @@ function cleanupText(value?: string): string {
 
 function extractMeta(html: string, key: string): string {
   const patterns = [
-    new RegExp(`<meta[^>]+(?:property|name)=["']${key}["'][^>]+content=["']([^"']+)["'][^>]*>`, "i"),
-    new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']${key}["'][^>]*>`, "i"),
+    new RegExp(
+      `<meta[^>]+(?:property|name)=["']${key}["'][^>]+content=["']([^"']+)["'][^>]*>`,
+      "i"
+    ),
+    new RegExp(
+      `<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']${key}["'][^>]*>`,
+      "i"
+    ),
   ];
 
   for (const pattern of patterns) {
@@ -183,25 +216,23 @@ async function resolveFromHtml(target: string): Promise<{ title?: string; icon?:
 
     const finalUrl = new URL(response.url || target);
     const contentType = response.headers.get("content-type")?.toLowerCase() || "";
-    if (contentType && !contentType.includes("text/html") && !contentType.includes("application/xhtml")) {
+    if (
+      contentType &&
+      !contentType.includes("text/html") &&
+      !contentType.includes("application/xhtml")
+    ) {
       return null;
     }
 
     const html = (await response.text()).slice(0, 300_000);
 
     const title =
-      extractMeta(html, "og:title") ||
-      extractMeta(html, "twitter:title") ||
-      extractTitleTag(html);
+      extractMeta(html, "og:title") || extractMeta(html, "twitter:title") || extractTitleTag(html);
 
-    const iconHref =
-      extractIconHref(html) ||
-      extractMeta(html, "og:image") ||
-      "";
+    const iconHref = extractIconHref(html) || extractMeta(html, "og:image") || "";
 
     const icon =
-      (iconHref ? absolutizeUrl(iconHref, finalUrl) : null) ||
-      `${finalUrl.origin}/favicon.ico`;
+      (iconHref ? absolutizeUrl(iconHref, finalUrl) : null) || `${finalUrl.origin}/favicon.ico`;
 
     return {
       title: title || undefined,
@@ -276,6 +307,7 @@ export async function GET(request: NextRequest) {
   let parsedUrl: URL;
   try {
     parsedUrl = normalizeUrl(urlParam);
+    assertSafeUrl(parsedUrl);
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "URL 无效" },
@@ -305,22 +337,19 @@ export async function GET(request: NextRequest) {
   }
 
   const title =
-    microlink?.title ||
-    noembed?.title ||
-    html?.title ||
-    titleFromHostname(parsedUrl.hostname);
+    microlink?.title || noembed?.title || html?.title || titleFromHostname(parsedUrl.hostname);
 
   const favicon =
-    chooseFavicon(parsedUrl, microlink?.icon || html?.icon) ||
-    googleS2(parsedUrl.hostname);
+    chooseFavicon(parsedUrl, microlink?.icon || html?.icon) || googleS2(parsedUrl.hostname);
 
-  const source: ParsedResult["source"] = microlink?.title || microlink?.icon
-    ? "microlink"
-    : noembed?.title
-      ? "noembed"
-      : html?.title || html?.icon
-        ? "html"
-        : "fallback";
+  const source: ParsedResult["source"] =
+    microlink?.title || microlink?.icon
+      ? "microlink"
+      : noembed?.title
+        ? "noembed"
+        : html?.title || html?.icon
+          ? "html"
+          : "fallback";
 
   const result: ParsedResult = {
     title,

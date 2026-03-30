@@ -35,7 +35,7 @@ export async function getAuthState(forceRefresh: boolean = false): Promise<AuthS
       return cachedAuthState;
     }
 
-    const payload = await response.json() as {
+    const payload = (await response.json()) as {
       authenticated: boolean;
       user: AuthState["user"];
     };
@@ -83,7 +83,3 @@ export async function isAuthenticated(): Promise<boolean> {
   const auth = await getAuthState();
   return !!auth.token;
 }
-
-// 兼容旧回调页调用，已废弃
-export function setGitHubToken(): void {}
-export function setGitHubUser(): void {}

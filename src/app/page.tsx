@@ -12,19 +12,18 @@ import { IconFolder, IconSearch, IconBook } from "@/components/icons";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { SearchBar, SearchStatus, ViewToggle } from "@/components/SearchBar";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/lib/storage/local-storage";
 
 // 懒加载大型组件
-const SortableSites = lazy(() => import("@/components/SortableSites").then(module => ({ default: module.SortableSites })));
-const AddCategoryDialog = lazy(() => import("@/components/AddCategoryDialog").then(module => ({ default: module.AddCategoryDialog })));
+const SortableSites = lazy(() =>
+  import("@/components/SortableSites").then((module) => ({ default: module.SortableSites }))
+);
+const AddCategoryDialog = lazy(() =>
+  import("@/components/AddCategoryDialog").then((module) => ({ default: module.AddCategoryDialog }))
+);
 
 // DnD Kit imports for category sorting
 import {
@@ -52,18 +51,21 @@ interface SortableCategoryItemProps {
   isGuestMode: boolean;
   allCategories: Category[];
   onSiteChange: () => void;
-  viewMode: 'grid' | 'list';
+  viewMode: "grid" | "list";
 }
 
-function SortableCategoryItem({ category, onEdit, onDelete, isGuestMode, allCategories, onSiteChange, viewMode }: SortableCategoryItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: category.id });
+function SortableCategoryItem({
+  category,
+  onEdit,
+  onDelete,
+  isGuestMode,
+  allCategories,
+  onSiteChange,
+  viewMode,
+}: SortableCategoryItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: category.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -76,9 +78,9 @@ function SortableCategoryItem({ category, onEdit, onDelete, isGuestMode, allCate
     e.preventDefault();
     const element = document.getElementById(`category-${category.id}`);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
       // 更新 URL hash
-      window.history.pushState(null, '', `#category-${category.id}`);
+      window.history.pushState(null, "", `#category-${category.id}`);
     }
   };
 
@@ -142,7 +144,13 @@ function SortableCategoryItem({ category, onEdit, onDelete, isGuestMode, allCate
       </div>
 
       {/* 站点列表 */}
-      <Suspense fallback={<div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2"><div className="w-[100px] h-[100px] bg-[var(--muted)] rounded-[var(--radius-md)] animate-pulse" /></div>}>
+      <Suspense
+        fallback={
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2">
+            <div className="w-[100px] h-[100px] bg-[var(--muted)] rounded-[var(--radius-md)] animate-pulse" />
+          </div>
+        }
+      >
         <SortableSites
           category={category}
           allCategories={allCategories}
@@ -172,7 +180,7 @@ export default function Home() {
 
   // 搜索状态
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   // DnD Sensors for category sorting
   const sensors = useSensors(
@@ -215,15 +223,15 @@ export default function Home() {
         const categoryMatches = category.name.toLowerCase().includes(query);
 
         // 检查站点
-        const matchingSites = category.sites.filter(site =>
-          site.title.toLowerCase().includes(query) ||
-          site.url.toLowerCase().includes(query)
+        const matchingSites = category.sites.filter(
+          (site) =>
+            site.title.toLowerCase().includes(query) || site.url.toLowerCase().includes(query)
         );
 
         if (categoryMatches || matchingSites.length > 0) {
           filtered.push({
             ...category,
-            sites: matchingSites.length > 0 ? matchingSites : category.sites
+            sites: matchingSites.length > 0 ? matchingSites : category.sites,
           });
         }
       }
@@ -244,9 +252,7 @@ export default function Home() {
     if (!editingCategory || !editingCategory.name.trim()) return;
 
     const newCategories = categories.map((c) =>
-      c.id === editingCategory.id
-        ? { ...c, name: editingCategory.name.trim() }
-        : c
+      c.id === editingCategory.id ? { ...c, name: editingCategory.name.trim() } : c
     );
     updateSites(newCategories);
     setEditingCategory(null);
@@ -283,14 +289,8 @@ export default function Home() {
             <IconSearch className="w-8 h-8 text-[var(--muted-foreground)]" />
           </div>
           <div className="empty-state-title">未找到匹配内容</div>
-          <div className="empty-state-description">
-            尝试调整搜索词
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setSearchQuery("")}
-            className="mt-4"
-          >
+          <div className="empty-state-description">尝试调整搜索词</div>
+          <Button variant="outline" onClick={() => setSearchQuery("")} className="mt-4">
             清除搜索
           </Button>
         </div>
@@ -310,7 +310,8 @@ export default function Home() {
         </div>
         {!isGuestMode && (
           <div className="mt-4 text-xs text-[var(--muted-foreground)]">
-            <span className="kbd">Ctrl/Cmd</span> + <span className="kbd">Shift</span> + <span className="kbd">N</span> 快速新建
+            <span className="kbd">Ctrl/Cmd</span> + <span className="kbd">Shift</span> +{" "}
+            <span className="kbd">N</span> 快速新建
           </div>
         )}
       </div>
@@ -325,10 +326,7 @@ export default function Home() {
           {/* 搜索栏 + 新建按钮 */}
           <div className="flex gap-3 items-center w-full flex-wrap">
             <div className="flex-1 min-w-0 flex-grow">
-              <SearchBar
-                onSearch={setSearchQuery}
-                placeholder="搜索站点名称、URL..."
-              />
+              <SearchBar onSearch={setSearchQuery} placeholder="搜索站点名称、URL..." />
             </div>
 
             {/* 视图切换 */}
@@ -343,9 +341,7 @@ export default function Home() {
               >
                 <Plus className="w-4 h-4" />
                 新建
-                <span className="hidden sm:inline text-xs opacity-75 ml-1">
-                  (Ctrl/Cmd+Shift+N)
-                </span>
+                <span className="hidden sm:inline text-xs opacity-75 ml-1">(Ctrl/Cmd+Shift+N)</span>
               </Button>
             )}
           </div>
@@ -373,7 +369,10 @@ export default function Home() {
                 <div className="h-6 bg-[var(--muted)] rounded-[var(--radius-sm)] mb-4 w-1/3"></div>
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full">
                   {[...Array(4)].map((_, j) => (
-                    <div key={j} className="w-[100px] h-[100px] bg-[var(--muted)] rounded-[var(--radius-md)] flex-shrink-0"></div>
+                    <div
+                      key={j}
+                      className="w-[100px] h-[100px] bg-[var(--muted)] rounded-[var(--radius-md)] flex-shrink-0"
+                    ></div>
                   ))}
                 </div>
               </div>
@@ -423,7 +422,8 @@ export default function Home() {
                 <span>快速搜索</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="kbd">Ctrl/Cmd</span> + <span className="kbd">Shift</span> + <span className="kbd">N</span>
+                <span className="kbd">Ctrl/Cmd</span> + <span className="kbd">Shift</span> +{" "}
+                <span className="kbd">N</span>
                 <span>新建分类</span>
               </div>
               <div className="flex items-center gap-2">
@@ -441,12 +441,18 @@ export default function Home() {
 
       {/* 添加分类对话框 */}
       {showAddCategoryDialog && (
-        <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"><div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" /></div>}>
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+              <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+            </div>
+          }
+        >
           <AddCategoryDialog
             onClose={() => setShowAddCategoryDialog(false)}
             onConfirm={(name) => {
               addCategory({
-                id: `cat_${Date.now()}`,
+                id: `cat_${crypto.randomUUID()}`,
                 name: name.trim(),
                 sort: categories.length,
                 sites: [],
@@ -466,7 +472,9 @@ export default function Home() {
             </DialogHeader>
             <div className="py-4 space-y-3">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[var(--foreground-secondary)]">分类名称</label>
+                <label className="text-sm font-medium text-[var(--foreground-secondary)]">
+                  分类名称
+                </label>
                 <Input
                   value={editingCategory.name}
                   onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
@@ -527,7 +535,10 @@ export default function Home() {
                 <DialogTitle className="text-2xl font-bold">确认删除分类</DialogTitle>
               </div>
               <div className="py-4 text-[var(--foreground-secondary)] text-sm leading-relaxed">
-                确定要删除这个分类吗？<strong className="text-[var(--error)] font-semibold">分类下的所有站点也会被删除。</strong>
+                确定要删除这个分类吗？
+                <strong className="text-[var(--error)] font-semibold">
+                  分类下的所有站点也会被删除。
+                </strong>
                 <br />
                 <span className="text-xs text-[var(--muted-foreground)]">此操作无法撤销。</span>
               </div>

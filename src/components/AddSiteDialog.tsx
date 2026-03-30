@@ -74,7 +74,7 @@ export function AddSiteDialog({
         const { title, favicon } = await parseURL(urlToValidate);
 
         setSiteInfo({
-          id: Date.now().toString(),
+          id: crypto.randomUUID(),
           title,
           favicon,
           url: urlToValidate,
@@ -84,7 +84,7 @@ export function AddSiteDialog({
         setTimeout(() => setShowSuccess(false), 1600);
       } catch (err) {
         setSiteInfo({
-          id: Date.now().toString(),
+          id: crypto.randomUUID(),
           title: "",
           favicon: "",
           url: (urlToCheck || link).trim(),
@@ -126,7 +126,7 @@ export function AddSiteDialog({
     try {
       setIsSubmitting(true);
       await addSite(activeCategory, {
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         title: editedTitle || siteInfo.title,
         favicon: siteInfo.favicon,
         url: siteInfo.url,
@@ -147,12 +147,26 @@ export function AddSiteDialog({
 
   const renderStepIndicator = () => (
     <div className="flex items-center gap-2 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--background-secondary)]/75 p-2 text-xs">
-      <div className={cn("flex items-center gap-1.5 rounded-md px-2 py-1", currentStep === 1 ? "bg-[var(--primary-100)] text-[var(--primary-700)]" : "text-[var(--muted-foreground)]")}>
+      <div
+        className={cn(
+          "flex items-center gap-1.5 rounded-md px-2 py-1",
+          currentStep === 1
+            ? "bg-[var(--primary-100)] text-[var(--primary-700)]"
+            : "text-[var(--muted-foreground)]"
+        )}
+      >
         <span className="kbd">1</span>
         <span>输入链接</span>
       </div>
       <span className="text-[var(--muted-foreground)]">→</span>
-      <div className={cn("flex items-center gap-1.5 rounded-md px-2 py-1", currentStep === 2 ? "bg-[var(--primary-100)] text-[var(--primary-700)]" : "text-[var(--muted-foreground)]")}>
+      <div
+        className={cn(
+          "flex items-center gap-1.5 rounded-md px-2 py-1",
+          currentStep === 2
+            ? "bg-[var(--primary-100)] text-[var(--primary-700)]"
+            : "text-[var(--muted-foreground)]"
+        )}
+      >
         <span className="kbd">2</span>
         <span>确认信息</span>
       </div>
@@ -335,9 +349,7 @@ export function AddSiteDialog({
             {siteInfo ? "确认站点信息" : "添加新链接"}
           </DialogTitle>
           <DialogDescription className="text-sm text-[var(--foreground-secondary)]">
-            {siteInfo
-              ? "检查信息后添加到当前分类"
-              : "输入网址并自动获取网站信息"}
+            {siteInfo ? "检查信息后添加到当前分类" : "输入网址并自动获取网站信息"}
           </DialogDescription>
         </DialogHeader>
 

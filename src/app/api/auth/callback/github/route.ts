@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { validateOrigin, checkRateLimit, getClientIP } from "@/lib/security";
+import { validateOrigin, checkRateLimit, getClientIP, verifyOAuthState } from "@/lib/security";
 import { OAUTH_CONFIG, SECURITY_CONFIG } from "@/lib/config";
 
 export async function GET(request: NextRequest) {
@@ -33,8 +33,8 @@ export async function GET(request: NextRequest) {
 
   const storedState = request.cookies.get("oauth_state")?.value;
 
-  // 强制验证 OAuth state 参数（CSRF 保护）
-  if (!state || !storedState || state !== storedState) {
+  // 强制验证 OAuth state 参数（CSRF 保护，时间安全比较）
+  if (!state || !storedState || !verifyOAuthState(state, storedState)) {
     const response = NextResponse.redirect(
       `${origin}/?oauth_error=${encodeURIComponent("Invalid state parameter")}`
     );
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify({
         client_id: OAUTH_CONFIG.CLIENT_ID,
@@ -114,13 +114,17 @@ export async function GET(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 30,
       path: "/",
     });
-    redirectResponse.cookies.set("github_user", Buffer.from(JSON.stringify(user), "utf-8").toString("base64url"), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30,
-      path: "/",
-    });
+    redirectResponse.cookies.set(
+      "github_user",
+      Buffer.from(JSON.stringify(user), "utf-8").toString("base64url"),
+      {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 30,
+        path: "/",
+      }
+    );
     redirectResponse.cookies.set("oauth_state", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -130,7 +134,6 @@ export async function GET(request: NextRequest) {
     });
 
     return redirectResponse;
-
   } catch (error) {
     console.error("OAuth callback error:", error);
     const errorMessage = error instanceof Error ? error.message : "未知错误";

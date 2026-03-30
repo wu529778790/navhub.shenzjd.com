@@ -12,12 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { FaviconImage } from "@/components/FaviconImage";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +31,7 @@ interface SiteCardProps {
   favicon?: string;
   categoryId: string;
   onSiteChange?: () => void;
-  view?: 'grid' | 'list';
+  view?: "grid" | "list";
 }
 
 export function SiteCard({
@@ -46,7 +41,7 @@ export function SiteCard({
   favicon = "",
   categoryId,
   onSiteChange,
-  view = 'grid',
+  view = "grid",
 }: SiteCardProps) {
   const { updateSite, deleteSite, isGuestMode } = useSites();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -66,8 +61,8 @@ export function SiteCard({
     if (!isContextMenuOpen) return;
 
     // 防止页面滚动
-    if (typeof document !== 'undefined') {
-      document.body.style.overflow = 'hidden';
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "hidden";
     }
 
     const handleClickOutside = (e: MouseEvent) => {
@@ -79,8 +74,8 @@ export function SiteCard({
     document.addEventListener("click", handleClickOutside);
 
     return () => {
-      if (typeof document !== 'undefined') {
-        document.body.style.overflow = '';
+      if (typeof document !== "undefined") {
+        document.body.style.overflow = "";
       }
       document.removeEventListener("click", handleClickOutside);
     };
@@ -147,8 +142,8 @@ export function SiteCard({
       return;
     }
 
-    // 打开链接
-    window.open(url, "_blank");
+    // 打开链接（noopener 防止 tab-nabbing）
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   // 右键菜单
@@ -175,9 +170,9 @@ export function SiteCard({
       }
       // 视觉反馈 - 临时缩放
       if (cardRef.current) {
-        cardRef.current.style.transform = 'scale(0.98)';
+        cardRef.current.style.transform = "scale(0.98)";
         setTimeout(() => {
-          if (cardRef.current) cardRef.current.style.transform = '';
+          if (cardRef.current) cardRef.current.style.transform = "";
         }, 150);
       }
     }, 450); // 450ms 长按（略微缩短）
@@ -235,22 +230,29 @@ export function SiteCard({
             <div className="w-12 h-12 rounded-full bg-[var(--error)]/10 flex items-center justify-center border border-[var(--error)]/20">
               <Trash2 className="w-5 h-5 text-[var(--error)]" />
             </div>
-            <AlertDialogTitle className="text-2xl font-bold text-[var(--foreground)]">确认删除站点</AlertDialogTitle>
+            <AlertDialogTitle className="text-2xl font-bold text-[var(--foreground)]">
+              确认删除站点
+            </AlertDialogTitle>
           </div>
           <AlertDialogDescription className="text-[var(--foreground-secondary)] text-base leading-relaxed mt-2">
-            确定要删除 <strong className="text-[var(--error)] font-semibold">{initialTitle}</strong> 吗？
+            确定要删除 <strong className="text-[var(--error)] font-semibold">{initialTitle}</strong>{" "}
+            吗？
             <br />
-            <span className="text-sm text-[var(--muted-foreground)] mt-1 inline-block">此操作无法撤销，数据将从本地和 GitHub 同步删除。</span>
+            <span className="text-sm text-[var(--muted-foreground)] mt-1 inline-block">
+              此操作无法撤销，数据将从本地和 GitHub 同步删除。
+            </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex gap-3 pt-4 mt-4 border-t border-[var(--border)] w-full">
-          <AlertDialogCancel className={cn(
-            "flex-1 h-12 rounded-[var(--radius-xl)] text-base font-medium",
-            "bg-[var(--background)] border border-[var(--border)]",
-            "hover:bg-[var(--background-secondary)] hover:border-[var(--border-strong)]",
-            "transition-all duration-200 active:scale-95",
-            "text-base font-medium"
-          )}>
+          <AlertDialogCancel
+            className={cn(
+              "flex-1 h-12 rounded-[var(--radius-xl)] text-base font-medium",
+              "bg-[var(--background)] border border-[var(--border)]",
+              "hover:bg-[var(--background-secondary)] hover:border-[var(--border-strong)]",
+              "transition-all duration-200 active:scale-95",
+              "text-base font-medium"
+            )}
+          >
             取消
           </AlertDialogCancel>
           <AlertDialogAction
@@ -284,7 +286,7 @@ export function SiteCard({
   );
 
   // 网格视图
-  if (view === 'grid') {
+  if (view === "grid") {
     return (
       <>
         <div
@@ -301,12 +303,15 @@ export function SiteCard({
           onTouchEnd={handleTouchEnd}
           onTouchMove={handleTouchMove}
           onKeyDown={(e) => {
-            if ((e.key === 'Enter' || e.key === ' ') && !isGuestMode) {
+            if ((e.key === "Enter" || e.key === " ") && !isGuestMode) {
               e.preventDefault();
               setIsContextMenuOpen(!isContextMenuOpen);
             }
           }}
-          className={cn("site-card group cursor-pointer bg-[var(--background-secondary)]/85", isContextMenuOpen && "z-[9999]")}
+          className={cn(
+            "site-card group cursor-pointer bg-[var(--background-secondary)]/85",
+            isContextMenuOpen && "z-[9999]"
+          )}
           title={isGuestMode ? "点击打开链接" : "点击打开链接，按 Enter 显示菜单"}
         >
           {/* 图标 */}
@@ -323,7 +328,9 @@ export function SiteCard({
           </div>
 
           {/* 标题 */}
-          <span className="site-title transition-colors group-hover:text-[var(--primary-700)]">{initialTitle}</span>
+          <span className="site-title transition-colors group-hover:text-[var(--primary-700)]">
+            {initialTitle}
+          </span>
 
           {/* 右键菜单 - 仅在非访客模式 */}
           {!isGuestMode && isContextMenuOpen && (
@@ -351,10 +358,12 @@ export function SiteCard({
                 )}
                 aria-label={`编辑 ${initialTitle}`}
               >
-                <div className={cn(
-                  "w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center",
-                  "group-hover:bg-[var(--primary-200)] transition-colors"
-                )}>
+                <div
+                  className={cn(
+                    "w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center",
+                    "group-hover:bg-[var(--primary-200)] transition-colors"
+                  )}
+                >
                   <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)] group-hover:scale-110 transition-transform" />
                 </div>
                 <span>编辑站点</span>
@@ -370,10 +379,12 @@ export function SiteCard({
                 )}
                 aria-label={`删除 ${initialTitle}`}
               >
-                <div className={cn(
-                  "w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center",
-                  "group-hover:bg-[var(--error)]/20 transition-colors"
-                )}>
+                <div
+                  className={cn(
+                    "w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center",
+                    "group-hover:bg-[var(--error)]/20 transition-colors"
+                  )}
+                >
                   <Trash2 className="w-3.5 h-3.5 text-[var(--error)] group-hover:scale-110 transition-transform" />
                 </div>
                 <span>删除站点</span>
@@ -386,11 +397,15 @@ export function SiteCard({
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent className="sm:max-w-md bg-[var(--background)]/95 backdrop-blur-2xl border border-[var(--border)] rounded-[var(--radius-2xl)] shadow-[0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-[var(--foreground)]">编辑站点</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-[var(--foreground)]">
+                编辑站点
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[var(--foreground-secondary)]">标题</label>
+                <label className="text-sm font-medium text-[var(--foreground-secondary)]">
+                  标题
+                </label>
                 <Input
                   placeholder="站点名称"
                   value={editedTitle}
@@ -405,7 +420,9 @@ export function SiteCard({
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[var(--foreground-secondary)]">URL</label>
+                <label className="text-sm font-medium text-[var(--foreground-secondary)]">
+                  URL
+                </label>
                 <Input
                   placeholder="https://example.com"
                   value={editedUrl}
@@ -420,7 +437,9 @@ export function SiteCard({
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[var(--foreground-secondary)]">图标 URL (可选)</label>
+                <label className="text-sm font-medium text-[var(--foreground-secondary)]">
+                  图标 URL (可选)
+                </label>
                 <Input
                   placeholder="https://example.com/favicon.ico"
                   value={editedFavicon}
@@ -484,7 +503,10 @@ export function SiteCard({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
-        className={cn("relative flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)]/90 transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1 cursor-pointer", isContextMenuOpen && "z-[9999]")}
+        className={cn(
+          "relative flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)]/90 transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1 cursor-pointer",
+          isContextMenuOpen && "z-[9999]"
+        )}
         title={isGuestMode ? "点击打开链接" : "点击打开链接，右键或长按显示菜单"}
       >
         {/* 图标 */}
@@ -531,10 +553,12 @@ export function SiteCard({
                 "group relative overflow-hidden whitespace-nowrap cursor-pointer"
               )}
             >
-              <div className={cn(
-                "w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center",
-                "group-hover:bg-[var(--primary-200)] transition-colors"
-              )}>
+              <div
+                className={cn(
+                  "w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center",
+                  "group-hover:bg-[var(--primary-200)] transition-colors"
+                )}
+              >
                 <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)] group-hover:scale-110 transition-transform" />
               </div>
               <span>编辑站点</span>
@@ -548,10 +572,12 @@ export function SiteCard({
                 "group relative overflow-hidden whitespace-nowrap cursor-pointer"
               )}
             >
-              <div className={cn(
-                "w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center",
-                "group-hover:bg-[var(--error)]/20 transition-colors"
-              )}>
+              <div
+                className={cn(
+                  "w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center",
+                  "group-hover:bg-[var(--error)]/20 transition-colors"
+                )}
+              >
                 <Trash2 className="w-3.5 h-3.5 text-[var(--error)] group-hover:scale-110 transition-transform" />
               </div>
               <span>删除站点</span>
@@ -564,7 +590,9 @@ export function SiteCard({
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-md bg-[var(--background)]/95 backdrop-blur-2xl border border-[var(--border)] rounded-[var(--radius-2xl)] shadow-[0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-[var(--foreground)]">编辑站点</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-[var(--foreground)]">
+              编辑站点
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -598,7 +626,9 @@ export function SiteCard({
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[var(--foreground-secondary)]">图标 URL (可选)</label>
+              <label className="text-sm font-medium text-[var(--foreground-secondary)]">
+                图标 URL (可选)
+              </label>
               <Input
                 placeholder="https://example.com/favicon.ico"
                 value={editedFavicon}

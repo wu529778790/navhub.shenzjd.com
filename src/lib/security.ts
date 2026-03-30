@@ -4,20 +4,27 @@
  */
 
 import { NextRequest } from "next/server";
-import { randomBytes } from "node:crypto";
+import { randomBytes, timingSafeEqual } from "node:crypto";
 
-// OAuth state 存储（生产环境应使用 Redis）
-const oauthStateStore = new Map<string, { expires: number }>();
+/**
+ * 时间安全的字符串比较
+ */
+function timingSafeStringCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    // 仍然执行比较以保持恒定时间
+    timingSafeEqual(Buffer.from(a), Buffer.from(b));
+    return false;
+  }
+  return timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
 
 /**
  * 生成 CSRF token
  */
 export function generateCSRFToken(): string {
   if (typeof window === "undefined") {
-    // 服务端：使用 crypto
     return randomBytes(32).toString("hex");
   } else {
-    // 客户端：使用 Web Crypto API
     const array = new Uint8Array(32);
     crypto.getRandomValues(array);
     return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -25,14 +32,13 @@ export function generateCSRFToken(): string {
 }
 
 /**
- * 验证 CSRF token
+ * 验证 CSRF token（时间安全比较）
  */
 export function verifyCSRFToken(token: string, storedToken: string): boolean {
   if (!token || !storedToken) {
     return false;
   }
-  // 使用时间安全的比较
-  return token === storedToken;
+  return timingSafeStringCompare(token, storedToken);
 }
 
 /**
@@ -47,7 +53,6 @@ export function validateOrigin(request: NextRequest): boolean {
     return false;
   }
 
-  // 允许的源
   const allowedOrigins = [
     `https://${host}`,
     `http://${host}`,
@@ -55,12 +60,10 @@ export function validateOrigin(request: NextRequest): boolean {
     `http://${host.replace(":3000", "")}`,
   ];
 
-  // 检查 Origin
   if (origin && !allowedOrigins.some((allowed) => origin.startsWith(allowed))) {
     return false;
   }
 
-  // 检查 Referer
   if (referer && !allowedOrigins.some((allowed) => referer.startsWith(allowed))) {
     return false;
   }
@@ -83,7 +86,6 @@ export function checkRateLimit(
   const record = rateLimitMap.get(identifier);
 
   if (!record || now > record.resetTime) {
-    // 创建新记录
     const resetTime = now + windowMs;
     rateLimitMap.set(identifier, { count: 1, resetTime });
     return { allowed: true, remaining: maxRequests - 1, resetTime };
@@ -93,7 +95,6 @@ export function checkRateLimit(
     return { allowed: false, remaining: 0, resetTime: record.resetTime };
   }
 
-  // 增加计数
   record.count++;
   rateLimitMap.set(identifier, record);
   return {
@@ -160,75 +161,19 @@ export function validateRedirectURI(redirectUri: string, allowedOrigins: string[
 }
 
 /**
- * 生成 OAuth state 参数（CSRF 保护）
- */
-export function generateOAuthState(): string {
-  const state = generateCSRFToken();
-  // 存储 state，10分钟过期
-  oauthStateStore.set(state, { expires: Date.now() + 10 * 60 * 1000 });
-  return state;
-}
-
-/**
- * 验证 OAuth state 参数
- */
-export function validateOAuthState(state: string | null): boolean {
-  if (!state) {
-    return false;
-  }
-
-  const record = oauthStateStore.get(state);
-  if (!record) {
-    return false;
-  }
-
-  // 检查是否过期
-  if (Date.now() > record.expires) {
-    oauthStateStore.delete(state);
-    return false;
-  }
-
-  // 使用后删除（一次性使用）
-  oauthStateStore.delete(state);
-  return true;
-}
-
-/**
- * 清理过期的 OAuth state 记录
- */
-export function cleanupOAuthState(): void {
-  const now = Date.now();
-  for (const [key, value] of oauthStateStore.entries()) {
-    if (now > value.expires) {
-      oauthStateStore.delete(key);
-    }
-  }
-}
-
-// 定期清理（每 5 分钟）
-if (typeof setInterval !== "undefined") {
-  setInterval(cleanupOAuthState, 5 * 60 * 1000);
-}
-
-/**
  * 验证 GitHub token 格式
  */
 export function validateGitHubToken(token: string): boolean {
-  // GitHub token 通常是 40 字符的十六进制字符串
-  // 或者以 github_pat_ 开头的更长的 token
   const githubTokenPattern = /^(gh[pous]_[A-Za-z0-9_]{36,255}|[0-9a-f]{40})$/;
   return githubTokenPattern.test(token);
 }
 
 /**
- * 创建安全响应头
+ * 时间安全的 OAuth state 比较（服务端用）
  */
-export function getSecurityHeaders() {
-  return {
-    "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
-    "X-XSS-Protection": "1; mode=block",
-    "Referrer-Policy": "strict-origin-when-cross-origin",
-    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
-  };
+export function verifyOAuthState(state: string, storedState: string): boolean {
+  if (!state || !storedState) {
+    return false;
+  }
+  return timingSafeStringCompare(state, storedState);
 }

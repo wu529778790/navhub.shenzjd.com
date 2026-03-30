@@ -5,14 +5,7 @@
 
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { useSync } from "@/hooks/use-sync";
 import {
   loadFromLocalStorage,
@@ -41,7 +34,12 @@ interface SitesContextType {
   syncStep: SyncStepInfo | null;
   isOnline: boolean;
   lastSync: Date | null;
-  manualSync: () => Promise<{ success: boolean; message?: string; direction: string; error?: string }>;
+  manualSync: () => Promise<{
+    success: boolean;
+    message?: string;
+    direction: string;
+    error?: string;
+  }>;
   isGuestMode: boolean;
 }
 
@@ -80,14 +78,22 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       checkAuth();
     };
 
-    window.addEventListener('auth-update', handleAuthUpdate);
+    window.addEventListener("auth-update", handleAuthUpdate);
 
     return () => {
-      window.removeEventListener('auth-update', handleAuthUpdate);
+      window.removeEventListener("auth-update", handleAuthUpdate);
     };
   }, []);
 
-  const { status: syncStatus, syncStep, isOnline, lastSync, sync, syncNow, manualSync: runManualSync } = useSync(githubToken);
+  const {
+    status: syncStatus,
+    syncStep,
+    isOnline,
+    lastSync,
+    sync,
+    syncNow,
+    manualSync: runManualSync,
+  } = useSync(githubToken);
 
   // 包装 manualSync 以在同步后刷新数据
   const manualSync = useCallback(async () => {
@@ -170,10 +176,11 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         // 如果本地有有效数据（未过期且有真实内容），直接使用
         if (localData?.categories && localData.categories.length > 0) {
           // 额外检查：如果是空的默认分类且时间戳为 0，仍然需要拉取
-          const isDefaultEmpty = localData.categories.length === 1 &&
-                                 localData.categories[0].id === "default" &&
-                                 localData.categories[0].sites.length === 0 &&
-                                 localData.lastModified === 0;
+          const isDefaultEmpty =
+            localData.categories.length === 1 &&
+            localData.categories[0].id === "default" &&
+            localData.categories[0].sites.length === 0 &&
+            localData.lastModified === 0;
 
           if (!isDefaultEmpty) {
             setSites(localData.categories);
@@ -239,41 +246,30 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       fetchSites(true);
     };
 
-    window.addEventListener('auth-update', handleAuthUpdate);
-    return () => window.removeEventListener('auth-update', handleAuthUpdate);
+    window.addEventListener("auth-update", handleAuthUpdate);
+    return () => window.removeEventListener("auth-update", handleAuthUpdate);
   }, [fetchSites]);
 
-  // 操作函数：立即更新本地 + 后台同步
-  const updateSitesData = useCallback(async (newSites: Category[], immediateSync = false) => {
-    // 访客模式不允许修改
-    if (isGuestMode) {
-      setError("访客模式，无法修改数据（请登录后操作）");
-      return;
-    }
-
-    setSites(newSites);
-    saveSitesToLocalStorage(newSites);
-
-    // 后台同步到 GitHub（如果已登录）
-    if (githubToken && !isGuestMode) {
+  // Helper: sync to GitHub after local update
+  const syncToGitHub = useCallback(
+    async (immediateSync = false) => {
+      if (!githubToken || isGuestMode) return;
       const navData = loadFromLocalStorage();
-      if (navData) {
-        if (immediateSync) {
-          // 关键操作走统一同步入口，避免和防抖同步逻辑分叉
-          try {
-            await syncNow(navData);
-          } catch (error) {
-            console.error("立即同步失败:", error);
-            // 同步失败时，使用防抖同步作为 fallback
-            sync(navData);
-          }
-        } else {
-          // 防抖同步（用于添加操作）
+      if (!navData) return;
+
+      if (immediateSync) {
+        try {
+          await syncNow(navData);
+        } catch (error) {
+          console.error("同步失败:", error);
           sync(navData);
         }
+      } else {
+        sync(navData);
       }
-    }
-  }, [githubToken, sync, syncNow, isGuestMode]);
+    },
+    [githubToken, sync, syncNow, isGuestMode]
+  );
 
   const addSite = async (categoryId: string, site: Site) => {
     if (isGuestMode) {
@@ -281,18 +277,12 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const newSites = sites.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          sites: [...category.sites, site],
-        };
-      }
-      return category;
-    });
-
-    // 添加操作使用防抖同步
-    await updateSitesData(newSites, false);
+    const newSites = sites.map((category) =>
+      category.id === categoryId ? { ...category, sites: [...category.sites, site] } : category
+    );
+    setSites(newSites);
+    saveSitesToLocalStorage(newSites);
+    await syncToGitHub(false);
   };
 
   const updateSite = async (categoryId: string, siteId: string, site: Site) => {
@@ -301,18 +291,14 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const newSites = sites.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          sites: category.sites.map((s) => (s.id === siteId ? site : s)),
-        };
-      }
-      return category;
-    });
-
-    // 修改操作使用立即同步
-    await updateSitesData(newSites, true);
+    const newSites = sites.map((category) =>
+      category.id === categoryId
+        ? { ...category, sites: category.sites.map((s) => (s.id === siteId ? site : s)) }
+        : category
+    );
+    setSites(newSites);
+    saveSitesToLocalStorage(newSites);
+    await syncToGitHub(true);
   };
 
   const deleteSite = async (categoryId: string, siteId: string) => {
@@ -321,18 +307,14 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const newSites = sites.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          sites: category.sites.filter((s) => s.id !== siteId),
-        };
-      }
-      return category;
-    });
-
-    // 删除操作使用立即同步
-    await updateSitesData(newSites, true);
+    const newSites = sites.map((category) =>
+      category.id === categoryId
+        ? { ...category, sites: category.sites.filter((s) => s.id !== siteId) }
+        : category
+    );
+    setSites(newSites);
+    saveSitesToLocalStorage(newSites);
+    await syncToGitHub(true);
   };
 
   const addCategory = async (category: Category) => {
@@ -342,8 +324,9 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     }
 
     const newSites = [...sites, category];
-    // 添加分类使用防抖同步
-    await updateSitesData(newSites, false);
+    setSites(newSites);
+    saveSitesToLocalStorage(newSites);
+    await syncToGitHub(false);
   };
 
   const updateCategory = async (categoryId: string, category: Category) => {
@@ -352,9 +335,10 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const newSites = sites.map((c) => (c.id === categoryId ? category : c));
-    // 修改分类使用立即同步
-    await updateSitesData(newSites, true);
+    const newSites = sites.map((c: Category) => (c.id === categoryId ? category : c));
+    setSites(newSites);
+    saveSitesToLocalStorage(newSites);
+    await syncToGitHub(true);
   };
 
   const deleteCategory = async (categoryId: string) => {
@@ -363,9 +347,10 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const newSites = sites.filter((c) => c.id !== categoryId);
-    // 删除分类使用立即同步
-    await updateSitesData(newSites, true);
+    const newSites = sites.filter((c: Category) => c.id !== categoryId);
+    setSites(newSites);
+    saveSitesToLocalStorage(newSites);
+    await syncToGitHub(true);
   };
 
   const updateSites = async (newSites: Category[]) => {
@@ -374,8 +359,9 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // 批量更新使用立即同步
-    await updateSitesData(newSites, true);
+    setSites(newSites);
+    saveSitesToLocalStorage(newSites);
+    await syncToGitHub(true);
   };
 
   return (
@@ -392,13 +378,14 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         deleteCategory,
         refreshSites: fetchSites,
         updateSites,
-    syncStatus,
-    syncStep,
-    isOnline,
+        syncStatus,
+        syncStep,
+        isOnline,
         lastSync,
         manualSync,
         isGuestMode,
-      }}>
+      }}
+    >
       {children}
     </SitesContext.Provider>
   );
