@@ -32,7 +32,7 @@ describe("FaviconImage", () => {
 
     expect(screen.getByAltText("站点图标")).toHaveAttribute(
       "src",
-      "https://example.com/second.ico"
+      "/api/favicon?src=https%3A%2F%2Fexample.com%2Fsecond.ico"
     );
   });
 });
