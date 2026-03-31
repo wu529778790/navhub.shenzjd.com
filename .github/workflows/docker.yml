@@ -8,11 +8,9 @@ on:
     branches: [main]
 
 env:
-  REGISTRY_DOCKER: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}
-  REGISTRY_GHCR: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
+  IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
-  # ── Lint + Build check ──────────────────────────────
   quality:
     runs-on: ubuntu-latest
     env:
@@ -27,7 +25,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
@@ -36,7 +34,6 @@ jobs:
       - run: pnpm test --run
       - run: pnpm build
 
-  # ── Build & push Docker image ───────────────────────
   build:
     needs: quality
     if: github.event_name != 'pull_request'
@@ -51,12 +48,6 @@ jobs:
 
       - uses: docker/login-action@v3
         with:
-          registry: docker.io
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-      - uses: docker/login-action@v3
-        with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
@@ -64,9 +55,7 @@ jobs:
       - uses: docker/metadata-action@v5
         id: meta
         with:
-          images: |
-            ${{ env.REGISTRY_DOCKER }}
-            ${{ env.REGISTRY_GHCR }}
+          images: ${{ env.IMAGE }}
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -85,7 +74,6 @@ jobs:
             NEXT_PUBLIC_GITHUB_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
             GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}
 
-  # ── Deploy via SSH ──────────────────────────────────
   deploy:
     needs: build
     if: github.ref == 'refs/heads/main'
@@ -99,7 +87,7 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
             cd ${{ secrets.SSH_DEPLOY_PATH }}
-            docker pull ${{ env.REGISTRY_DOCKER }}:main
+            docker pull ${{ env.IMAGE }}:main
             docker compose down
             docker compose up -d
             docker image prune -f
