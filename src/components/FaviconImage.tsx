@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { Globe } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { getRenderableFaviconUrl } from "@/lib/favicon-url";
 
 interface FaviconImageProps {
   src?: string;
@@ -25,13 +26,19 @@ export function FaviconImage({
   iconClassName,
 }: FaviconImageProps) {
   const [loadFailed, setLoadFailed] = useState(false);
-  const shouldShowImage = Boolean(src) && !loadFailed;
+  const resolvedSrc = useMemo(() => getRenderableFaviconUrl(src), [src]);
+
+  useEffect(() => {
+    setLoadFailed(false);
+  }, [resolvedSrc]);
+
+  const shouldShowImage = Boolean(resolvedSrc) && !loadFailed;
 
   if (shouldShowImage) {
     if (fill) {
       return (
         <Image
-          src={src!}
+          src={resolvedSrc!}
           alt={alt}
           fill
           className={imageClassName}
@@ -43,7 +50,7 @@ export function FaviconImage({
 
     return (
       <Image
-        src={src!}
+        src={resolvedSrc!}
         alt={alt}
         width={size}
         height={size}
