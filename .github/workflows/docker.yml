@@ -72,21 +72,3 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             NEXT_PUBLIC_GITHUB_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
-
-  deploy:
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
-          script: |
-            cd ${{ secrets.SSH_DEPLOY_PATH }}
-            docker pull ${{ env.IMAGE }}:main
-            docker compose down
-            docker compose up -d
-            docker image prune -f
