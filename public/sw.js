@@ -7,16 +7,24 @@ const CACHE_NAME = "navhub-v1";
 const OFFLINE_URL = "/offline";
 
 // 静态资源缓存列表
-const STATIC_CACHE_URLS = ["/", "/offline", "/favicon.ico", "/manifest.json"];
+const STATIC_CACHE_URLS = ["/"];
 
 // 安装事件 - 缓存静态资源
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => {
+      .then(async (cache) => {
         console.log("[SW] Caching static resources");
-        return cache.addAll(STATIC_CACHE_URLS);
+        await Promise.all(
+          STATIC_CACHE_URLS.map(async (url) => {
+            try {
+              await cache.add(url);
+            } catch (error) {
+              console.warn("[SW] Failed to precache resource:", url, error);
+            }
+          })
+        );
       })
       .then(() => {
         return self.skipWaiting();

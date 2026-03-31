@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { URL_PARSER_CONFIG } from "@/lib/config";
+import { normalizeExternalAssetUrl } from "@/lib/runtime-policies";
 
 interface ParsedResult {
   title: string;
@@ -275,7 +276,7 @@ async function resolveNoembed(target: string): Promise<{ title?: string } | null
 }
 
 function chooseFavicon(urlObj: URL, fromProvider?: string): string {
-  if (fromProvider) return fromProvider;
+  if (fromProvider) return normalizeExternalAssetUrl(fromProvider);
 
   const hostname = urlObj.hostname;
   return `https://icons.duckduckgo.com/ip3/${hostname}.ico`;

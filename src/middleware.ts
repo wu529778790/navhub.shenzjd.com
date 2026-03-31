@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { buildContentSecurityPolicy } from "@/lib/runtime-policies";
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
@@ -14,15 +15,7 @@ export function middleware(request: NextRequest) {
   );
   response.headers.set(
     "Content-Security-Policy",
-    [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: https://avatars.githubusercontent.com https://www.google.com https://icons.duckduckgo.com https://t1.gstatic.com",
-      "connect-src 'self' https://api.github.com https://raw.githubusercontent.com https://api.microlink.io https://noembed.com",
-      "frame-ancestors 'none'",
-    ].join("; ")
+    buildContentSecurityPolicy()
   );
 
   if (request.nextUrl.protocol === "https:") {
