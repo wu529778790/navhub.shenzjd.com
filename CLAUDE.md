@@ -9,16 +9,16 @@ A personal navigation/bookmarks site ("NavHub") built with Next.js 16 App Router
 ## Commands
 
 ```bash
-pnpm dev                  # Dev server on localhost:3000
-pnpm build                # Production build
-pnpm lint / pnpm lint:fix # ESLint (Next.js + TS rules)
-pnpm format / pnpm format:check  # Prettier on src/**/*
-pnpm type-check           # tsc --noEmit (strict mode)
-pnpm test                  # Vitest (jsdom, globals)
-pnpm test:coverage         # Vitest with v8 coverage
+npm run dev                      # Dev server on localhost:3000
+npm run build                    # Production build
+npm run lint / npm run lint:fix  # ESLint (Next.js + TS rules)
+npm run format / npm run format:check  # Prettier on src/**/*
+npm run type-check               # tsc --noEmit (strict mode)
+npm test                         # Vitest (jsdom, globals)
+npm run test:coverage            # Vitest with v8 coverage
 ```
 
-Single test: `pnpm vitest run src/lib/errors.test.ts`
+Single test: `npx vitest run src/lib/errors.test.ts`
 
 ## Architecture
 

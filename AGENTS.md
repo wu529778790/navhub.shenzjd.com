@@ -8,13 +8,13 @@
 - Static assets are in `public/`; seed/sample data is in `data/` and `src/data/`; operational docs are in `docs/`.
 
 ## Build, Test, and Development Commands
-- `pnpm dev`: start local development server at `http://localhost:3000`.
-- `pnpm build`: create production build.
-- `pnpm start`: run the production build locally.
-- `pnpm lint` / `pnpm lint:fix`: run ESLint (Next.js + TypeScript rules), optionally auto-fix.
-- `pnpm format` / `pnpm format:check`: run Prettier write/check on `src/**/*`.
-- `pnpm type-check`: run strict TypeScript checks with no emit.
-- `pnpm test`, `pnpm test:ui`, `pnpm test:coverage`: run Vitest in CLI, UI, or coverage mode.
+- `npm run dev`: start local development server at `http://localhost:3000`.
+- `npm run build`: create production build.
+- `npm run start`: run the production build locally.
+- `npm run lint` / `npm run lint:fix`: run ESLint (Next.js + TypeScript rules), optionally auto-fix.
+- `npm run format` / `npm run format:check`: run Prettier write/check on `src/**/*`.
+- `npm run type-check`: run strict TypeScript checks with no emit.
+- `npm test`, `npm run test:ui`, `npm run test:coverage`: run Vitest in CLI, UI, or coverage mode.
 
 ## Coding Style & Naming Conventions
 - TypeScript is strict; prefer explicit types for public APIs and shared utilities.
@@ -25,12 +25,12 @@
 ## Testing Guidelines
 - Framework: Vitest + Testing Library (`jsdom`, global test APIs enabled).
 - Keep tests close to the code they validate and use `*.test.ts` naming.
-- Run `pnpm test:coverage` before opening a PR; coverage reports are generated as text, JSON, and HTML.
+- Run `npm run test:coverage` before opening a PR; coverage reports are generated as text, JSON, and HTML.
 
 ## Commit & Pull Request Guidelines
 - Recent history includes automated sync commits (`[skip ci] Auto sync ...`); use clear human-authored messages for feature work.
 - Prefer concise imperative commit subjects, e.g. `feat(sync): improve URL metadata fallback`.
-- PRs should include: purpose/scope, key implementation notes, test evidence (`pnpm test`, `pnpm lint`, `pnpm type-check`), linked issue, and UI screenshots/GIFs when behavior changes.
+- PRs should include: purpose/scope, key implementation notes, test evidence (`npm test`, `npm run lint`, `npm run type-check`), linked issue, and UI screenshots/GIFs when behavior changes.
 
 ## Security & Configuration Tips
 - Copy `.env.example` to `.env.local` for local development.

@@ -30,8 +30,8 @@ cp .env.example .env.local
 ### 3. 运行
 
 ```bash
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 访问 http://localhost:3000
@@ -68,12 +68,12 @@ docker run -d -p 3000:3000 \
 ## 开发
 
 ```bash
-pnpm dev              # 开发服务器
-pnpm build            # 生产构建
-pnpm lint             # ESLint
-pnpm type-check       # TypeScript 类型检查
-pnpm test --run       # 运行测试
-pnpm format           # Prettier 格式化
+npm run dev              # 开发服务器
+npm run build            # 生产构建
+npm run lint             # ESLint
+npm run type-check       # TypeScript 类型检查
+npm test -- --run        # 运行测试
+npm run format           # Prettier 格式化
 ```
 
 ## 安全
