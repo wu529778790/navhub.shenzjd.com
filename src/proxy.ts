@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { buildContentSecurityPolicy } from "@/lib/runtime-policies";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -13,10 +13,7 @@ export function middleware(request: NextRequest) {
     "Permissions-Policy",
     "camera=(), microphone=(), geolocation=()"
   );
-  response.headers.set(
-    "Content-Security-Policy",
-    buildContentSecurityPolicy()
-  );
+  response.headers.set("Content-Security-Policy", buildContentSecurityPolicy());
 
   if (request.nextUrl.protocol === "https:") {
     response.headers.set(
@@ -32,9 +29,7 @@ export const config = {
   matcher: [
     {
       source: "/((?!_next/static|_next/image|favicon.ico).*)",
-      missing: [
-        { type: "header", key: "x-matched-path" },
-      ],
+      missing: [{ type: "header", key: "x-matched-path" }],
     },
   ],
 };
