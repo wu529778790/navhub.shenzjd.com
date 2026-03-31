@@ -7,6 +7,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { shouldEnableServiceWorker } from "@/lib/service-worker-env";
 
 export type SWUpdateStatus = "idle" | "checking" | "available" | "updating";
 
@@ -68,6 +69,15 @@ export function useServiceWorker(): UseServiceWorkerReturn {
     // 检查是否支持 Service Worker
     if (!("serviceWorker" in navigator)) {
       console.warn("[SW] Service Worker not supported");
+      return;
+    }
+
+    if (!shouldEnableServiceWorker(window.location.hostname, process.env.NODE_ENV)) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => {
+          registration.unregister();
+        });
+      });
       return;
     }
 
