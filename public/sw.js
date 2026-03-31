@@ -4,7 +4,7 @@
  */
 
 const CACHE_NAME = "navhub-v1";
-const OFFLINE_URL = "/offline";
+const APP_SHELL_URL = "/";
 
 // 静态资源缓存列表
 const STATIC_CACHE_URLS = ["/"];
@@ -103,9 +103,9 @@ self.addEventListener("fetch", (event) => {
         .catch((error) => {
           console.log("[SW] Fetch failed:", error);
 
-          // 如果是导航请求，返回离线页面
+          // 如果是导航请求，回退到已缓存的首页壳资源
           if (event.request.mode === "navigate") {
-            return caches.match(OFFLINE_URL);
+            return caches.match(APP_SHELL_URL);
           }
 
           // 其他请求，返回空响应或缓存中的其他资源

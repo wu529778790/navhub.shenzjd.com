@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  APP_SHELL_URL,
   buildContentSecurityPolicy,
   normalizeExternalAssetUrl,
   STATIC_CACHE_URLS,
@@ -20,6 +21,12 @@ describe("STATIC_CACHE_URLS", () => {
     expect(STATIC_CACHE_URLS).not.toContain("/offline");
     expect(STATIC_CACHE_URLS).not.toContain("/favicon.ico");
     expect(STATIC_CACHE_URLS).not.toContain("/manifest.json");
+  });
+});
+
+describe("APP_SHELL_URL", () => {
+  it("离线导航回退到已缓存的首页壳资源", () => {
+    expect(APP_SHELL_URL).toBe("/");
   });
 });
 

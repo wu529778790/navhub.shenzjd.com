@@ -1,3 +1,4 @@
+export const APP_SHELL_URL = "/";
 export const STATIC_CACHE_URLS = ["/"] as const;
 
 export function buildContentSecurityPolicy(): string {
