@@ -27,6 +27,12 @@ cp .env.example .env.local
 
 编辑 `.env.local`，填入 OAuth App 的 Client ID 和 Client Secret。
 
+说明：
+
+- 本地开发时，这些环境变量从 `.env.local` 读取
+- Docker 部署时，这些环境变量支持在**容器运行时**注入，不依赖镜像构建阶段
+- `NEXT_PUBLIC_GITHUB_CLIENT_ID` 已改为通过运行时配置接口下发给前端，因此镜像可以一次构建、多环境复用
+
 ### 3. 运行
 
 ```bash
@@ -34,7 +40,7 @@ npm install
 npm run dev
 ```
 
-访问 http://localhost:3000
+访问 `http://localhost:3000`
 
 ## Docker 部署
 
@@ -49,9 +55,17 @@ docker run -d -p 3000:3000 \
 
 镜像由 GitHub Actions 自动构建并推送到 GHCR。
 
+说明：
+
+- 以上环境变量在容器启动时注入即可，无需在 GitHub Actions 构建镜像时提供
+- 如果你还需要覆盖示例仓库来源，也可以在运行时注入：
+  - `NEXT_PUBLIC_GITHUB_OWNER`
+  - `NEXT_PUBLIC_GITHUB_REPO`
+  - `NEXT_PUBLIC_DATA_FILE_PATH`
+
 ## 数据同步
 
-```
+```text
 用户操作 → localStorage (即时) → UI 更新 → 3秒防抖 → /api/github/data → GitHub API → sites.json
 ```
 
@@ -87,7 +101,7 @@ npm run format           # Prettier 格式化
 
 数据存储在你自己的 GitHub 仓库中：
 
-```
+```text
 your_username/navhub.shenzjd.com
 └── data/
     └── sites.json
