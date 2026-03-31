@@ -98,38 +98,40 @@ export function classifyError(error: unknown): GitHubError | Error {
     return error;
   }
 
-  if (error instanceof Error) {
-    const err = error as Error & {
-      status?: number;
-      headers?: Record<string, string>;
-    };
+  // Normalize to a shape with status/message
+  const err = (error instanceof Error ? error : null) as
+    | (Error & { status?: number; headers?: Record<string, string> })
+    | null;
+  const status = (error as { status?: number })?.status;
+  const message = (error as { message?: string })?.message ?? String(error);
 
-    // 检查网络错误
-    if (err.message?.includes("fetch") || err.message?.includes("network")) {
-      return new NetworkError(err.message, error);
-    }
+  // 检查网络错误
+  if (err && (err.message?.includes("fetch") || err.message?.includes("network"))) {
+    return new NetworkError(err.message, error);
+  }
 
-    // 检查 GitHub API 错误
-    if (err.status === 401 || err.status === 403) {
-      if (err.message?.includes("rate limit")) {
-        const retryAfterHeader = err.headers?.["retry-after"];
-        const retryAfter = retryAfterHeader ? Number.parseInt(retryAfterHeader, 10) : undefined;
-        return new RateLimitError("API 调用次数超限，请稍后再试", retryAfter);
-      }
-      if (err.message?.includes("Bad credentials")) {
-        return new AuthError("认证失败，请重新登录", error);
-      }
-      return new PermissionError("没有访问权限", error);
+  // 检查 GitHub API 错误
+  if (status === 401 || status === 403) {
+    if (message?.includes("rate limit")) {
+      const retryAfterHeader = (error as { headers?: Record<string, string> })?.headers?.[
+        "retry-after"
+      ];
+      const retryAfter = retryAfterHeader ? Number.parseInt(retryAfterHeader, 10) : undefined;
+      return new RateLimitError("API 调用次数超限，请稍后再试", retryAfter);
     }
+    if (message?.includes("Bad credentials")) {
+      return new AuthError("认证失败，请重新登录", error);
+    }
+    return new PermissionError("没有访问权限", error);
+  }
 
-    if (err.status === 404) {
-      return new RepositoryError("仓库不存在，请先 Fork 仓库", 404, error);
-    }
+  if (status === 404) {
+    return new RepositoryError("仓库不存在，请先 Fork 仓库", 404, error);
+  }
 
-    // JSON 解析错误
-    if (err instanceof SyntaxError) {
-      return new ParseError("数据格式错误", error);
-    }
+  // JSON 解析错误
+  if (err instanceof SyntaxError) {
+    return new ParseError("数据格式错误", error);
   }
 
   // 默认返回通用错误
