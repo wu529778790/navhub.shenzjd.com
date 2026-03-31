@@ -13,6 +13,13 @@ describe("buildContentSecurityPolicy", () => {
     expect(csp).toContain("https://static.cloudflareinsights.com");
     expect(csp).toContain("https://cloudflareinsights.com");
   });
+
+  it("允许字体样式表和 favicon 服务发起连接", () => {
+    const csp = buildContentSecurityPolicy();
+
+    expect(csp).toContain("https://fonts.googleapis.com");
+    expect(csp).toContain("https://icons.duckduckgo.com");
+  });
 });
 
 describe("STATIC_CACHE_URLS", () => {

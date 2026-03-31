@@ -65,9 +65,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 跳过 API 请求（避免缓存认证数据）
+  // 仅缓存同源请求，避免拦截跨域字体、图片和第三方资源
   try {
     const url = new URL(event.request.url);
+    if (url.origin !== self.location.origin) {
+      return;
+    }
+
     if (url.pathname.startsWith("/api/")) {
       return;
     }

@@ -1,19 +1,20 @@
+/* eslint-disable @next/next/no-img-element */
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { FaviconImage } from "./FaviconImage";
 
 vi.mock("next/image", () => ({
-  default: ({
-    alt,
-    src,
-    unoptimized: _unoptimized,
-    ...props
-  }: React.ImgHTMLAttributes<HTMLImageElement> & {
-    src: string;
-    unoptimized?: boolean;
-  }) => (
-    <img alt={alt} src={src} {...props} />
-  ),
+  default: (
+    props: React.ImgHTMLAttributes<HTMLImageElement> & {
+      src: string;
+      unoptimized?: boolean;
+    }
+  ) => {
+    const imgProps = { ...props };
+    delete imgProps.unoptimized;
+
+    return <img alt={props.alt} src={props.src} {...imgProps} />;
+  },
 }));
 
 describe("FaviconImage", () => {

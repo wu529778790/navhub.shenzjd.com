@@ -22,6 +22,8 @@ export function buildContentSecurityPolicy(): string {
       "https://api.microlink.io",
       "https://noembed.com",
       "https://cloudflareinsights.com",
+      "https://fonts.googleapis.com",
+      "https://icons.duckduckgo.com",
     ].join(" "),
     "frame-ancestors 'none'",
   ].join("; ");
