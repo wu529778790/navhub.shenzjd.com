@@ -25,6 +25,7 @@ function sanitizeErrorMessage(error: unknown): { message: string; status: number
   return { message: "操作失败，请稍后重试", status: 500 };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(_request: NextRequest) {
   try {
     const data = await getDataFromGitHubByCookie<NavData>();

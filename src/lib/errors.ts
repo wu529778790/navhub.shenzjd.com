@@ -111,16 +111,17 @@ export function classifyError(error: unknown): GitHubError | Error {
   }
 
   // 检查 GitHub API 错误
-  if (status === 401 || status === 403) {
+  if (status === 401) {
+    return new AuthError("认证失败，请重新登录", error);
+  }
+
+  if (status === 403) {
     if (message?.includes("rate limit")) {
       const retryAfterHeader = (error as { headers?: Record<string, string> })?.headers?.[
         "retry-after"
       ];
       const retryAfter = retryAfterHeader ? Number.parseInt(retryAfterHeader, 10) : undefined;
       return new RateLimitError("API 调用次数超限，请稍后再试", retryAfter);
-    }
-    if (message?.includes("Bad credentials")) {
-      return new AuthError("认证失败，请重新登录", error);
     }
     return new PermissionError("没有访问权限", error);
   }
