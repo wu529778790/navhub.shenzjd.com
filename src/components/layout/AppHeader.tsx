@@ -12,10 +12,8 @@ import { LogOut, Github, Star, ChevronDown, Settings, RefreshCw } from "lucide-r
 import { getAuthState, clearAuth } from "@/lib/auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
-import { OAUTH_CONFIG } from "@/lib/config";
+import { getRuntimePublicConfig, type RuntimePublicConfig } from "@/lib/runtime-public-config";
 import Image from "next/image";
-
-const GITHUB_CLIENT_ID = OAUTH_CONFIG.CLIENT_ID;
 
 export function AppHeader() {
   const { isOnline, manualSync, syncStep } = useSites();
@@ -26,6 +24,9 @@ export function AppHeader() {
   const [showForkModal, setShowForkModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [githubClientId, setGithubClientId] = useState("");
+  const [runtimeConfigLoaded, setRuntimeConfigLoaded] = useState(false);
+  const [runtimeConfig, setRuntimeConfig] = useState<RuntimePublicConfig | null>(null);
 
   useEffect(() => {
     void (async () => {
@@ -39,6 +40,12 @@ export function AppHeader() {
       }
 
       const auth = await getAuthState(true);
+      const loadedRuntimeConfig = await getRuntimePublicConfig().catch(() => null);
+      if (loadedRuntimeConfig) {
+        setRuntimeConfig(loadedRuntimeConfig);
+        setGithubClientId(loadedRuntimeConfig.githubClientId);
+      }
+      setRuntimeConfigLoaded(true);
       if (auth.token && auth.user) {
         setSession({ user: auth.user, token: auth.token });
         if (oauthSuccess) {
@@ -50,11 +57,27 @@ export function AppHeader() {
     })();
   }, [showToast]);
 
-  const handleGitHubLogin = () => {
-    if (!GITHUB_CLIENT_ID) {
+  const handleGitHubLogin = async () => {
+    let clientId = githubClientId;
+    if (!clientId) {
+      const loadedRuntimeConfig = await getRuntimePublicConfig().catch(() => null);
+      if (!loadedRuntimeConfig) {
+        setRuntimeConfigLoaded(true);
+        showToast("运行时配置加载失败，请稍后重试", "error");
+        return;
+      }
+
+      setRuntimeConfig(loadedRuntimeConfig);
+      clientId = loadedRuntimeConfig.githubClientId;
+      setGithubClientId(loadedRuntimeConfig.githubClientId);
+      setRuntimeConfigLoaded(true);
+    }
+
+    if (!clientId) {
       showToast("请配置 NEXT_PUBLIC_GITHUB_CLIENT_ID 环境变量", "error");
       return;
     }
+
     setShowForkModal(true);
   };
 
@@ -167,7 +190,7 @@ export function AppHeader() {
             <SyncStatus />
 
             <a
-              href="https://github.com/wu529778790/navhub.shenzjd.com"
+              href={`https://github.com/${runtimeConfig?.githubOwner || "wu529778790"}/${runtimeConfig?.githubRepo || "navhub.shenzjd.com"}`}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden items-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)] px-3 py-1.5 text-sm font-semibold text-[var(--foreground-secondary)] transition-colors hover:border-[var(--primary-300)] hover:text-[var(--primary-700)] sm:flex"
@@ -213,7 +236,14 @@ export function AppHeader() {
                 )}
               </div>
             ) : (
-              <Button size="sm" onClick={handleGitHubLogin} className="gap-2 shadow-md transition-all hover:shadow-lg">
+              <Button
+                size="sm"
+                onClick={() => {
+                  void handleGitHubLogin();
+                }}
+                disabled={!runtimeConfigLoaded && !githubClientId}
+                className="gap-2 shadow-md transition-all hover:shadow-lg"
+              >
                 <Github className="h-4 w-4" />
                 登录
               </Button>
@@ -232,16 +262,18 @@ export function AppHeader() {
             <div className="mb-6 space-y-3 text-sm text-[var(--foreground-secondary)]">
               <p>
                 登录后，系统会自动 Fork 仓库
-                <code className="ml-1 rounded bg-[var(--muted)] px-2 py-0.5">wu529778790/navhub.shenzjd.com</code>
+                <code className="ml-1 rounded bg-[var(--muted)] px-2 py-0.5">
+                  {runtimeConfig?.githubOwner || "wu529778790"}/{runtimeConfig?.githubRepo || "navhub.shenzjd.com"}
+                </code>
                 到你的 GitHub 账户。
               </p>
               <p>数据将存放在你的仓库中：</p>
               <ul className="ml-4 list-inside list-disc space-y-1">
                 <li>
-                  文件路径: <code className="rounded bg-[var(--muted)] px-2 py-0.5">data/sites.json</code>
+                  文件路径: <code className="rounded bg-[var(--muted)] px-2 py-0.5">{runtimeConfig?.dataFilePath || "data/sites.json"}</code>
                 </li>
                 <li>
-                  仓库名称: <code className="rounded bg-[var(--muted)] px-2 py-0.5">navhub.shenzjd.com</code>
+                  仓库名称: <code className="rounded bg-[var(--muted)] px-2 py-0.5">{runtimeConfig?.githubRepo || "navhub.shenzjd.com"}</code>
                 </li>
               </ul>
             </div>
@@ -280,10 +312,10 @@ export function AppHeader() {
                   <div className="space-y-1 text-xs text-[var(--muted-foreground)]">
                     <div>• 数据自动同步到你的 GitHub 仓库</div>
                     <div>
-                      • 仓库: <code className="rounded bg-[var(--muted)] px-1.5 py-0.5">navhub.shenzjd.com</code>
+                      • 仓库: <code className="rounded bg-[var(--muted)] px-1.5 py-0.5">{runtimeConfig?.githubRepo || "navhub.shenzjd.com"}</code>
                     </div>
                     <div>
-                      • 文件: <code className="rounded bg-[var(--muted)] px-1.5 py-0.5">data/sites.json</code>
+                      • 文件: <code className="rounded bg-[var(--muted)] px-1.5 py-0.5">{runtimeConfig?.dataFilePath || "data/sites.json"}</code>
                     </div>
                   </div>
                 </div>

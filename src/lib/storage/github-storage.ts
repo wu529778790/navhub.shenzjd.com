@@ -4,11 +4,7 @@
  */
 
 import type { NavData } from "./local-storage";
-import { GITHUB_CONFIG } from "@/lib/config";
-
-const ORIGINAL_OWNER = GITHUB_CONFIG.ORIGINAL_OWNER;
-const ORIGINAL_REPO = GITHUB_CONFIG.ORIGINAL_REPO;
-const DATA_FILE_PATH = GITHUB_CONFIG.DATA_FILE_PATH;
+import { getRuntimePublicConfig } from "@/lib/runtime-public-config";
 
 export async function getDataFromGitHub(_token?: string): Promise<NavData | null> {
   void _token;
@@ -50,8 +46,13 @@ export async function saveDataToGitHub(_token: string, data: NavData, message?: 
 }
 
 export async function getYourDataFromGitHub(): Promise<NavData | null> {
+  const runtimeConfig = await getRuntimePublicConfig().catch(() => null);
+  if (!runtimeConfig) {
+    throw new Error("运行时配置加载失败");
+  }
+
   try {
-    const rawUrl = `https://raw.githubusercontent.com/${ORIGINAL_OWNER}/${ORIGINAL_REPO}/main/${DATA_FILE_PATH}`;
+    const rawUrl = `https://raw.githubusercontent.com/${runtimeConfig.githubOwner}/${runtimeConfig.githubRepo}/main/${runtimeConfig.dataFilePath}`;
     const response = await fetch(rawUrl, {
       headers: {
         Accept: "application/json",
@@ -62,7 +63,7 @@ export async function getYourDataFromGitHub(): Promise<NavData | null> {
 
     if (!response.ok) {
       const apiResponse = await fetch(
-        `https://api.github.com/repos/${ORIGINAL_OWNER}/${ORIGINAL_REPO}/contents/${DATA_FILE_PATH}`,
+        `https://api.github.com/repos/${runtimeConfig.githubOwner}/${runtimeConfig.githubRepo}/contents/${runtimeConfig.dataFilePath}`,
         {
           headers: {
             Accept: "application/vnd.github+json",

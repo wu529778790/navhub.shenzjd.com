@@ -150,6 +150,12 @@ export function SitesProvider({ children }: { children: ReactNode }) {
           }
         } catch (guestError) {
           console.error("读取示例数据失败:", guestError);
+          if (
+            guestError instanceof Error &&
+            guestError.message.includes("运行时配置加载失败")
+          ) {
+            throw guestError;
+          }
         }
         // 如果 GitHub 拉取失败，继续执行后面的 fallback 逻辑
       }
@@ -235,7 +241,6 @@ export function SitesProvider({ children }: { children: ReactNode }) {
 
   // 组件挂载时加载数据
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchSites();
   }, [fetchSites]);
 
