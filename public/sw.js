@@ -3,7 +3,7 @@
  * Provides offline support and caching
  */
 
-const CACHE_NAME = "navhub-v2";
+const CACHE_NAME = "navhub-v3";
 const APP_SHELL_URL = "/";
 
 // 静态资源缓存列表
