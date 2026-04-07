@@ -1,15 +1,13 @@
-/** @type {import("next").NextConfig} */
-const nextConfig = {
-  // Enable gzip compression.
+import type { NextConfig } from "next";
+import { buildContentSecurityPolicy } from "./src/lib/runtime-policies";
+
+const nextConfig: NextConfig = {
   compress: true,
-  // Remove the X-Powered-By header for a smaller fingerprint.
   poweredByHeader: false,
-  // Keep React strict mode enabled for development diagnostics.
   reactStrictMode: true,
-  // Use standalone output for Docker deployments.
   output: "standalone",
-  // Prevent CDN from caching HTML pages — only static assets should be cached.
   async headers() {
+    const csp = buildContentSecurityPolicy();
     return [
       {
         source: "/((?!_next/static|_next/image|favicon.ico|sw\\.js).*)",
@@ -18,11 +16,14 @@ const nextConfig = {
             key: "Cache-Control",
             value: "public, max-age=0, s-maxage=0, must-revalidate",
           },
+          {
+            key: "Content-Security-Policy",
+            value: csp,
+          },
         ],
       },
     ];
   },
-  // Allow loading GitHub avatars through next/image.
   images: {
     remotePatterns: [
       {
@@ -33,4 +34,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
