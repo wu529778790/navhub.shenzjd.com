@@ -33,4 +33,6 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 USER nextjs
-CMD ["node", "server.js"]
+# Must use shell form to override Docker's automatic HOSTNAME (container ID)
+# Otherwise standalone server.js listens on wrong address → 502
+CMD HOSTNAME=0.0.0.0 node server.js

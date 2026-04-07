@@ -11,6 +11,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - HOSTNAME=0.0.0.0
       - NEXT_PUBLIC_GITHUB_CLIENT_ID=${NEXT_PUBLIC_GITHUB_CLIENT_ID}
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
     restart: unless-stopped
