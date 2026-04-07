@@ -3,7 +3,7 @@
  * Provides offline support and caching
  */
 
-const CACHE_NAME = "navhub-v1";
+const CACHE_NAME = "navhub-v2";
 const APP_SHELL_URL = "/";
 
 // 静态资源缓存列表
@@ -66,8 +66,9 @@ self.addEventListener("fetch", (event) => {
   }
 
   // 仅缓存同源请求，避免拦截跨域字体、图片和第三方资源
+  let url;
   try {
-    const url = new URL(event.request.url);
+    url = new URL(event.request.url);
     if (url.origin !== self.location.origin) {
       return;
     }
@@ -77,42 +78,59 @@ self.addEventListener("fetch", (event) => {
     }
   } catch {
     // ignore invalid URLs
+    return;
   }
 
+  // 对 _next/static/ 资源和导航请求使用 network-first 策略
+  // 确保每次部署新版本时都能获取最新的 chunk
+  if (url.pathname.startsWith("/_next/static/") || event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === "basic") {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            if (event.request.mode === "navigate") {
+              return caches.match(APP_SHELL_URL);
+            }
+            return new Response("Offline");
+          });
+        })
+    );
+    return;
+  }
+
+  // 其他同源请求使用 cache-first 策略
   event.respondWith(
     caches.match(event.request).then((response) => {
-      // 如果缓存中有响应，直接返回
       if (response) {
         return response;
       }
 
-      // 否则，发起网络请求
       return fetch(event.request)
         .then((response) => {
-          // 检查是否是有效响应
           if (!response || response.status !== 200 || response.type !== "basic") {
             return response;
           }
 
-          // 克隆响应，因为响应流只能使用一次
           const responseToCache = response.clone();
-
-          // 将新响应添加到缓存
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
 
           return response;
         })
-        .catch((error) => {
-          console.log("[SW] Fetch failed:", error);
-
-          // 如果是导航请求，回退到已缓存的首页壳资源
-          if (event.request.mode === "navigate") {
-            return caches.match(APP_SHELL_URL);
-          }
-
-          // 其他请求，返回空响应或缓存中的其他资源
+        .catch(() => {
           return new Response("Offline");
         });
     })

@@ -6,6 +6,8 @@ const nextConfig = {
   poweredByHeader: false,
   // Keep React strict mode enabled for development diagnostics.
   reactStrictMode: true,
+  // Use standalone output for Docker deployments.
+  output: "standalone",
   // Allow loading GitHub avatars through next/image.
   images: {
     remotePatterns: [
