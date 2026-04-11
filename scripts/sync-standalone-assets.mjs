@@ -28,7 +28,34 @@ function copyDir(src, dest) {
   console.log("[sync-standalone]", path.relative(root, src), "→", path.relative(root, dest));
 }
 
+/** @param {string} dir */
+function countFilesRecursive(dir) {
+  if (!fs.existsSync(dir)) return -1;
+  let n = 0;
+  for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, ent.name);
+    if (ent.isDirectory()) n += countFilesRecursive(p);
+    else n += 1;
+  }
+  return n;
+}
+
 const standaloneNext = path.join(standaloneRoot, ".next");
 fs.mkdirSync(standaloneNext, { recursive: true });
-copyDir(path.join(root, ".next", "static"), path.join(standaloneNext, "static"));
+const staticSrc = path.join(root, ".next", "static");
+const staticDest = path.join(standaloneNext, "static");
+copyDir(staticSrc, staticDest);
 copyDir(path.join(root, "public"), path.join(standaloneRoot, "public"));
+
+const srcCount = countFilesRecursive(staticSrc);
+const destCount = countFilesRecursive(staticDest);
+if (srcCount < 1 || destCount !== srcCount) {
+  console.error("[sync-standalone] Static copy verification failed:", {
+    ".next/static files": srcCount,
+    "standalone/.next/static files": destCount,
+  });
+  console.error(
+    "[sync-standalone] Fix: run a clean `npm run build`; deploy the entire `.next/standalone` output."
+  );
+  process.exit(1);
+}
