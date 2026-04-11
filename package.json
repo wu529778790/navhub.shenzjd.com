@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && node scripts/sync-standalone-assets.cjs",
+    "build": "next build && node scripts/sync-standalone-assets.mjs",
     "start": "node server.js",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
