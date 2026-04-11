@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+import { buildContentSecurityPolicy } from "@/lib/runtime-policies";
+
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
   // HTML must not live in shared caches (CDN): `private` keeps documents off the edge; `no-cache`
   // forces revalidation in the browser. Hashed assets under `/_next/static/` stay long-cache/immutable.
   response.headers.set("Cache-Control", "private, no-cache, must-revalidate");
+  // Set CSP here (not only in next.config headers) so prerender/route-cache cannot serve stale CSP.
+  response.headers.set("Content-Security-Policy", buildContentSecurityPolicy());
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-XSS-Protection", "1; mode=block");
