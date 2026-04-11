@@ -3,11 +3,11 @@
  * Provides offline support and caching
  */
 
-const CACHE_NAME = "navhub-v3";
+const CACHE_NAME = "navhub-v4";
 const APP_SHELL_URL = "/";
 
-// 静态资源缓存列表
-const STATIC_CACHE_URLS = ["/"];
+// 不预缓存 HTML：首页脚本 URL 随构建变化，install 时 cache.add("/") 会长期固定旧 chunk 列表。
+const STATIC_CACHE_URLS = [];
 
 // 安装事件 - 缓存静态资源
 self.addEventListener("install", (event) => {
@@ -84,8 +84,9 @@ self.addEventListener("fetch", (event) => {
   // 对 _next/static/ 资源和导航请求使用 network-first 策略
   // 确保每次部署新版本时都能获取最新的 chunk
   if (url.pathname.startsWith("/_next/static/") || event.request.mode === "navigate") {
+    const networkRequest = new Request(event.request, { cache: "no-store" });
     event.respondWith(
-      fetch(event.request)
+      fetch(networkRequest)
         .then((response) => {
           if (response && response.status === 200 && response.type === "basic") {
             const responseToCache = response.clone();

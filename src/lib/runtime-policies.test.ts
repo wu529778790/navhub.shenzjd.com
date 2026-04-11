@@ -23,8 +23,8 @@ describe("buildContentSecurityPolicy", () => {
 });
 
 describe("STATIC_CACHE_URLS", () => {
-  it("只预缓存仓库中稳定存在的静态资源", () => {
-    expect(STATIC_CACHE_URLS).toEqual(["/"]);
+  it("不预缓存首页，避免安装 SW 时把旧构建的 chunk 列表写入缓存", () => {
+    expect(STATIC_CACHE_URLS).toEqual([]);
     expect(STATIC_CACHE_URLS).not.toContain("/offline");
     expect(STATIC_CACHE_URLS).not.toContain("/favicon.ico");
     expect(STATIC_CACHE_URLS).not.toContain("/manifest.json");

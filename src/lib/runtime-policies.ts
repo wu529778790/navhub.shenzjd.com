@@ -1,5 +1,6 @@
 export const APP_SHELL_URL = "/";
-export const STATIC_CACHE_URLS = ["/"] as const;
+/** Do not precache `/` — it embeds build-specific chunk URLs and causes stale-shell404s after deploy. */
+export const STATIC_CACHE_URLS = [] as const;
 
 export function buildContentSecurityPolicy(): string {
   return [
