@@ -191,8 +191,13 @@ export default function Home() {
   // 快捷键支持
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ctrl/Cmd + Shift + N: 新建分类（避免与浏览器新建标签页冲突）
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "n") {
+      // Ctrl/Cmd + Alt + N: 新建分类（避免与 Ctrl+Shift+N 打开无痕/隐私窗口冲突）
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.altKey &&
+        !e.shiftKey &&
+        e.key.toLowerCase() === "n"
+      ) {
         e.preventDefault();
         if (!isGuestMode) setShowAddCategoryDialog(true);
       }
@@ -310,7 +315,7 @@ export default function Home() {
         </div>
         {!isGuestMode && (
           <div className="mt-4 text-xs text-[var(--muted-foreground)]">
-            <span className="kbd">Ctrl/Cmd</span> + <span className="kbd">Shift</span> +{" "}
+            <span className="kbd">Ctrl/Cmd</span> + <span className="kbd">Alt</span> +{" "}
             <span className="kbd">N</span> 快速新建
           </div>
         )}
@@ -341,7 +346,7 @@ export default function Home() {
               >
                 <Plus className="w-4 h-4" />
                 新建
-                <span className="hidden sm:inline text-xs opacity-75 ml-1">(Ctrl/Cmd+Shift+N)</span>
+                <span className="hidden sm:inline text-xs opacity-75 ml-1">(Ctrl/Cmd+Alt+N)</span>
               </Button>
             )}
           </div>
@@ -422,7 +427,7 @@ export default function Home() {
                 <span>快速搜索</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="kbd">Ctrl/Cmd</span> + <span className="kbd">Shift</span> +{" "}
+                <span className="kbd">Ctrl/Cmd</span> + <span className="kbd">Alt</span> +{" "}
                 <span className="kbd">N</span>
                 <span>新建分类</span>
               </div>
