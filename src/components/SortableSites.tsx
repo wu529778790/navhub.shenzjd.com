@@ -119,7 +119,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
   // 网格视图布局
   if (view === 'grid') {
     return (
-      <div className="group">
+      <div>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -144,9 +144,9 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
               </SortableItem>
             ))}
 
-            {/* 添加站点卡片 - hover 时显示 */}
+            {/* 添加站点卡片（登录态始终可见） */}
             {!isGuestMode && (
-              <div className="w-[100px] h-[100px] flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="w-[100px] h-[100px] flex-shrink-0">
                 <AddSiteCard
                   activeCategory={category.id}
                   onSuccess={onSiteChange}
@@ -163,7 +163,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
 
   // 列表视图布局
   return (
-    <div className="group">
+    <div>
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
@@ -188,15 +188,13 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
             </SortableItem>
           ))}
 
-          {/* 添加站点卡片 - hover 时显示 */}
+          {/* 添加站点卡片（登录态始终可见） */}
           {!isGuestMode && (
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <AddSiteCard
-                activeCategory={category.id}
-                onSuccess={onSiteChange}
-                view="list"
-              />
-            </div>
+            <AddSiteCard
+              activeCategory={category.id}
+              onSuccess={onSiteChange}
+              view="list"
+            />
           )}
         </div>
       </SortableContext>
