@@ -128,7 +128,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
           items={category.sites.map((site) => site.id)}
           strategy={rectSortingStrategy}
         >
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full group/sites">
             {category.sites.map((site) => (
               <SortableItem key={site.id} id={site.id}>
                 <SiteCard
@@ -143,9 +143,9 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
               </SortableItem>
             ))}
 
-            {/* 添加站点卡片 - 放在站点列表后面 */}
+            {/* 添加站点卡片 - hover 时显示 */}
             {!isGuestMode && (
-              <div className="w-[100px] h-[100px] flex-shrink-0">
+              <div className="w-[100px] h-[100px] flex-shrink-0 opacity-0 group-hover/sites:opacity-100 transition-opacity duration-200">
                 <AddSiteCard
                   activeCategory={category.id}
                   onSuccess={onSiteChange}
@@ -170,7 +170,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
         items={category.sites.map((site) => site.id)}
         strategy={verticalListSortingStrategy}
       >
-        <div className="flex flex-col gap-2 mt-2">
+        <div className="flex flex-col gap-2 mt-2 group/sites">
           {category.sites.map((site) => (
             <SortableItem key={site.id} id={site.id}>
               <SiteCard
@@ -185,13 +185,15 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
             </SortableItem>
           ))}
 
-          {/* 添加站点卡片 - 放在站点列表后面 */}
+          {/* 添加站点卡片 - hover 时显示 */}
           {!isGuestMode && (
-            <AddSiteCard
-              activeCategory={category.id}
-              onSuccess={onSiteChange}
-              view="list"
-            />
+            <div className="opacity-0 group-hover/sites:opacity-100 transition-opacity duration-200">
+              <AddSiteCard
+                activeCategory={category.id}
+                onSuccess={onSiteChange}
+                view="list"
+              />
+            </div>
           )}
         </div>
       </SortableContext>

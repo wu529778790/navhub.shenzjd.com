@@ -88,7 +88,7 @@ function SortableCategoryItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="category-card p-5"
+      className="category-card group p-5"
       id={`category-${category.id}`}
     >
       {/* 分类标题栏 - 支持拖拽和点击编辑 */}
@@ -114,7 +114,7 @@ function SortableCategoryItem({
         </div>
 
         {!isGuestMode && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <Button
               variant="ghost"
               size="sm"
