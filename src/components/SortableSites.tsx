@@ -119,6 +119,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
   // 网格视图布局
   if (view === 'grid') {
     return (
+      <div className="group">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -128,7 +129,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
           items={category.sites.map((site) => site.id)}
           strategy={rectSortingStrategy}
         >
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full group/sites">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full">
             {category.sites.map((site) => (
               <SortableItem key={site.id} id={site.id}>
                 <SiteCard
@@ -145,7 +146,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
 
             {/* 添加站点卡片 - hover 时显示 */}
             {!isGuestMode && (
-              <div className="w-[100px] h-[100px] flex-shrink-0 opacity-0 group-hover/sites:opacity-100 transition-opacity duration-200">
+              <div className="w-[100px] h-[100px] flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <AddSiteCard
                   activeCategory={category.id}
                   onSuccess={onSiteChange}
@@ -156,11 +157,13 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
           </div>
         </SortableContext>
       </DndContext>
+      </div>
     );
   }
 
   // 列表视图布局
   return (
+    <div className="group">
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
@@ -170,7 +173,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
         items={category.sites.map((site) => site.id)}
         strategy={verticalListSortingStrategy}
       >
-        <div className="flex flex-col gap-2 mt-2 group/sites">
+        <div className="flex flex-col gap-2 mt-2">
           {category.sites.map((site) => (
             <SortableItem key={site.id} id={site.id}>
               <SiteCard
@@ -187,7 +190,7 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
 
           {/* 添加站点卡片 - hover 时显示 */}
           {!isGuestMode && (
-            <div className="opacity-0 group-hover/sites:opacity-100 transition-opacity duration-200">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <AddSiteCard
                 activeCategory={category.id}
                 onSuccess={onSiteChange}
@@ -198,5 +201,6 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
         </div>
       </SortableContext>
     </DndContext>
+    </div>
   );
 }
