@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1776438865734,
+  "lastModified": 1776746914255,
   "categories": [
     {
       "id": "default",
@@ -222,6 +222,12 @@
           "title": "HomeAssistant论坛 | HomeKit论坛 | Node-Red论坛 | ESPHome论坛-『瀚思彼岸』» 智能家居技术论坛！ - Powered by Discuz!",
           "url": "https://bbs.hassbian.com/forum.php",
           "favicon": "https://bbs.hassbian.com/favicon.ico"
+        },
+        {
+          "id": "0d387c75-9721-4970-8471-ab1e25bc2b69",
+          "title": "北京航空航天大学",
+          "url": "https://mail.buaa.edu.cn/coremail/",
+          "favicon": "https://mail.buaa.edu.cn/favicon.ico"
         }
       ]
     },
