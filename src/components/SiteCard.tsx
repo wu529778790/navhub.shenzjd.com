@@ -146,13 +146,28 @@ export function SiteCard({
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  const openContextMenu = () => {
+    if (isGuestMode) return;
+    setIsContextMenuOpen(true);
+  };
+
   // 右键菜单
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isGuestMode) return;
+    openContextMenu();
+  };
 
-    setIsContextMenuOpen(true);
+  // 在捕获阶段优先拦截右键，避免被拖拽监听或浏览器默认菜单抢走
+  const handleContextMenuCapture = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openContextMenu();
+  };
+
+  const handleSecondaryPointerCapture = (e: React.MouseEvent | React.PointerEvent) => {
+    if (e.button !== 2) return;
+    e.stopPropagation();
   };
 
   // 长按处理（移动端）- Skills 规范优化
@@ -298,7 +313,10 @@ export function SiteCard({
           aria-haspopup={!isGuestMode}
           aria-expanded={isContextMenuOpen}
           onClick={handleCardClick}
+          onContextMenuCapture={handleContextMenuCapture}
           onContextMenu={handleContextMenu}
+          onPointerDownCapture={handleSecondaryPointerCapture}
+          onMouseDownCapture={handleSecondaryPointerCapture}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onTouchMove={handleTouchMove}
@@ -499,7 +517,10 @@ export function SiteCard({
         ref={cardRef}
         key={id}
         onClick={handleCardClick}
+        onContextMenuCapture={handleContextMenuCapture}
         onContextMenu={handleContextMenu}
+        onPointerDownCapture={handleSecondaryPointerCapture}
+        onMouseDownCapture={handleSecondaryPointerCapture}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
