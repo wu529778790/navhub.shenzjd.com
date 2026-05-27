@@ -29,7 +29,10 @@ function sanitizeErrorMessage(error: unknown): { message: string; status: number
 export async function GET(_request: NextRequest) {
   try {
     const data = await getDataFromGitHubByCookie<NavData>();
-    return NextResponse.json({ data });
+    return NextResponse.json(
+      { data },
+      { headers: { "Cache-Control": "no-store" } }
+    );
   } catch (error) {
     const { message, status } = sanitizeErrorMessage(error);
     if (status === 404) {

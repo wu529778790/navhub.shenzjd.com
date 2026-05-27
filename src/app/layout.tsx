@@ -6,8 +6,8 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { UpdateBanner } from "@/components/UpdateBanner";
 
-// Avoid prerendered HTML being cached at the edge with long s-maxage; stale HTML
-// + new deployment causes _next/static/chunks/*.js 404 and MIME errors.
+// Avoid prerendered HTML being cached at the edge; stale HTML + new deployment
+// causes _next/static/chunks/*.js 404 and MIME errors.
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
