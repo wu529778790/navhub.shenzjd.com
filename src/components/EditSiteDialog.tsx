@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { siteTitleSchema, urlSchema } from "@/lib/validation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface EditSiteDialogProps {
@@ -27,8 +28,23 @@ export function EditSiteDialog({
   const [url, setUrl] = useState(initialUrl);
   const [favicon, setFavicon] = useState(initialFavicon);
   const [isLoading, setIsLoading] = useState(false);
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const [urlError, setUrlError] = useState<string | null>(null);
+  const isFormValid = title.trim().length > 0 && url.trim().length > 0 && !titleError && !urlError;
 
   const handleSave = async () => {
+    const titleResult = siteTitleSchema.safeParse(title);
+    const urlResult = urlSchema.safeParse(url);
+
+    if (!titleResult.success) {
+      setTitleError(titleResult.error.issues[0]?.message || "标题无效");
+      return;
+    }
+    if (!urlResult.success) {
+      setUrlError(urlResult.error.issues[0]?.message || "URL 无效");
+      return;
+    }
+
     try {
       setIsLoading(true);
       await onSave({ title, url, favicon });
@@ -52,7 +68,7 @@ export function EditSiteDialog({
             <Input
               placeholder="站点名称"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => { setTitle(e.target.value); setTitleError(null); }}
               disabled={isLoading}
               className={cn(
                 "h-12 rounded-[var(--radius-lg)]",
@@ -61,13 +77,14 @@ export function EditSiteDialog({
                 "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
               )}
             />
+            {titleError && <p className="text-xs text-[var(--error)]">{titleError}</p>}
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-[var(--foreground-secondary)]">URL</label>
             <Input
               placeholder="https://example.com"
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => { setUrl(e.target.value); setUrlError(null); }}
               disabled={isLoading}
               className={cn(
                 "h-12 rounded-[var(--radius-lg)]",
@@ -76,6 +93,7 @@ export function EditSiteDialog({
                 "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
               )}
             />
+            {urlError && <p className="text-xs text-[var(--error)]">{urlError}</p>}
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-[var(--foreground-secondary)]">
@@ -119,7 +137,7 @@ export function EditSiteDialog({
               "transition-all duration-200 active:scale-95",
               "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
             )}
-            disabled={isLoading}
+            disabled={isLoading || !isFormValid}
           >
             {isLoading ? "保存中..." : "保存"}
           </Button>
