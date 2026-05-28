@@ -20,9 +20,7 @@ export function UpdateBanner() {
         <div className="flex items-start gap-3">
           <div className="flex-1">
             <h3 className="font-semibold text-sm mb-1">发现新版本</h3>
-            <p className="text-xs text-white/80">
-              点击更新按钮获取最新功能和修复
-            </p>
+            <p className="text-xs text-white/80">点击更新按钮获取最新功能和修复</p>
           </div>
           <button
             onClick={applyUpdate}

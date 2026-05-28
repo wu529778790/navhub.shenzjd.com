@@ -83,9 +83,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               </div>
               <div>
                 <h1 className="text-xl font-bold text-[var(--foreground)]">出错了</h1>
-                <p className="text-sm text-[var(--muted-foreground)] mt-1">
-                  应用遇到了一个错误
-                </p>
+                <p className="text-sm text-[var(--muted-foreground)] mt-1">应用遇到了一个错误</p>
               </div>
             </div>
 
@@ -108,26 +106,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             )}
 
             <div className="flex flex-col sm:flex-row gap-2">
-              <Button
-                onClick={this.handleReset}
-                variant="outline"
-                className="flex-1 gap-2"
-              >
+              <Button onClick={this.handleReset} variant="outline" className="flex-1 gap-2">
                 <RefreshCw className="w-4 h-4" />
                 重试
               </Button>
-              <Button
-                onClick={this.handleReload}
-                variant="outline"
-                className="flex-1 gap-2"
-              >
+              <Button onClick={this.handleReload} variant="outline" className="flex-1 gap-2">
                 <RefreshCw className="w-4 h-4" />
                 刷新页面
               </Button>
-              <Button
-                onClick={this.handleGoHome}
-                className="flex-1 gap-2"
-              >
+              <Button onClick={this.handleGoHome} className="flex-1 gap-2">
                 <Home className="w-4 h-4" />
                 返回首页
               </Button>

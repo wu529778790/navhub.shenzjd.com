@@ -180,8 +180,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
@@ -214,7 +218,10 @@
   .card {
     @apply rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--background-secondary)];
     box-shadow: var(--shadow-sm);
-    transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+    transition:
+      transform 0.24s ease,
+      box-shadow 0.24s ease,
+      border-color 0.24s ease;
   }
 
   .card:hover {
@@ -231,7 +238,10 @@
   .site-card {
     @apply relative flex h-[100px] w-[100px] shrink-0 flex-col items-center justify-center gap-1.5 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--background-secondary)] px-2 py-2.5;
     margin: 2px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
   }
 
   .site-card:hover {

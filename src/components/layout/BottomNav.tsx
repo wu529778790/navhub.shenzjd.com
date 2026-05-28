@@ -20,7 +20,7 @@ export function BottomNav() {
   const handleClick = (item: (typeof navItems)[0]) => {
     if (item.path === "/settings") {
       // 触发设置弹窗事件
-      window.dispatchEvent(new Event('open-settings'));
+      window.dispatchEvent(new Event("open-settings"));
     } else {
       router.push(item.path);
     }
@@ -30,7 +30,8 @@ export function BottomNav() {
     <div className="sticky bottom-0 z-40 bg-white/90 dark:bg-neutral-950/90 backdrop-blur-md border-t border-neutral-200 dark:border-neutral-800">
       <div className="container h-16 flex items-center justify-around">
         {navItems.map((item) => {
-          const isActive = pathname === item.path || (item.path === "/settings" && pathname === "/settings");
+          const isActive =
+            pathname === item.path || (item.path === "/settings" && pathname === "/settings");
           const Icon = item.icon;
 
           return (
@@ -43,7 +44,7 @@ export function BottomNav() {
                   : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : ''}`} />
+              <Icon className={`w-5 h-5 ${isActive ? "stroke-[2.5]" : ""}`} />
               <span className="text-xs font-medium">{item.label}</span>
             </button>
           );

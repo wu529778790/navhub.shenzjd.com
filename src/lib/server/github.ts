@@ -31,7 +31,9 @@ export async function getAuthenticatedUserFromCookie(): Promise<GitHubUser> {
 
   if (encodedUser) {
     try {
-      const user = JSON.parse(Buffer.from(encodedUser, "base64url").toString("utf-8")) as GitHubUser;
+      const user = JSON.parse(
+        Buffer.from(encodedUser, "base64url").toString("utf-8")
+      ) as GitHubUser;
       if (user.id && user.name && user.avatar) {
         return user;
       }

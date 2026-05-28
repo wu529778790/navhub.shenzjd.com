@@ -8,19 +8,21 @@ import { Plus } from "lucide-react";
 import { useState, Suspense, lazy } from "react";
 
 // 懒加载添加站点对话框
-const AddSiteDialog = lazy(() => import("./AddSiteDialog").then(m => ({ default: m.AddSiteDialog })));
+const AddSiteDialog = lazy(() =>
+  import("./AddSiteDialog").then((m) => ({ default: m.AddSiteDialog }))
+);
 
 interface AddSiteCardProps {
   activeCategory: string;
   onSuccess: () => void;
-  view?: 'grid' | 'list';
+  view?: "grid" | "list";
 }
 
-export function AddSiteCard({ activeCategory, onSuccess, view = 'grid' }: AddSiteCardProps) {
+export function AddSiteCard({ activeCategory, onSuccess, view = "grid" }: AddSiteCardProps) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   // 网格视图
-  if (view === 'grid') {
+  if (view === "grid") {
     return (
       <>
         <div
@@ -31,10 +33,18 @@ export function AddSiteCard({ activeCategory, onSuccess, view = 'grid' }: AddSit
           <div className="site-icon-wrapper bg-[var(--muted)] transition-colors group-hover:bg-[var(--primary-100)]">
             <Plus className="w-4 h-4 text-[var(--muted-foreground)] transition-colors group-hover:text-[var(--primary-600)]" />
           </div>
-          <span className="site-title text-[var(--muted-foreground)] transition-colors group-hover:text-[var(--primary-700)]">添加站点</span>
+          <span className="site-title text-[var(--muted-foreground)] transition-colors group-hover:text-[var(--primary-700)]">
+            添加站点
+          </span>
         </div>
 
-        <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"><div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" /></div>}>
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+              <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+            </div>
+          }
+        >
           <AddSiteDialog
             open={isAddDialogOpen}
             onOpenChange={setIsAddDialogOpen}
@@ -63,7 +73,13 @@ export function AddSiteCard({ activeCategory, onSuccess, view = 'grid' }: AddSit
         </div>
       </div>
 
-      <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"><div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" /></div>}>
+      <Suspense
+        fallback={
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+          </div>
+        }
+      >
         <AddSiteDialog
           open={isAddDialogOpen}
           onOpenChange={setIsAddDialogOpen}

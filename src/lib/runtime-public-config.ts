@@ -5,7 +5,9 @@ export interface RuntimePublicConfig {
   dataFilePath: string;
 }
 
-export function buildRuntimePublicConfig(env: Record<string, string | undefined>): RuntimePublicConfig {
+export function buildRuntimePublicConfig(
+  env: Record<string, string | undefined>
+): RuntimePublicConfig {
   return {
     githubClientId: env.NEXT_PUBLIC_GITHUB_CLIENT_ID || "",
     githubOwner: env.NEXT_PUBLIC_GITHUB_OWNER || "wu529778790",

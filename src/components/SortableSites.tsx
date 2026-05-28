@@ -42,18 +42,13 @@ interface SortableSitesProps {
   };
   allCategories: Category[];
   onSiteChange: () => void;
-  view?: 'grid' | 'list';
+  view?: "grid" | "list";
 }
 
 function SortableItem({ id, children }: { id: string; children: React.ReactNode }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -62,18 +57,18 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    >
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       {children}
     </div>
   );
 }
 
-export function SortableSites({ category, allCategories, onSiteChange, view = 'grid' }: SortableSitesProps) {
+export function SortableSites({
+  category,
+  allCategories,
+  onSiteChange,
+  view = "grid",
+}: SortableSitesProps) {
   const { updateSites, isGuestMode } = useSites();
 
   const sensors = useSensors(
@@ -117,19 +112,51 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
   };
 
   // 网格视图布局
-  if (view === 'grid') {
+  if (view === "grid") {
     return (
       <div>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={category.sites.map((site) => site.id)}
+            strategy={rectSortingStrategy}
+          >
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full">
+              {category.sites.map((site) => (
+                <SortableItem key={site.id} id={site.id}>
+                  <SiteCard
+                    id={site.id}
+                    title={site.title}
+                    url={site.url}
+                    favicon={site.favicon}
+                    categoryId={category.id}
+                    onSiteChange={onSiteChange}
+                    view="grid"
+                  />
+                </SortableItem>
+              ))}
+
+              {/* 添加站点卡片（登录态始终可见） */}
+              {!isGuestMode && (
+                <div className="w-[100px] h-[100px] flex-shrink-0">
+                  <AddSiteCard activeCategory={category.id} onSuccess={onSiteChange} view="grid" />
+                </div>
+              )}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
+    );
+  }
+
+  // 列表视图布局
+  return (
+    <div>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={category.sites.map((site) => site.id)}
-          strategy={rectSortingStrategy}
+          strategy={verticalListSortingStrategy}
         >
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full">
+          <div className="flex flex-col gap-2 mt-2">
             {category.sites.map((site) => (
               <SortableItem key={site.id} id={site.id}>
                 <SiteCard
@@ -139,66 +166,18 @@ export function SortableSites({ category, allCategories, onSiteChange, view = 'g
                   favicon={site.favicon}
                   categoryId={category.id}
                   onSiteChange={onSiteChange}
-                  view="grid"
+                  view="list"
                 />
               </SortableItem>
             ))}
 
             {/* 添加站点卡片（登录态始终可见） */}
             {!isGuestMode && (
-              <div className="w-[100px] h-[100px] flex-shrink-0">
-                <AddSiteCard
-                  activeCategory={category.id}
-                  onSuccess={onSiteChange}
-                  view="grid"
-                />
-              </div>
+              <AddSiteCard activeCategory={category.id} onSuccess={onSiteChange} view="list" />
             )}
           </div>
         </SortableContext>
       </DndContext>
-      </div>
-    );
-  }
-
-  // 列表视图布局
-  return (
-    <div>
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext
-        items={category.sites.map((site) => site.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className="flex flex-col gap-2 mt-2">
-          {category.sites.map((site) => (
-            <SortableItem key={site.id} id={site.id}>
-              <SiteCard
-                id={site.id}
-                title={site.title}
-                url={site.url}
-                favicon={site.favicon}
-                categoryId={category.id}
-                onSiteChange={onSiteChange}
-                view="list"
-              />
-            </SortableItem>
-          ))}
-
-          {/* 添加站点卡片（登录态始终可见） */}
-          {!isGuestMode && (
-            <AddSiteCard
-              activeCategory={category.id}
-              onSuccess={onSiteChange}
-              view="list"
-            />
-          )}
-        </div>
-      </SortableContext>
-    </DndContext>
     </div>
   );
 }

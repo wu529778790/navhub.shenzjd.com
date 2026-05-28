@@ -92,10 +92,14 @@ export function SyncStatus() {
   return (
     <div className="flex items-center gap-2 text-sm">
       <div className="hidden items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)] px-3 py-1.5 text-[var(--foreground-secondary)] md:flex">
-        <span className={`inline-block h-2.5 w-2.5 rounded-full ${isOnline ? "bg-[var(--success)]" : "bg-[var(--warning)]"}`} />
+        <span
+          className={`inline-block h-2.5 w-2.5 rounded-full ${isOnline ? "bg-[var(--success)]" : "bg-[var(--warning)]"}`}
+        />
         <span className="font-semibold">{getStatusText()}</span>
         {lastSync && <span className="text-[var(--muted-foreground)]">{formatLastSync()}</span>}
-        {syncMessage && <span className="hidden text-[var(--primary-600)] lg:inline">({syncMessage})</span>}
+        {syncMessage && (
+          <span className="hidden text-[var(--primary-600)] lg:inline">({syncMessage})</span>
+        )}
       </div>
 
       {isOnline && isLoggedIn && !isGuestMode && (

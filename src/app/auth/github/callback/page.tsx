@@ -42,9 +42,7 @@ export default function GitHubCallback() {
         <div className="animate-spin mx-auto mb-4 w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full"></div>
         <h2 className="text-xl font-semibold mb-2">GitHub 登录</h2>
         <p className="text-gray-600">{status}</p>
-        <p className="text-sm text-gray-400 mt-4">
-          如果页面没有自动跳转，请手动返回首页
-        </p>
+        <p className="text-sm text-gray-400 mt-4">如果页面没有自动跳转，请手动返回首页</p>
       </div>
     </div>
   );

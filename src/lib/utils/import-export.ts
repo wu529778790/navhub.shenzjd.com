@@ -18,7 +18,7 @@ export function exportToJSON(data: NavData): string {
 export function importFromJSON(jsonString: string): NavData {
   try {
     const data = JSON.parse(jsonString) as NavData;
-    
+
     // 验证数据结构
     if (!data.categories || !Array.isArray(data.categories)) {
       throw new Error("无效的数据格式：缺少 categories 数组");
@@ -59,8 +59,9 @@ export function importFromJSON(jsonString: string): NavData {
  * 导出为 OPML 格式（RSS 订阅格式）
  */
 export function exportToOPML(data: NavData): string {
-  const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>\n<opml version="2.0">\n<head>\n<title>NavHub Export</title>\n</head>\n<body>\n';
-  const xmlFooter = '</body>\n</opml>';
+  const xmlHeader =
+    '<?xml version="1.0" encoding="UTF-8"?>\n<opml version="2.0">\n<head>\n<title>NavHub Export</title>\n</head>\n<body>\n';
+  const xmlFooter = "</body>\n</opml>";
 
   const outlines = data.categories
     .map((category) => {

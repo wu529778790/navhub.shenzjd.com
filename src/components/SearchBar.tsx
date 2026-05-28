@@ -65,7 +65,10 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
           autoComplete="off"
         />
 
-        <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary-600)]" aria-hidden="true">
+        <div
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary-600)]"
+          aria-hidden="true"
+        >
           <Search className="h-5 w-5" />
         </div>
 
@@ -79,7 +82,10 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
             <X className="h-4 w-4" />
           </button>
         ) : (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--muted-foreground)]" aria-hidden="true">
+          <div
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--muted-foreground)]"
+            aria-hidden="true"
+          >
             <span className="kbd">Ctrl</span>
             <span className="mx-1">+</span>
             <span className="kbd">K</span>
@@ -88,7 +94,11 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
       </div>
 
       {showShortcutHint && (
-        <div className="absolute -bottom-10 left-0 right-0 text-center" role="status" aria-live="polite">
+        <div
+          className="absolute -bottom-10 left-0 right-0 text-center"
+          role="status"
+          aria-live="polite"
+        >
           <div className="fade-in inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--primary-600)] px-3 py-1.5 text-sm text-white shadow-lg">
             <Keyboard className="h-4 w-4" />
             <span>搜索快捷键已激活</span>
@@ -97,7 +107,10 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
       )}
 
       {query && (
-        <div id="search-description" className="mt-2 flex items-center gap-2 text-xs text-[var(--foreground-secondary)]">
+        <div
+          id="search-description"
+          className="mt-2 flex items-center gap-2 text-xs text-[var(--foreground-secondary)]"
+        >
           <span className="inline-flex items-center gap-1">
             <span className="kbd">Esc</span>
             <span>清除搜索</span>
@@ -108,13 +121,7 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
   );
 }
 
-export function SearchStatus({
-  query,
-  resultsCount,
-}: {
-  query: string;
-  resultsCount: number;
-}) {
+export function SearchStatus({ query, resultsCount }: { query: string; resultsCount: number }) {
   if (!query) return null;
 
   return (

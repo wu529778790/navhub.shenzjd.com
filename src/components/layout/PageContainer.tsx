@@ -13,24 +13,14 @@ interface PageContainerProps {
   className?: string;
 }
 
-export function PageContainer({
-  children,
-  action,
-  className = "",
-}: PageContainerProps) {
+export function PageContainer({ children, action, className = "" }: PageContainerProps) {
   return (
     <Container size="lg" className={`w-full py-6 ${className}`}>
       {/* 页面内容 */}
-      <div className="space-y-4 w-full">
-        {children}
-      </div>
+      <div className="space-y-4 w-full">{children}</div>
 
       {/* 页面底部操作区 - 移到底部，避免占用顶部空间 */}
-      {action && (
-        <div className="mt-6 flex justify-center w-full">
-          {action}
-        </div>
-      )}
+      {action && <div className="mt-6 flex justify-center w-full">{action}</div>}
     </Container>
   );
 }

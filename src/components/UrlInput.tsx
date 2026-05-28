@@ -56,10 +56,10 @@ export function UrlInput({ link, onLinkChange, onParse, loading }: UrlInputProps
                   onLinkChange(text);
                   onParse(text);
                 } catch {
-                  console.log("剪贴板内容不是有效URL");
+                  // 剪贴板内容不是有效 URL，静默忽略
                 }
-              } catch (err) {
-                console.log("无法访问剪贴板:", err);
+              } catch {
+                // 无法访问剪贴板，静默忽略
               }
             }}
             disabled={loading}

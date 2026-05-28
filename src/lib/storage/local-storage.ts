@@ -24,7 +24,7 @@ export interface Site {
 export interface Category {
   id: string;
   name: string;
-  icon?: string;  // 可选，不再强制使用 emoji
+  icon?: string; // 可选，不再强制使用 emoji
   sort: number;
   sites: Site[];
 }
@@ -143,9 +143,8 @@ export function getSitesFromLocalStorage(): Category[] {
  */
 export function saveSitesToLocalStorage(categories: Category[]): void {
   // 检查是否是初始化的空默认分类
-  const isDefaultEmpty = categories.length === 1 &&
-                         categories[0].id === "default" &&
-                         categories[0].sites.length === 0;
+  const isDefaultEmpty =
+    categories.length === 1 && categories[0].id === "default" && categories[0].sites.length === 0;
 
   const data: NavData = {
     version: "1.0",

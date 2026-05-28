@@ -150,10 +150,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
           }
         } catch (guestError) {
           console.error("读取示例数据失败:", guestError);
-          if (
-            guestError instanceof Error &&
-            guestError.message.includes("运行时配置加载失败")
-          ) {
+          if (guestError instanceof Error && guestError.message.includes("运行时配置加载失败")) {
             throw guestError;
           }
         }

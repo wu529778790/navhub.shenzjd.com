@@ -3,7 +3,12 @@
  * 管理本地存储和 GitHub 之间的同步
  */
 
-import { saveToLocalStorage, loadFromLocalStorage, setLastSyncTime, type NavData } from "./local-storage";
+import {
+  saveToLocalStorage,
+  loadFromLocalStorage,
+  setLastSyncTime,
+  type NavData,
+} from "./local-storage";
 import { saveDataToGitHub, getDataFromGitHub } from "./github-storage";
 import { STORAGE_CONFIG, SYNC_CONFIG } from "@/lib/config";
 
@@ -11,12 +16,14 @@ import { STORAGE_CONFIG, SYNC_CONFIG } from "@/lib/config";
  * 检查本地数据是否为空（只有默认分类）
  */
 function isLocalDataEmpty(data: NavData | null): boolean {
-  return !data ||
-         !data.categories ||
-         data.categories.length === 0 ||
-         (data.categories.length === 1 &&
-          data.categories[0].id === "default" &&
-          data.categories[0].sites.length === 0);
+  return (
+    !data ||
+    !data.categories ||
+    data.categories.length === 0 ||
+    (data.categories.length === 1 &&
+      data.categories[0].id === "default" &&
+      data.categories[0].sites.length === 0)
+  );
 }
 
 /**
@@ -38,7 +45,7 @@ export async function resolveSyncDirection(
     return {
       success: true,
       direction: "download",
-      message: "从 GitHub 下载数据"
+      message: "从 GitHub 下载数据",
     };
   }
 
@@ -49,7 +56,7 @@ export async function resolveSyncDirection(
     return {
       success: true,
       direction: "upload",
-      message: "上传本地数据到 GitHub"
+      message: "上传本地数据到 GitHub",
     };
   }
 
@@ -59,7 +66,7 @@ export async function resolveSyncDirection(
     return {
       success: true,
       direction: "none",
-      message: "两端都为空，无需同步"
+      message: "两端都为空，无需同步",
     };
   }
 
@@ -70,12 +77,16 @@ export async function resolveSyncDirection(
 
     if (localTime > githubTime) {
       // 本地更新，上传
-      await saveDataToGitHub(token, localData, `${commitMessagePrefix} ${new Date().toISOString()}`);
+      await saveDataToGitHub(
+        token,
+        localData,
+        `${commitMessagePrefix} ${new Date().toISOString()}`
+      );
       setLastSyncTime();
       return {
         success: true,
         direction: "upload",
-        message: "本地数据较新，已上传到 GitHub"
+        message: "本地数据较新，已上传到 GitHub",
       };
     } else if (githubTime > localTime) {
       // GitHub 更新，下载
@@ -84,7 +95,7 @@ export async function resolveSyncDirection(
       return {
         success: true,
         direction: "download",
-        message: "GitHub 数据较新，已下载到本地"
+        message: "GitHub 数据较新，已下载到本地",
       };
     } else {
       // 时间戳相同，数据一致
@@ -92,7 +103,7 @@ export async function resolveSyncDirection(
       return {
         success: true,
         direction: "none",
-        message: "数据已同步，无需更新"
+        message: "数据已同步，无需更新",
       };
     }
   }
@@ -101,7 +112,7 @@ export async function resolveSyncDirection(
   return {
     success: false,
     direction: "none",
-    error: "未知的同步状态"
+    error: "未知的同步状态",
   };
 }
 
@@ -123,7 +134,14 @@ export interface SyncResult {
   error?: string;
 }
 
-export type SyncStep = "prepare" | "fetching" | "comparing" | "uploading" | "downloading" | "merging" | "done";
+export type SyncStep =
+  | "prepare"
+  | "fetching"
+  | "comparing"
+  | "uploading"
+  | "downloading"
+  | "merging"
+  | "done";
 
 export interface SyncStepInfo {
   step: SyncStep;
@@ -279,11 +297,18 @@ export class SyncManager {
    * 3. 双方都为空 → 无需操作
    * 4. 双方都有数据 → 比较时间戳决定方向
    */
-  private async resolveConflict(localData: NavData | null, githubData: NavData | null): Promise<SyncResult> {
+  private async resolveConflict(
+    localData: NavData | null,
+    githubData: NavData | null
+  ): Promise<SyncResult> {
     // 预测同步方向以更新 UI 状态
     const isLocalEmpty = isLocalDataEmpty(localData);
-    const direction = isLocalEmpty && githubData ? "download" :
-                      githubData === null && !isLocalEmpty ? "upload" : "none";
+    const direction =
+      isLocalEmpty && githubData
+        ? "download"
+        : githubData === null && !isLocalEmpty
+          ? "upload"
+          : "none";
 
     if (direction === "download") {
       this.updateStatus(SyncStatus.DOWNLOADING);
@@ -351,7 +376,11 @@ export class SyncManager {
 
     try {
       // 尝试同步到 GitHub
-      await saveDataToGitHub(this.options.token, data, `[skip ci] Auto sync ${new Date().toISOString()}`);
+      await saveDataToGitHub(
+        this.options.token,
+        data,
+        `[skip ci] Auto sync ${new Date().toISOString()}`
+      );
 
       // 更新最后同步时间
       setLastSyncTime();
@@ -359,8 +388,6 @@ export class SyncManager {
 
       this.updateStatus(SyncStatus.IDLE);
       this.options.onSuccess?.();
-
-      console.log("✅ 同步成功");
     } catch (error) {
       console.error("❌ 同步失败:", error);
       this.updateStatus(SyncStatus.ERROR);
@@ -389,7 +416,7 @@ export class SyncManager {
     this.retryCountMap.set(retryKey, nextRetryCount);
 
     // 指数退避 + 抖动，避免请求风暴
-    const exponentialDelay = SYNC_CONFIG.RETRY_DELAY_MS * (2 ** (nextRetryCount - 1));
+    const exponentialDelay = SYNC_CONFIG.RETRY_DELAY_MS * 2 ** (nextRetryCount - 1);
     const jitter = Math.floor(Math.random() * 500);
     const delay = exponentialDelay + jitter;
 

@@ -45,9 +45,7 @@ export function SiteInfoForm({
           <p className="text-sm font-medium text-[var(--foreground)] truncate">
             {editedTitle || siteInfo.title || "未命名网站"}
           </p>
-          <p className="text-xs text-[var(--muted-foreground)] truncate">
-            {siteInfo.url}
-          </p>
+          <p className="text-xs text-[var(--muted-foreground)] truncate">{siteInfo.url}</p>
         </div>
       </div>
 
@@ -62,7 +60,10 @@ export function SiteInfoForm({
             className="h-11 text-sm"
           />
           {siteInfo.favicon && (
-            <div className="relative w-8 h-8 rounded-md overflow-hidden border border-[var(--border)] bg-[var(--muted)] flex items-center justify-center flex-shrink-0 cursor-pointer" title="预览图标">
+            <div
+              className="relative w-8 h-8 rounded-md overflow-hidden border border-[var(--border)] bg-[var(--muted)] flex items-center justify-center flex-shrink-0 cursor-pointer"
+              title="预览图标"
+            >
               <FaviconImage
                 key={`site-info-preview-${siteInfo.favicon}`}
                 src={siteInfo.favicon}

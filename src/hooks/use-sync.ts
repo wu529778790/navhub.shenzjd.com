@@ -2,7 +2,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { SyncManager, SyncStatus, initialSync, manualSync as manualSyncFn, type SyncResult, type SyncStepInfo } from "@/lib/storage/sync-manager";
+import {
+  SyncManager,
+  SyncStatus,
+  initialSync,
+  manualSync as manualSyncFn,
+  type SyncResult,
+  type SyncStepInfo,
+} from "@/lib/storage/sync-manager";
 import type { NavData } from "@/lib/storage/local-storage";
 
 interface UseSyncReturn {
@@ -12,7 +19,7 @@ interface UseSyncReturn {
   syncStep: SyncStepInfo | null;
   sync: (data: NavData) => void;
   syncNow: (data: NavData) => Promise<void>;
-  manualSync: () => Promise<SyncResult>;  // 返回同步结果
+  manualSync: () => Promise<SyncResult>; // 返回同步结果
   refresh: () => Promise<NavData | null>;
   setToken: (token: string) => void;
 }
@@ -99,46 +106,52 @@ export function useSync(token?: string): UseSyncReturn {
    * 同步数据（防抖）
    * 注意：这个函数依赖 syncManager，syncManager 会在 currentToken 变化时更新
    */
-  const sync = useCallback((data: NavData) => {
-    if (!isOnline) {
-      setStatus(SyncStatus.OFFLINE);
-      return;
-    }
+  const sync = useCallback(
+    (data: NavData) => {
+      if (!isOnline) {
+        setStatus(SyncStatus.OFFLINE);
+        return;
+      }
 
-    if (!currentToken) {
-      setStatus(SyncStatus.IDLE); // 没有 token，不进行 GitHub 同步
-      return;
-    }
+      if (!currentToken) {
+        setStatus(SyncStatus.IDLE); // 没有 token，不进行 GitHub 同步
+        return;
+      }
 
-    // 如果 syncManager 的 token 不匹配，需要重新创建
-    if (syncManager) {
-      syncManager.sync(data);
-    }
-  }, [syncManager, isOnline, currentToken]);
+      // 如果 syncManager 的 token 不匹配，需要重新创建
+      if (syncManager) {
+        syncManager.sync(data);
+      }
+    },
+    [syncManager, isOnline, currentToken]
+  );
 
   /**
    * 立即同步
    */
-  const syncNow = useCallback(async (data: NavData) => {
-    if (!isOnline) {
-      throw new Error("当前离线，无法同步");
-    }
+  const syncNow = useCallback(
+    async (data: NavData) => {
+      if (!isOnline) {
+        throw new Error("当前离线，无法同步");
+      }
 
-    if (!currentToken) {
-      throw new Error("未认证用户");
-    }
+      if (!currentToken) {
+        throw new Error("未认证用户");
+      }
 
-    // 优先使用当前同步管理器执行立即同步，确保本地最新数据写入远端
-    if (syncManager) {
-      await syncManager.syncNow(data);
+      // 优先使用当前同步管理器执行立即同步，确保本地最新数据写入远端
+      if (syncManager) {
+        await syncManager.syncNow(data);
+        setLastSync(new Date());
+        return;
+      }
+
+      // 回退到手动同步
+      await manualSyncFn(currentToken);
       setLastSync(new Date());
-      return;
-    }
-
-    // 回退到手动同步
-    await manualSyncFn(currentToken);
-    setLastSync(new Date());
-  }, [isOnline, currentToken, syncManager]);
+    },
+    [isOnline, currentToken, syncManager]
+  );
 
   /**
    * 手动同步 - 双向同步

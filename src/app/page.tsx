@@ -7,25 +7,17 @@
 import { useState, useEffect, useMemo, Suspense, lazy } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Edit2, GripVertical, Keyboard } from "lucide-react";
-import { IconFolder, IconSearch, IconBook } from "@/components/icons";
+import { Plus, Trash2, Keyboard } from "lucide-react";
+import { IconSearch, IconBook } from "@/components/icons";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { SearchBar, SearchStatus, ViewToggle } from "@/components/SearchBar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { SortableCategoryItem } from "@/components/SortableCategoryItem";
 import type { Category } from "@/lib/storage/local-storage";
 
-// 懒加载大型组件
-const SortableSites = lazy(() =>
-  import("@/components/SortableSites").then((module) => ({ default: module.SortableSites }))
-);
-const AddCategoryDialog = lazy(() =>
-  import("@/components/AddCategoryDialog").then((module) => ({ default: module.AddCategoryDialog }))
-);
-
-// DnD Kit imports for category sorting
 import {
   DndContext,
   closestCenter,
@@ -40,127 +32,11 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-  useSortable,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 
-interface SortableCategoryItemProps {
-  category: Category;
-  onEdit: (category: Category) => void;
-  onDelete: (id: string) => void;
-  isGuestMode: boolean;
-  allCategories: Category[];
-  onSiteChange: () => void;
-  viewMode: "grid" | "list";
-}
-
-function SortableCategoryItem({
-  category,
-  onEdit,
-  onDelete,
-  isGuestMode,
-  allCategories,
-  onSiteChange,
-  viewMode,
-}: SortableCategoryItemProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: category.id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.8 : 1,
-  };
-
-  // 分类点击 - 锚点跳转
-  const handleCategoryClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const element = document.getElementById(`category-${category.id}`);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-      // 更新 URL hash
-      window.history.pushState(null, "", `#category-${category.id}`);
-    }
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="category-card group p-5"
-      id={`category-${category.id}`}
-    >
-      {/* 分类标题栏 - 支持拖拽和点击编辑 */}
-      <div
-        className="flex items-center justify-between mb-4 cursor-move p-2 -mx-2 -mt-2 rounded-lg"
-        {...attributes}
-        {...listeners}
-      >
-        <div className="flex items-center gap-3 flex-1">
-          <div className="p-1.5 bg-[var(--primary-100)] rounded-[var(--radius-sm)] text-[var(--primary-700)]">
-            <GripVertical className="w-4 h-4" />
-          </div>
-          <div className="flex-1">
-            <h3
-              className="font-semibold text-lg text-[var(--foreground)] flex items-center gap-2 cursor-pointer"
-              onClick={handleCategoryClick}
-              title="点击跳转到此分类"
-            >
-              <IconFolder className="w-5 h-5 text-[var(--primary-600)]" />
-              <span>{category.name}</span>
-            </h3>
-          </div>
-        </div>
-
-        {!isGuestMode && (
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(category);
-              }}
-              className="px-2 hover:bg-[var(--muted)]"
-              title="编辑分类"
-            >
-              <Edit2 className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(category.id);
-              }}
-              className="px-2 text-[var(--error)] hover:bg-[var(--error)]/10"
-              title="删除分类"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* 站点列表 */}
-      <Suspense
-        fallback={
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2">
-            <div className="w-[100px] h-[100px] bg-[var(--muted)] rounded-[var(--radius-md)] animate-pulse" />
-          </div>
-        }
-      >
-        <SortableSites
-          category={category}
-          allCategories={allCategories}
-          onSiteChange={onSiteChange}
-          view={viewMode}
-        />
-      </Suspense>
-    </div>
-  );
-}
+const AddCategoryDialog = lazy(() =>
+  import("@/components/AddCategoryDialog").then((module) => ({ default: module.AddCategoryDialog }))
+);
 
 export default function Home() {
   const {
@@ -173,66 +49,44 @@ export default function Home() {
     updateSites,
   } = useSites();
 
-  // UI 状态
   const [showAddCategoryDialog, setShowAddCategoryDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<string | null>(null);
-
-  // 搜索状态
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // DnD Sensors for category sorting
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  // 快捷键支持
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ctrl/Cmd + Alt + N: 新建分类（避免与 Ctrl+Shift+N 打开无痕/隐私窗口冲突）
-      if (
-        (e.ctrlKey || e.metaKey) &&
-        e.altKey &&
-        !e.shiftKey &&
-        e.key.toLowerCase() === "n"
-      ) {
+      if ((e.ctrlKey || e.metaKey) && e.altKey && !e.shiftKey && e.key.toLowerCase() === "n") {
         e.preventDefault();
         if (!isGuestMode) setShowAddCategoryDialog(true);
       }
-
-      // Escape: 关闭所有对话框
       if (e.key === "Escape") {
         setShowAddCategoryDialog(false);
         setEditingCategory(null);
         setDeletingCategory(null);
       }
     };
-
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isGuestMode]);
 
-  // 搜索逻辑 - 仅按搜索词过滤
   const filteredCategories = useMemo(() => {
     let result = categories as Category[];
-
-    // 按搜索词过滤
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       const filtered: Category[] = [];
-
       for (const category of result) {
-        // 检查分类名称
         const categoryMatches = category.name.toLowerCase().includes(query);
-
-        // 检查站点
         const matchingSites = category.sites.filter(
           (site) =>
             site.title.toLowerCase().includes(query) || site.url.toLowerCase().includes(query)
         );
-
         if (categoryMatches || matchingSites.length > 0) {
           filtered.push({
             ...category,
@@ -240,22 +94,17 @@ export default function Home() {
           });
         }
       }
-
       result = filtered;
     }
-
     return result;
   }, [categories, searchQuery]);
 
-  // 搜索结果统计
   const searchResultsCount = useMemo(() => {
     return filteredCategories.reduce((sum, cat) => sum + cat.sites.length, 0);
   }, [filteredCategories]);
 
-  // 编辑分类
   const handleEditCategory = () => {
     if (!editingCategory || !editingCategory.name.trim()) return;
-
     const newCategories = categories.map((c) =>
       c.id === editingCategory.id ? { ...c, name: editingCategory.name.trim() } : c
     );
@@ -263,29 +112,20 @@ export default function Home() {
     setEditingCategory(null);
   };
 
-  // 删除分类
   const handleDeleteCategory = (categoryId: string) => {
     const newCategories = categories.filter((c) => c.id !== categoryId);
     updateSites(newCategories);
     setDeletingCategory(null);
   };
 
-  // 分类拖拽排序
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-
-    if (!over || active.id === over.id) {
-      return;
-    }
-
+    if (!over || active.id === over.id) return;
     const oldIndex = categories.findIndex((c) => c.id === active.id);
     const newIndex = categories.findIndex((c) => c.id === over.id);
-
-    const newCategories = arrayMove(categories, oldIndex, newIndex);
-    updateSites(newCategories);
+    updateSites(arrayMove(categories, oldIndex, newIndex));
   };
 
-  // 空状态处理
   const renderEmptyState = () => {
     if (searchQuery) {
       return (
@@ -301,7 +141,6 @@ export default function Home() {
         </div>
       );
     }
-
     return (
       <div className="empty-state card p-12">
         <div className="empty-state-icon">
@@ -326,18 +165,12 @@ export default function Home() {
   return (
     <AppLayout>
       <PageContainer>
-        {/* 搜索和工具栏 */}
         <div className="flex flex-col gap-4 mb-6 w-full">
-          {/* 搜索栏 + 新建按钮 */}
           <div className="flex gap-3 items-center w-full flex-wrap">
             <div className="flex-1 min-w-0 flex-grow">
               <SearchBar onSearch={setSearchQuery} placeholder="搜索站点名称、URL..." />
             </div>
-
-            {/* 视图切换 */}
             <ViewToggle view={viewMode} onViewChange={setViewMode} />
-
-            {/* 新建按钮 - 移到搜索栏右侧 */}
             {!isGuestMode && (
               <Button
                 size="sm"
@@ -350,8 +183,6 @@ export default function Home() {
               </Button>
             )}
           </div>
-
-          {/* 搜索状态栏 */}
           {searchQuery && (
             <div className="flex items-center justify-between gap-3 flex-wrap w-full">
               <SearchStatus query={searchQuery} resultsCount={searchResultsCount} />
@@ -359,14 +190,12 @@ export default function Home() {
           )}
         </div>
 
-        {/* 错误提示 */}
         {error && (
           <div className="p-4 bg-[var(--error)]/10 border border-[var(--error)]/20 rounded-[var(--radius-lg)] text-[var(--error)] mb-4">
             {error}
           </div>
         )}
 
-        {/* 加载状态 */}
         {loading ? (
           <div className="space-y-4">
             {[...Array(2)].map((_, i) => (
@@ -386,7 +215,6 @@ export default function Home() {
         ) : filteredCategories.length === 0 ? (
           renderEmptyState()
         ) : (
-          /* 分类列表 - 支持拖拽排序 */
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -414,7 +242,6 @@ export default function Home() {
           </DndContext>
         )}
 
-        {/* 快捷键提示 - 底部固定提示 */}
         {!isGuestMode && !loading && (
           <div className="mt-8 p-4 bg-[var(--background-secondary)] rounded-[var(--radius-lg)] border border-[var(--border)]">
             <div className="flex items-center gap-2 text-sm text-[var(--foreground-secondary)] mb-2">
@@ -444,7 +271,6 @@ export default function Home() {
         )}
       </PageContainer>
 
-      {/* 添加分类对话框 */}
       {showAddCategoryDialog && (
         <Suspense
           fallback={
@@ -468,7 +294,6 @@ export default function Home() {
         </Suspense>
       )}
 
-      {/* 编辑分类对话框 */}
       {editingCategory && (
         <Dialog open onOpenChange={() => setEditingCategory(null)}>
           <DialogContent className="sm:max-w-md">
@@ -528,7 +353,6 @@ export default function Home() {
         </Dialog>
       )}
 
-      {/* 删除确认对话框 */}
       {deletingCategory && (
         <Dialog open onOpenChange={() => setDeletingCategory(null)}>
           <DialogContent>

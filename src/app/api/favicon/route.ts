@@ -77,7 +77,9 @@ async function fetchFavicon(target: URL, remainingRedirects = 2): Promise<Respon
     response.status < 400 &&
     response.headers.get("location")
   ) {
-    const redirected = normalizeTarget(new URL(response.headers.get("location")!, target).toString());
+    const redirected = normalizeTarget(
+      new URL(response.headers.get("location")!, target).toString()
+    );
     if (!redirected) {
       throw new Error("Unsafe redirect target");
     }

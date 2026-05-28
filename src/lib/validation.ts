@@ -74,9 +74,7 @@ export const faviconUrlSchema = z
         const urlObj = new URL(url);
         // 允许 http, https, data (用于 base64 图片)
         return (
-          urlObj.protocol === "http:" ||
-          urlObj.protocol === "https:" ||
-          urlObj.protocol === "data:"
+          urlObj.protocol === "http:" || urlObj.protocol === "https:" || urlObj.protocol === "data:"
         );
       } catch {
         return false;
@@ -97,11 +95,7 @@ export const categoryNameSchema = z
   .refine(
     (name) => {
       // 检查是否包含潜在的 XSS 攻击
-      const dangerousPatterns = [
-        /<script/i,
-        /javascript:/i,
-        /on\w+\s*=/i,
-      ];
+      const dangerousPatterns = [/<script/i, /javascript:/i, /on\w+\s*=/i];
       return !dangerousPatterns.some((pattern) => pattern.test(name));
     },
     { message: "分类名称包含不安全的内容" }

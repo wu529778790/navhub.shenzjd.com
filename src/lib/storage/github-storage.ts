@@ -21,11 +21,15 @@ export async function getDataFromGitHub(_token?: string): Promise<NavData | null
     throw new Error("读取 GitHub 数据失败");
   }
 
-  const payload = await response.json() as { data: NavData | null };
+  const payload = (await response.json()) as { data: NavData | null };
   return payload.data;
 }
 
-export async function saveDataToGitHub(_token: string, data: NavData, message?: string): Promise<void> {
+export async function saveDataToGitHub(
+  _token: string,
+  data: NavData,
+  message?: string
+): Promise<void> {
   void _token;
   const response = await fetch("/api/github/data", {
     method: "POST",
@@ -40,7 +44,9 @@ export async function saveDataToGitHub(_token: string, data: NavData, message?: 
     throw new Error("未认证用户");
   }
   if (!response.ok) {
-    const payload = await response.json().catch(() => ({ error: "保存到 GitHub 失败" })) as { error?: string };
+    const payload = (await response.json().catch(() => ({ error: "保存到 GitHub 失败" }))) as {
+      error?: string;
+    };
     throw new Error(payload.error || "保存到 GitHub 失败");
   }
 }
@@ -77,7 +83,7 @@ export async function getYourDataFromGitHub(): Promise<NavData | null> {
         return null;
       }
 
-      const apiData = await apiResponse.json() as { content?: string };
+      const apiData = (await apiResponse.json()) as { content?: string };
       if (apiData.content) {
         const content = atob(apiData.content.replace(/\n/g, ""));
         return JSON.parse(content) as NavData;
@@ -85,7 +91,7 @@ export async function getYourDataFromGitHub(): Promise<NavData | null> {
       return null;
     }
 
-    return await response.json() as NavData;
+    return (await response.json()) as NavData;
   } catch (error) {
     console.error("读取你的 GitHub 数据失败:", error);
     return null;

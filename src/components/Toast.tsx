@@ -14,9 +14,15 @@ interface ToastMessage {
   duration?: number;
 }
 
-let showToastCallback: ((message: string, type?: "success" | "error" | "info", duration?: number) => void) | null = null;
+let showToastCallback:
+  | ((message: string, type?: "success" | "error" | "info", duration?: number) => void)
+  | null = null;
 
-export function showToast(message: string, type: "success" | "error" | "info" = "info", duration: number = 3000) {
+export function showToast(
+  message: string,
+  type: "success" | "error" | "info" = "info",
+  duration: number = 3000
+) {
   if (showToastCallback) {
     showToastCallback(message, type, duration);
   }
@@ -25,14 +31,17 @@ export function showToast(message: string, type: "success" | "error" | "info" = 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  const showToast = useCallback((message: string, type: "success" | "error" | "info" = "info", duration: number = 3000) => {
-    const id = `toast_${Date.now()}_${Math.random()}`;
-    setToasts((prev) => [...prev, { id, type, message, duration }]);
+  const showToast = useCallback(
+    (message: string, type: "success" | "error" | "info" = "info", duration: number = 3000) => {
+      const id = `toast_${Date.now()}_${Math.random()}`;
+      setToasts((prev) => [...prev, { id, type, message, duration }]);
 
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, duration);
-  }, []);
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, duration);
+    },
+    []
+  );
 
   useEffect(() => {
     showToastCallback = showToast;
@@ -49,7 +58,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         return <XCircle className="w-4 h-4" />;
       default:
         return <AlertCircle className="w-4 h-4" />;
-    };
+    }
   };
 
   const getColors = (type: string) => {
@@ -60,7 +69,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         return "bg-red-600 text-white";
       default:
         return "bg-blue-600 text-white";
-    };
+    }
   };
 
   return (

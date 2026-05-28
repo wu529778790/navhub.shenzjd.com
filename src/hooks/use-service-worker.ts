@@ -89,13 +89,11 @@ export function useServiceWorker(): UseServiceWorkerReturn {
         });
 
         registrationRef.current = registration;
-        console.log("[SW] Service Worker registered:", registration);
 
         // 检查是否有等待中的 Service Worker
         if (registration.waiting) {
           setUpdateAvailable(true);
           setUpdateStatus("available");
-          console.log("[SW] Waiting service worker found");
         }
 
         // 监听新的 Service Worker 安装
@@ -103,18 +101,12 @@ export function useServiceWorker(): UseServiceWorkerReturn {
           const newWorker = registration.installing;
           if (!newWorker) return;
 
-          console.log("[SW] New service worker installing");
-
           newWorker.addEventListener("statechange", () => {
             if (newWorker.state === "installed") {
               if (navigator.serviceWorker.controller) {
-                // 有新版本可用
-                console.log("[SW] New service worker available");
                 setUpdateAvailable(true);
                 setUpdateStatus("available");
               } else {
-                // 首次安装
-                console.log("[SW] Service worker installed for the first time");
                 setUpdateStatus("idle");
               }
             }
@@ -122,9 +114,12 @@ export function useServiceWorker(): UseServiceWorkerReturn {
         });
 
         // 定期检查更新（每 30 分钟）
-        const updateInterval = setInterval(() => {
-          checkForUpdates();
-        }, 30 * 60 * 1000);
+        const updateInterval = setInterval(
+          () => {
+            checkForUpdates();
+          },
+          30 * 60 * 1000
+        );
 
         return () => {
           clearInterval(updateInterval);
@@ -143,7 +138,6 @@ export function useServiceWorker(): UseServiceWorkerReturn {
 
     // 监听 Service Worker 控制权变化
     const handleControllerChange = () => {
-      console.log("[SW] Service Worker controller changed, reloading...");
       window.location.reload();
     };
 

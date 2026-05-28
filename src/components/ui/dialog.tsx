@@ -1,13 +1,13 @@
-import * as React from "react"
-import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { X } from "lucide-react"
+import * as React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-const Dialog = DialogPrimitive.Root
-const DialogTrigger = DialogPrimitive.Trigger
-const DialogPortal = DialogPrimitive.Portal
-const DialogClose = DialogPrimitive.Close
+const Dialog = DialogPrimitive.Root;
+const DialogTrigger = DialogPrimitive.Trigger;
+const DialogPortal = DialogPrimitive.Portal;
+const DialogClose = DialogPrimitive.Close;
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
@@ -32,8 +32,8 @@ const DialogOverlay = React.forwardRef<
     )}
     {...props}
   />
-))
-DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
+));
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
@@ -84,45 +84,44 @@ const DialogContent = React.forwardRef<
       {children}
 
       {/* 现代化关闭按钮 - 带悬停反馈 */}
-      <DialogPrimitive.Close className={cn(
-        // 基础样式
-        "absolute right-4 top-4",
-        "rounded-[var(--radius-md)]",
-        "p-1.5",
+      <DialogPrimitive.Close
+        className={cn(
+          // 基础样式
+          "absolute right-4 top-4",
+          "rounded-[var(--radius-md)]",
+          "p-1.5",
 
-        // 颜色和交互
-        "text-[var(--muted-foreground)]",
-        "hover:text-[var(--foreground)]",
-        "hover:bg-[var(--muted)]",
+          // 颜色和交互
+          "text-[var(--muted-foreground)]",
+          "hover:text-[var(--foreground)]",
+          "hover:bg-[var(--muted)]",
 
-        // 动画和过渡
-        "transition-all duration-200 ease-out",
-        "active:scale-90 active:rotate-3",
+          // 动画和过渡
+          "transition-all duration-200 ease-out",
+          "active:scale-90 active:rotate-3",
 
-        // 焦点状态
-        "focus:outline-none",
-        "focus-visible:ring-2 focus-visible:ring-[var(--primary-500)]",
-        "focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+          // 焦点状态
+          "focus:outline-none",
+          "focus-visible:ring-2 focus-visible:ring-[var(--primary-500)]",
+          "focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
 
-        // 触摸优化
-        "w-9 h-9 flex items-center justify-center",
-        "touch-manipulation",
+          // 触摸优化
+          "w-9 h-9 flex items-center justify-center",
+          "touch-manipulation",
 
-        // 深色模式
-        "dark:hover:bg-[var(--neutral-800)]"
-      )}>
+          // 深色模式
+          "dark:hover:bg-[var(--neutral-800)]"
+        )}
+      >
         <X className="h-5 w-5 transition-transform duration-200 hover:rotate-90" />
         <span className="sr-only">关闭弹窗</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>
-))
-DialogContent.displayName = DialogPrimitive.Content.displayName
+));
+DialogContent.displayName = DialogPrimitive.Content.displayName;
 
-const DialogHeader = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
       // Skills 规范: 清晰的视觉层次
@@ -132,13 +131,10 @@ const DialogHeader = ({
     )}
     {...props}
   />
-)
-DialogHeader.displayName = "DialogHeader"
+);
+DialogHeader.displayName = "DialogHeader";
 
-const DialogFooter = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
       // Skills 规范: 移动端垂直排列，桌面端水平排列
@@ -149,8 +145,8 @@ const DialogFooter = ({
     )}
     {...props}
   />
-)
-DialogFooter.displayName = "DialogFooter"
+);
+DialogFooter.displayName = "DialogFooter";
 
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -168,8 +164,8 @@ const DialogTitle = React.forwardRef<
     )}
     {...props}
   />
-))
-DialogTitle.displayName = DialogPrimitive.Title.displayName
+));
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
 const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
@@ -185,8 +181,8 @@ const DialogDescription = React.forwardRef<
     )}
     {...props}
   />
-))
-DialogDescription.displayName = DialogPrimitive.Description.displayName
+));
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
   Dialog,
@@ -199,4 +195,4 @@ export {
   DialogTitle,
   DialogDescription,
   DialogClose,
-}
+};

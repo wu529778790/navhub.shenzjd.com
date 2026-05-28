@@ -35,7 +35,9 @@ export async function parseURL(url: string): Promise<ParsedURL> {
 
   return {
     title: data.title || getDomain(parsed.toString()),
-    favicon: data.favicon || `https://www.google.com/s2/favicons?domain=${encodeURIComponent(parsed.hostname)}&sz=64`,
+    favicon:
+      data.favicon ||
+      `https://www.google.com/s2/favicons?domain=${encodeURIComponent(parsed.hostname)}&sz=64`,
   };
 }
 
