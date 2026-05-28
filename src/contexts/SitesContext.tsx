@@ -23,6 +23,7 @@ interface SitesContextType {
   sites: Category[];
   loading: boolean;
   error: string | null;
+  clearError: () => void;
   addSite: (categoryId: string, site: Site) => Promise<void>;
   updateSite: (categoryId: string, siteId: string, site: Site) => Promise<void>;
   deleteSite: (categoryId: string, siteId: string) => Promise<void>;
@@ -344,6 +345,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         sites,
         loading,
         error,
+        clearError: () => setError(null),
         addSite,
         updateSite,
         deleteSite,

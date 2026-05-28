@@ -192,8 +192,15 @@ export default function Home() {
         </div>
 
         {error && (
-          <div className="p-4 bg-[var(--error)]/10 border border-[var(--error)]/20 rounded-[var(--radius-lg)] text-[var(--error)] mb-4">
-            {error}
+          <div className="p-4 bg-[var(--error)]/10 border border-[var(--error)]/20 rounded-[var(--radius-lg)] text-[var(--error)] mb-4 flex items-center justify-between gap-2">
+            <span>{error}</span>
+            <button
+              onClick={clearError}
+              className="text-[var(--error)] hover:text-[var(--error)]/70 transition-colors p-1 cursor-pointer flex-shrink-0"
+              aria-label="关闭错误提示"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         )}
 
