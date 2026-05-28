@@ -10,7 +10,7 @@ on:
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}
-  CONTAINER_NAME: nav.shenzjd.com
+  CONTAINER_NAME: navhub.shenzjd.com
 
 jobs:
   quality:
@@ -84,10 +84,10 @@ jobs:
           script: |
             IMAGE="ghcr.io/${{ github.repository }}:latest"
             sudo docker pull --quiet "$IMAGE"
-            sudo docker stop nav.shenzjd.com || true
-            sudo docker rm nav.shenzjd.com || true
+            sudo docker stop navhub.shenzjd.com || true
+            sudo docker rm navhub.shenzjd.com || true
             sudo docker run -d \
-              --name nav.shenzjd.com \
+              --name navhub.shenzjd.com \
               --restart unless-stopped \
               -e NODE_ENV=production \
               -e HOSTNAME=0.0.0.0 \
