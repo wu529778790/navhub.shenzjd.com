@@ -74,20 +74,6 @@ export function SiteCard({
     };
   }, []);
 
-  // Use native event listener on document to catch all contextmenu events in the card
-  useEffect(() => {
-    if (isGuestMode) return;
-    const handler = (e: MouseEvent) => {
-      const el = cardRef.current;
-      if (el && el.contains(e.target as Node)) {
-        e.preventDefault();
-        setIsContextMenuOpen(true);
-      }
-    };
-    document.addEventListener("contextmenu", handler);
-    return () => document.removeEventListener("contextmenu", handler);
-  }, [isGuestMode]);
-
   const getDomain = () => {
     try {
       return new URL(url).hostname;
@@ -125,6 +111,13 @@ export function SiteCard({
   const handleSecondaryPointerCapture = (e: React.MouseEvent | React.PointerEvent) => {
     if (e.button !== 2) return;
     e.stopPropagation();
+  };
+
+  const handleContextMenuCapture = (e: React.MouseEvent) => {
+    if (isGuestMode) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setIsContextMenuOpen(true);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -298,6 +291,7 @@ export function SiteCard({
 
   const cardEvents = {
     onClick: handleCardClick,
+    onContextMenuCapture: handleContextMenuCapture,
     onPointerDownCapture: handleSecondaryPointerCapture,
     onMouseDownCapture: handleSecondaryPointerCapture,
     onTouchStart: handleTouchStart,

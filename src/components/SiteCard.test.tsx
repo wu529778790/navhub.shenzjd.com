@@ -58,8 +58,14 @@ describe("SiteCard", () => {
     );
 
     const card = screen.getByLabelText(/示例站点 - 点击打开链接/);
-    fireEvent.contextMenu(card);
+    const contextMenuEvent = new MouseEvent("contextmenu", {
+      bubbles: true,
+      cancelable: true,
+      button: 2,
+    });
+    fireEvent(card, contextMenuEvent);
 
+    expect(contextMenuEvent.defaultPrevented).toBe(true);
     expect(screen.getByRole("menu", { name: "站点操作菜单" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "编辑 示例站点" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "删除 示例站点" })).toBeInTheDocument();
