@@ -9,7 +9,7 @@ on:
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}
-  CONTAINER_NAME: navhub
+  CONTAINER_NAME: nav.shenzjd.com
 
 jobs:
   quality:
@@ -91,7 +91,7 @@ jobs:
               -e NODE_ENV=production \
               -e HOSTNAME=0.0.0.0 \
               --env-file /opt/1panel/apps/openresty/openresty/www/sites/navhub.shenzjd.com/index/.env \
-              -p 3000:3000 \
+              -p 5271:3000 \
               -v navhub_data:/app/data \
               "$IMAGE"
             sudo docker image prune -f
