@@ -81,7 +81,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
           script: |
-            IMAGE="ghcr.io/${{ github.repository }}:latest"
+            IMAGE="ghcr.io/${{ github.repository }}:${{ github.sha }}"
             sudo docker pull "$IMAGE"
             sudo docker stop nav.shenzjd.com || true
             sudo docker rm nav.shenzjd.com || true
