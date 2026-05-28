@@ -3,7 +3,7 @@
  * Provides offline support and caching
  */
 
-const CACHE_NAME = "navhub-v4";
+const CACHE_NAME = "navhub-v5";
 const APP_SHELL_URL = "/";
 
 // 不预缓存 HTML：首页脚本 URL 随构建变化，install 时 cache.add("/") 会长期固定旧 chunk 列表。
@@ -102,7 +102,18 @@ self.addEventListener("fetch", (event) => {
               return cachedResponse;
             }
             if (event.request.mode === "navigate") {
-              return caches.match(APP_SHELL_URL);
+              return caches.open(CACHE_NAME).then((cache) => {
+                return cache.match(new Request(APP_SHELL_URL, { mode: "navigate" }));
+              }).then((appShell) => {
+                if (appShell) return appShell;
+                return new Response(
+                  "<!DOCTYPE html><html><head><meta charset='utf-8'><title>离线</title>" +
+                  "<style>body{font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#333}" +
+                  "div{text-align:center}h1{font-size:1.5rem;margin-bottom:0.5rem}p{color:#666}</style></head>" +
+                  "<body><div><h1>无法连接网络</h1><p>请检查网络连接后重试</p></div></body></html>",
+                  { headers: { "Content-Type": "text/html; charset=utf-8" } }
+                );
+              });
             }
             return new Response("Offline");
           });
