@@ -7,7 +7,7 @@
 import { useState, useEffect, useMemo, Suspense, lazy } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Keyboard } from "lucide-react";
+import { Plus, Trash2, Keyboard, X } from "lucide-react";
 import { IconSearch, IconBook } from "@/components/icons";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -43,6 +43,7 @@ export default function Home() {
     sites: categories,
     loading,
     error,
+    clearError,
     refreshSites,
     isGuestMode,
     addCategory,
@@ -198,7 +199,7 @@ export default function Home() {
 
         {loading ? (
           <div className="space-y-4">
-            {[...Array(2)].map((_, i) => (
+            {[...Array(Math.max(2, categories.length || 2))].map((_, i) => (
               <div key={i} className="category-card p-5 animate-pulse">
                 <div className="h-6 bg-[var(--muted)] rounded-[var(--radius-sm)] mb-4 w-1/3"></div>
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full">
