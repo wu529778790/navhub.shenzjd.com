@@ -8,7 +8,9 @@ import { OAUTH_CONFIG } from "@/lib/config";
 import { generateCSRFToken } from "@/lib/security";
 
 export async function GET(request: NextRequest) {
-  const { origin } = new URL(request.url);
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const protocol = request.headers.get("x-forwarded-proto") || "https";
+  const origin = forwardedHost ? `${protocol}://${forwardedHost}` : new URL(request.url).origin;
 
   if (!OAUTH_CONFIG.CLIENT_ID) {
     return NextResponse.redirect(
