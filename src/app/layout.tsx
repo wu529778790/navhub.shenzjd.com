@@ -24,13 +24,13 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body className="antialiased">
         <ErrorBoundary>
-          <SitesProvider>
-            <ToastProvider>
+          <ToastProvider>
+            <SitesProvider>
               <ServiceWorkerRegister />
               <UpdateBanner />
               {children}
-            </ToastProvider>
-          </SitesProvider>
+            </SitesProvider>
+          </ToastProvider>
         </ErrorBoundary>
       </body>
     </html>

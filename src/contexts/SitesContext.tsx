@@ -7,6 +7,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { useSync } from "@/hooks/use-sync";
+import { useToast } from "@/components/ui/toast";
 import {
   loadFromLocalStorage,
   saveSitesToLocalStorage,
@@ -51,6 +52,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [githubToken, setGithubToken] = useState<string | undefined>(undefined);
   const [isGuestMode, setIsGuestMode] = useState(false);
+  const { showToast } = useToast();
 
   const {
     status: syncStatus,
@@ -232,13 +234,15 @@ export function SitesProvider({ children }: { children: ReactNode }) {
           await syncNow(navData);
         } catch (error) {
           console.error("同步失败:", error);
+          const msg = error instanceof Error ? error.message : "同步失败";
+          showToast(msg, "error");
           sync(navData);
         }
       } else {
         sync(navData);
       }
     },
-    [githubToken, sync, syncNow, isGuestMode]
+    [githubToken, sync, syncNow, isGuestMode, showToast]
   );
 
   const addSite = async (categoryId: string, site: Site) => {
