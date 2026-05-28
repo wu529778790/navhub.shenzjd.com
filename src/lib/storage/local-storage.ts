@@ -7,6 +7,7 @@ import { STORAGE_CONFIG } from "@/lib/config";
 
 const STORAGE_KEY = "nav_data";
 const LAST_SYNC_KEY = "nav_last_sync";
+const LAST_SYNC_FINGERPRINT_KEY = "nav_last_sync_fingerprint";
 const EXPIRY_KEY = "nav_expiry";
 const CACHE_DURATION = STORAGE_CONFIG.CACHE_DURATION;
 
@@ -76,9 +77,32 @@ export function clearLocalStorage(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(LAST_SYNC_KEY);
+    localStorage.removeItem(LAST_SYNC_FINGERPRINT_KEY);
     localStorage.removeItem(EXPIRY_KEY);
   } catch (error) {
     console.error("清除 localStorage 失败:", error);
+  }
+}
+
+/**
+ * 获取用于冲突检测的数据指纹。忽略 lastModified，只比较实际导航内容。
+ */
+export function getDataFingerprint(data: NavData | null): string | null {
+  if (!data) return null;
+  return JSON.stringify({
+    version: data.version,
+    categories: data.categories,
+  });
+}
+
+/**
+ * 获取上一次成功同步时的数据指纹。
+ */
+export function getLastSyncedFingerprint(): string | null {
+  try {
+    return localStorage.getItem(LAST_SYNC_FINGERPRINT_KEY);
+  } catch {
+    return null;
   }
 }
 
@@ -109,9 +133,15 @@ export function getLastSyncTime(): Date | null {
 /**
  * 设置最后同步时间
  */
-export function setLastSyncTime(): void {
+export function setLastSyncTime(data?: NavData): void {
   try {
     localStorage.setItem(LAST_SYNC_KEY, Date.now().toString());
+    const fingerprint = data ? getDataFingerprint(data) : null;
+    if (fingerprint) {
+      localStorage.setItem(LAST_SYNC_FINGERPRINT_KEY, fingerprint);
+    } else {
+      localStorage.removeItem(LAST_SYNC_FINGERPRINT_KEY);
+    }
   } catch (error) {
     console.error("设置同步时间失败:", error);
   }

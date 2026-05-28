@@ -7,6 +7,8 @@ import {
   saveToLocalStorage,
   loadFromLocalStorage,
   setLastSyncTime,
+  getDataFingerprint,
+  getLastSyncedFingerprint,
   type NavData,
 } from "./local-storage";
 import { saveDataToGitHub, getDataFromGitHub } from "./github-storage";
@@ -26,6 +28,44 @@ function isLocalDataEmpty(data: NavData | null): boolean {
   );
 }
 
+export class SyncConflictError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SyncConflictError";
+  }
+}
+
+function getSyncConflictError(
+  localData: NavData | null,
+  githubData: NavData | null
+): string | null {
+  const localFingerprint = getDataFingerprint(localData);
+  const githubFingerprint = getDataFingerprint(githubData);
+  const lastSyncedFingerprint = getLastSyncedFingerprint();
+
+  if (!localData || !githubData || !localFingerprint || !githubFingerprint) {
+    return null;
+  }
+
+  const bothChangedSinceLastSync =
+    localFingerprint !== githubFingerprint &&
+    lastSyncedFingerprint &&
+    localFingerprint !== lastSyncedFingerprint &&
+    githubFingerprint !== lastSyncedFingerprint;
+
+  if (bothChangedSinceLastSync) {
+    return "检测到同步冲突：本地和 GitHub 数据都已修改，请先备份后手动合并";
+  }
+
+  const localTime = localData.lastModified || 0;
+  const githubTime = githubData.lastModified || 0;
+  if (localTime === githubTime && localFingerprint !== githubFingerprint) {
+    return "检测到同步冲突：本地和 GitHub 时间戳相同但内容不同，请手动合并";
+  }
+
+  return null;
+}
+
 /**
  * 冲突解决逻辑（共享）
  * 决定同步方向：upload / download / none
@@ -37,11 +77,20 @@ export async function resolveSyncDirection(
   commitMessagePrefix: string
 ): Promise<SyncResult> {
   const isLocalEmpty = isLocalDataEmpty(localData);
+  const conflictError = getSyncConflictError(localData, githubData);
+  if (conflictError) {
+    return {
+      success: false,
+      direction: "none",
+      conflictResolved: false,
+      error: conflictError,
+    };
+  }
 
   // 情况 1: 本地为空，GitHub 有数据 → 下载
   if (isLocalEmpty && githubData) {
     saveToLocalStorage(githubData);
-    setLastSyncTime();
+    setLastSyncTime(githubData);
     return {
       success: true,
       direction: "download",
@@ -52,7 +101,7 @@ export async function resolveSyncDirection(
   // 情况 2: GitHub 为空，本地有有效数据 → 上传
   if (githubData === null && !isLocalEmpty && localData) {
     await saveDataToGitHub(token, localData, `${commitMessagePrefix} ${new Date().toISOString()}`);
-    setLastSyncTime();
+    setLastSyncTime(localData);
     return {
       success: true,
       direction: "upload",
@@ -82,7 +131,7 @@ export async function resolveSyncDirection(
         localData,
         `${commitMessagePrefix} ${new Date().toISOString()}`
       );
-      setLastSyncTime();
+      setLastSyncTime(localData);
       return {
         success: true,
         direction: "upload",
@@ -91,7 +140,7 @@ export async function resolveSyncDirection(
     } else if (githubTime > localTime) {
       // GitHub 更新，下载
       saveToLocalStorage(githubData);
-      setLastSyncTime();
+      setLastSyncTime(githubData);
       return {
         success: true,
         direction: "download",
@@ -99,7 +148,7 @@ export async function resolveSyncDirection(
       };
     } else {
       // 时间戳相同，数据一致
-      setLastSyncTime();
+      setLastSyncTime(localData);
       return {
         success: true,
         direction: "none",
@@ -375,6 +424,12 @@ export class SyncManager {
     this.updateStatus(SyncStatus.SYNCING);
 
     try {
+      const githubData = await getDataFromGitHub(this.options.token);
+      const conflictError = getSyncConflictError(data, githubData);
+      if (conflictError) {
+        throw new SyncConflictError(conflictError);
+      }
+
       // 尝试同步到 GitHub
       await saveDataToGitHub(
         this.options.token,
@@ -383,7 +438,7 @@ export class SyncManager {
       );
 
       // 更新最后同步时间
-      setLastSyncTime();
+      setLastSyncTime(data);
       this.retryCountMap.clear();
 
       this.updateStatus(SyncStatus.IDLE);
@@ -392,6 +447,10 @@ export class SyncManager {
       console.error("❌ 同步失败:", error);
       this.updateStatus(SyncStatus.ERROR);
       this.options.onError?.(error as Error);
+
+      if (error instanceof SyncConflictError) {
+        return;
+      }
 
       this.retrySync(data);
     } finally {
@@ -479,7 +538,7 @@ export async function initialSync(token?: string): Promise<NavData | null> {
       if (githubData) {
         // 保存到本地
         saveToLocalStorage(githubData);
-        setLastSyncTime();
+        setLastSyncTime(githubData);
         return githubData;
       }
     } catch (error) {
