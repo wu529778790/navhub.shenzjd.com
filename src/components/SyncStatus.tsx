@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
-import { showToast } from "@/components/Toast";
+import { useToast } from "@/components/ui/toast";
 import { getAuthState } from "@/lib/auth";
 
 export function SyncStatus() {
@@ -17,6 +17,7 @@ export function SyncStatus() {
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     void (async () => {
