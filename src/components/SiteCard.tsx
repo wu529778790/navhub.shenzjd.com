@@ -74,17 +74,18 @@ export function SiteCard({
     };
   }, []);
 
-  // Use native event listener to reliably prevent browser context menu
+  // Use native event listener on document to catch all contextmenu events in the card
   useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const handler = (e: Event) => {
-      if (isGuestMode) return;
-      e.preventDefault();
-      setIsContextMenuOpen(true);
+    if (isGuestMode) return;
+    const handler = (e: MouseEvent) => {
+      const el = cardRef.current;
+      if (el && el.contains(e.target as Node)) {
+        e.preventDefault();
+        setIsContextMenuOpen(true);
+      }
     };
-    el.addEventListener("contextmenu", handler);
-    return () => el.removeEventListener("contextmenu", handler);
+    document.addEventListener("contextmenu", handler);
+    return () => document.removeEventListener("contextmenu", handler);
   }, [isGuestMode]);
 
   const getDomain = () => {
