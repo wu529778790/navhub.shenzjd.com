@@ -9,6 +9,7 @@ on:
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}
+  CONTAINER_NAME: navhub
 
 jobs:
   quality:
@@ -57,6 +58,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix=sha-
+            type=raw,value=latest
 
       - uses: docker/build-push-action@v5
         with:
@@ -68,3 +70,31 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             NEXT_PUBLIC_GITHUB_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          script: |
+            IMAGE="${{ env.IMAGE }}:latest"
+            sudo docker pull "$IMAGE"
+            sudo docker stop ${{ env.CONTAINER_NAME }} || true
+            sudo docker rm ${{ env.CONTAINER_NAME }} || true
+            sudo docker run -d \
+              --name ${{ env.CONTAINER_NAME }} \
+              --restart unless-stopped \
+              -e NODE_ENV=production \
+              -e HOSTNAME=0.0.0.0 \
+              -e NEXT_PUBLIC_GITHUB_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }} \
+              -e GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }} \
+              -p 3000:3000 \
+              -v navhub_data:/app/data \
+              "$IMAGE"
+            sudo docker image prune -f
