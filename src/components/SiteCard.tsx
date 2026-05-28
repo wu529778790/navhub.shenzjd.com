@@ -86,7 +86,7 @@ export function SiteCard({
     const handler = (e: Event) => {
       if (isGuestMode) return;
       e.preventDefault();
-      openContextMenu();
+      setIsContextMenuOpen(true);
     };
     el.addEventListener("contextmenu", handler);
     return () => el.removeEventListener("contextmenu", handler);
