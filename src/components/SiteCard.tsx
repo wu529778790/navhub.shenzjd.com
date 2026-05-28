@@ -74,11 +74,6 @@ export function SiteCard({
     };
   }, []);
 
-  const openContextMenu = () => {
-    if (isGuestMode) return;
-    setIsContextMenuOpen(true);
-  };
-
   // Use native event listener to reliably prevent browser context menu
   useEffect(() => {
     const el = cardRef.current;
