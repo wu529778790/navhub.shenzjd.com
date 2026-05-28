@@ -4,7 +4,6 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { OAUTH_CONFIG } from "@/lib/config";
 import { generateCSRFToken } from "@/lib/security";
 
 export async function GET(request: NextRequest) {
@@ -12,7 +11,8 @@ export async function GET(request: NextRequest) {
   const protocol = request.headers.get("x-forwarded-proto") || "https";
   const origin = forwardedHost ? `${protocol}://${forwardedHost}` : new URL(request.url).origin;
 
-  if (!OAUTH_CONFIG.CLIENT_ID) {
+  const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
+  if (!clientId) {
     return NextResponse.redirect(
       `${origin}/?oauth_error=${encodeURIComponent("NEXT_PUBLIC_GITHUB_CLIENT_ID 未配置")}`
     );
@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
   const redirectUri = `${origin}/api/auth/callback/github`;
 
   const authUrl = new URL("https://github.com/login/oauth/authorize");
-  authUrl.searchParams.set("client_id", OAUTH_CONFIG.CLIENT_ID);
+  authUrl.searchParams.set("client_id", clientId);
   authUrl.searchParams.set("redirect_uri", redirectUri);
-  authUrl.searchParams.set("scope", OAUTH_CONFIG.SCOPE);
+  authUrl.searchParams.set("scope", "repo gist");
   authUrl.searchParams.set("state", state);
 
   const response = NextResponse.redirect(authUrl.toString());

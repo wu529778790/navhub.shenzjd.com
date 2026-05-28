@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { validateOrigin, checkRateLimit, getClientIP, verifyOAuthState } from "@/lib/security";
-import { OAUTH_CONFIG, SECURITY_CONFIG } from "@/lib/config";
+import { SECURITY_CONFIG } from "@/lib/config";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -63,8 +63,8 @@ export async function GET(request: NextRequest) {
         Accept: "application/json",
       },
       body: JSON.stringify({
-        client_id: OAUTH_CONFIG.CLIENT_ID,
-        client_secret: OAUTH_CONFIG.CLIENT_SECRET,
+        client_id: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
         code: code,
       }),
     });
