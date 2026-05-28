@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1776746914255,
+  "lastModified": 1779760156447,
   "categories": [
     {
       "id": "default",
@@ -417,6 +417,12 @@
           "title": "Nolock",
           "url": "https://www.nolock.io/aff.php?aff=1245",
           "favicon": "https://www.nolock.io/favicon.ico"
+        },
+        {
+          "id": "5b44fa6e-2ec8-40c0-a00d-e249cf6082fb",
+          "title": "Nolock",
+          "url": "https://new.nolock.io/register?aff=Bp0OoQri",
+          "favicon": "https://new.nolock.io/favicon.ico"
         }
       ]
     },
