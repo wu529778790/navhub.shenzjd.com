@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1781096137537,
+  "lastModified": 1781232316602,
   "categories": [
     {
       "id": "default",
@@ -228,6 +228,12 @@
           "title": "北京航空航天大学",
           "url": "https://mail.buaa.edu.cn/coremail/",
           "favicon": "https://mail.buaa.edu.cn/favicon.ico"
+        },
+        {
+          "id": "5481da57-6038-4153-9058-58801f7ef52c",
+          "title": "Linux",
+          "url": "https://linux.do/",
+          "favicon": "https://icons.duckduckgo.com/ip3/linux.do.ico"
         }
       ]
     },
