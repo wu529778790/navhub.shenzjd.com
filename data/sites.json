@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": 1781232316602,
+  "lastModified": 1781686865500,
   "categories": [
     {
       "id": "default",
@@ -122,6 +122,12 @@
           "title": "Agentrouter",
           "url": "https://agentrouter.org/register?aff=zc85",
           "favicon": "https://agentrouter.org/favicon.ico"
+        },
+        {
+          "id": "144eea7b-faae-44e1-8b51-4800d528fdb8",
+          "title": "New API",
+          "url": "https://jiuuij.de5.net/",
+          "favicon": "https://jiuuij.de5.net/logo.png"
         }
       ]
     },
