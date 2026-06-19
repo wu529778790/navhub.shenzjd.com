@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -33,27 +33,29 @@
   --error: #d94a4a;
   --info: #3f9ce8;
 
-  --background: #f6f9fb;
+  --background: #f4f7f9;
   --background-secondary: #ffffff;
+  --background-elevated: #ffffff;
   --foreground: #112029;
   --foreground-secondary: #49606b;
-  --muted: #ebf1f3;
+  --muted: #edf2f4;
   --muted-foreground: #6e828d;
-  --border: #d9e4e8;
-  --border-strong: #bfd0d8;
-  --input-border: #cad9df;
+  --border: #dde6ea;
+  --border-strong: #c2d2d8;
+  --input-border: #cdd9de;
 
-  --shadow-xs: 0 1px 2px rgb(6 31 37 / 0.06);
-  --shadow-sm: 0 6px 16px -10px rgb(8 41 50 / 0.28);
-  --shadow-md: 0 14px 30px -16px rgb(8 41 50 / 0.3);
-  --shadow-lg: 0 24px 48px -20px rgb(8 41 50 / 0.36);
-  --shadow-xl: 0 32px 64px -24px rgb(8 41 50 / 0.44);
+  /* 扁平·克制阴影:以边框/色块分层为主,阴影仅作微妙浮起 */
+  --shadow-xs: 0 1px 2px rgb(8 41 50 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(8 41 50 / 0.04), 0 1px 3px rgb(8 41 50 / 0.06);
+  --shadow-md: 0 2px 4px -2px rgb(8 41 50 / 0.05), 0 4px 12px -2px rgb(8 41 50 / 0.08);
+  --shadow-lg: 0 4px 8px -4px rgb(8 41 50 / 0.06), 0 12px 24px -6px rgb(8 41 50 / 0.1);
+  --shadow-xl: 0 8px 16px -6px rgb(8 41 50 / 0.08), 0 20px 40px -10px rgb(8 41 50 / 0.14);
 
-  --radius-sm: 0.45rem;
+  --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.25rem;
-  --radius-2xl: 1.6rem;
+  --radius-2xl: 1.5rem;
 
   --container-max: 1200px;
   --container-padding: 1.25rem;
@@ -61,15 +63,16 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0d171d;
-    --background-secondary: #13232b;
+    --background: #0c151b;
+    --background-secondary: #131f26;
+    --background-elevated: #182730;
     --foreground: #eaf4f8;
     --foreground-secondary: #afc3cd;
-    --muted: #192c35;
+    --muted: #1a2830;
     --muted-foreground: #8ba3af;
-    --border: #223843;
-    --border-strong: #2b4855;
-    --input-border: #2e4a56;
+    --border: #243742;
+    --border-strong: #2e4654;
+    --input-border: #314956;
 
     --primary-50: #0d2925;
     --primary-100: #143d38;
@@ -90,6 +93,13 @@
     --warning: #f5b24e;
     --error: #f06b6b;
     --info: #5fb3f0;
+
+    /* 深色模式:阴影需略强以体现层级(暗背景下边框对比已足够) */
+    --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 4px rgb(0 0 0 / 0.25);
+    --shadow-md: 0 4px 8px -2px rgb(0 0 0 / 0.35), 0 2px 4px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 8px 16px -4px rgb(0 0 0 / 0.4), 0 4px 8px rgb(0 0 0 / 0.3);
+    --shadow-xl: 0 16px 32px -8px rgb(0 0 0 / 0.5), 0 8px 16px rgb(0 0 0 / 0.35);
   }
 }
 
@@ -125,6 +135,8 @@
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
+
+  --font-sans: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
 }
 
 @layer base {
@@ -134,19 +146,22 @@
 
   body {
     @apply min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased;
-    font-family: "Manrope", "Segoe UI", sans-serif;
+    font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+    /* 纸感背景:纯净单色 + 顶部极淡高光,去掉过重的彩色光斑 */
     background-image:
-      radial-gradient(circle at 8% 2%, rgb(22 127 115 / 0.1), transparent 34%),
-      radial-gradient(circle at 90% 6%, rgb(255 159 47 / 0.11), transparent 30%),
-      linear-gradient(180deg, rgb(255 255 255 / 0.4), transparent 38%);
+      linear-gradient(180deg, rgb(255 255 255 / 0.5), transparent 180px),
+      radial-gradient(circle at 12% -4%, rgb(22 127 115 / 0.05), transparent 32%);
     background-attachment: fixed;
+    background-repeat: no-repeat;
+    font-feature-settings: "cv11", "ss01";
   }
 
   h1,
   h2,
   h3,
   h4 {
-    font-family: "Outfit", "Manrope", sans-serif;
+    font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+    letter-spacing: -0.02em;
   }
 
   ::selection {
@@ -155,8 +170,12 @@
   }
 
   ::-webkit-scrollbar {
-    width: 9px;
-    height: 9px;
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -172,7 +191,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--accent-500);
+    outline: 2px solid var(--primary-500);
     outline-offset: 2px;
     border-radius: 8px;
   }
@@ -180,19 +199,19 @@
 
 @layer utilities {
   .fade-in {
-    animation: fadeIn 0.35s ease-out;
+    animation: fadeIn 0.3s ease-out;
   }
 
   .slide-up {
-    animation: slideUp 0.4s cubic-bezier(0.2, 0.75, 0.28, 1);
+    animation: slideUp 0.35s cubic-bezier(0.2, 0.75, 0.28, 1);
   }
 
   .scale-in {
-    animation: scaleIn 0.22s ease-out;
+    animation: scaleIn 0.18s ease-out;
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, var(--primary-700), var(--accent-500));
+    background: linear-gradient(135deg, var(--primary-700), var(--primary-500));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -211,7 +230,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -222,7 +241,7 @@
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.96);
+    transform: scale(0.97);
   }
   to {
     opacity: 1;
@@ -235,57 +254,74 @@
     @apply max-w-[var(--container-max)] mx-auto px-[var(--container-padding)];
   }
 
+  /* 卡片:扁平、清晰边框、微浮起,hover 轻抬升 + 边框强调 */
   .card {
     @apply rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--background-secondary)];
     box-shadow: var(--shadow-sm);
-    transition:
-      transform 0.24s ease,
-      box-shadow 0.24s ease,
-      border-color 0.24s ease;
-  }
-
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--border-strong);
-  }
-
-  .category-card {
-    @apply rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--background-secondary)] p-1;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .site-card {
-    @apply relative flex h-[100px] w-[100px] shrink-0 flex-col items-center justify-center gap-1.5 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--background-secondary)] px-2 py-2.5;
-    margin: 2px;
     transition:
       transform 0.2s ease,
       box-shadow 0.2s ease,
       border-color 0.2s ease;
   }
 
+  .card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
+  }
+
+  /* 分类卡片:扁平分组容器,顶部留出标题区呼吸感 */
+  .category-card {
+    @apply overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--background-secondary)];
+    box-shadow: var(--shadow-xs);
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .category-card:hover {
+    box-shadow: var(--shadow-sm);
+    border-color: var(--border-strong);
+  }
+
+  /* 站点卡片:扁平、色块感,hover 边框转主色 */
+  .site-card {
+    @apply relative flex h-[96px] w-[96px] shrink-0 flex-col items-center justify-center gap-1.5 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--background-secondary)] px-2 py-2.5;
+    margin: 2px;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      border-color 0.18s ease,
+      background-color 0.18s ease;
+  }
+
   .site-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     border-color: var(--primary-300);
     box-shadow: var(--shadow-md);
   }
 
+  .site-card:focus-visible {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgb(22 127 115 / 0.16);
+  }
+
+  /* 图标底:扁平色块,去掉重渐变 */
   .site-icon-wrapper {
     @apply relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-[var(--radius-md)];
-    background: linear-gradient(160deg, var(--primary-100), var(--primary-50));
-    border: 1px solid var(--primary-200);
+    background: var(--primary-50);
+    border: 1px solid var(--primary-100);
   }
 
   .site-title {
-    @apply w-full truncate text-center text-[11px] leading-[1.15] font-semibold text-[var(--foreground-secondary)];
+    @apply w-full truncate text-center text-[11px] leading-[1.2] font-semibold text-[var(--foreground-secondary)];
     min-height: 1.4rem;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
   }
 
   .input,
   .search-input {
     @apply w-full rounded-[var(--radius-lg)] border border-[var(--input-border)] bg-[var(--background-secondary)] text-[var(--foreground)] transition-all duration-200;
-    box-shadow: 0 8px 20px -20px rgb(8 41 50 / 0.35);
   }
 
   .input {
@@ -305,7 +341,7 @@
   .search-input:focus {
     outline: none;
     border-color: var(--primary-400);
-    box-shadow: 0 0 0 3px rgb(22 127 115 / 0.15);
+    box-shadow: 0 0 0 3px rgb(22 127 115 / 0.14);
   }
 
   .empty-state {
@@ -314,8 +350,8 @@
 
   .empty-state-icon {
     @apply mb-4 flex h-20 w-20 items-center justify-center rounded-full;
-    background: linear-gradient(140deg, var(--primary-100), var(--neutral-50));
-    border: 1px solid var(--primary-200);
+    background: var(--primary-50);
+    border: 1px solid var(--primary-100);
   }
 
   .empty-state-title {
@@ -331,9 +367,10 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 
+  /* 头部/栏:接近实色 + 极轻模糊,扁平干净 */
   .glass {
-    background: color-mix(in oklab, var(--background-secondary) 86%, white 14%);
-    backdrop-filter: blur(10px);
+    background: color-mix(in oklab, var(--background-secondary) 90%, transparent);
+    backdrop-filter: blur(10px) saturate(140%);
   }
 }
 

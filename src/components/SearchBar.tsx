@@ -99,7 +99,7 @@ export function SearchBar({ onSearch, placeholder = "搜索站点..." }: SearchB
           role="status"
           aria-live="polite"
         >
-          <div className="fade-in inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--primary-600)] px-3 py-1.5 text-sm text-white shadow-lg">
+          <div className="fade-in inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--primary-600)] px-3 py-1.5 text-sm text-white shadow-[var(--shadow-lg)]">
             <Keyboard className="h-4 w-4" />
             <span>搜索快捷键已激活</span>
           </div>
@@ -143,12 +143,12 @@ export function ViewToggle({
   onViewChange: (view: "grid" | "list") => void;
 }) {
   return (
-    <div className="flex items-center gap-1 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)] p-1 shadow-sm">
+    <div className="flex items-center gap-1 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)] p-1">
       <button
         onClick={() => onViewChange("grid")}
         className={`rounded-[var(--radius-sm)] p-2 transition-all duration-200 cursor-pointer ${
           view === "grid"
-            ? "bg-[var(--primary-600)] text-white shadow"
+            ? "bg-[var(--primary-600)] text-white"
             : "text-[var(--foreground-secondary)] hover:bg-[var(--muted)]"
         }`}
         aria-label="网格视图"
@@ -160,7 +160,7 @@ export function ViewToggle({
         onClick={() => onViewChange("list")}
         className={`rounded-[var(--radius-sm)] p-2 transition-all duration-200 cursor-pointer ${
           view === "list"
-            ? "bg-[var(--primary-600)] text-white shadow"
+            ? "bg-[var(--primary-600)] text-white"
             : "text-[var(--foreground-secondary)] hover:bg-[var(--muted)]"
         }`}
         aria-label="列表视图"

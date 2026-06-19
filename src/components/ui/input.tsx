@@ -12,8 +12,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         className={cn(
           // 现代化输入框 - 使用项目设计系统
           "flex w-full rounded-[var(--radius-md)] border border-[var(--input-border)]",
-          "bg-[var(--background)] text-[var(--foreground)]",
-          "px-3 py-2.5 text-sm shadow-sm",
+          "bg-[var(--background-secondary)] text-[var(--foreground)]",
+          "px-3 py-2.5 text-sm",
 
           // 交互状态
           "transition-all duration-200 ease-out",
