@@ -182,7 +182,10 @@ export const SiteCard = memo(function SiteCard({
           onClick={handleCardClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="site-card group cursor-pointer bg-[var(--background-secondary)]/85"
+          className={cn(
+            "site-card group cursor-pointer bg-[var(--background-secondary)]/85",
+            isMenuOpen && "z-[9999] relative"
+          )}
           title="点击打开链接"
         >
           {/* 三点菜单按钮 — 仅 hover 当前卡片时显示 */}
@@ -236,7 +239,10 @@ export const SiteCard = memo(function SiteCard({
         onClick={handleCardClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="relative flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)]/90 transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] cursor-pointer group"
+        className={cn(
+          "relative flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)]/90 transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] cursor-pointer group",
+          isMenuOpen && "z-[9999]"
+        )}
         title="点击打开链接"
       >
         <div className="site-icon-wrapper w-10 h-10 flex-shrink-0">
