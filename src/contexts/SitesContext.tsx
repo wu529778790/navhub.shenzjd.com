@@ -12,6 +12,7 @@ import {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
   ReactNode,
 } from "react";
 import { useSync } from "@/hooks/use-sync";
@@ -111,14 +112,19 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     return result;
   }, [runManualSync, isGuestMode]);
 
+  // 用于竞态控制：只允许最新的 fetch 更新状态
+  const fetchIdRef = useRef(0);
+
   /**
    * 初始化：从本地或 GitHub 加载数据
    * 优化策略：
    * 1. 本地数据优先展示（消除 loading 转圈）
    * 2. 不带 forceRefresh 调用 getAuthState（利用缓存，不发网络请求）
    * 3. 认证检查与远程数据获取并行执行
+   * 4. fetchId 防止旧请求覆盖新数据
    */
   const fetchSites = useCallback(async (_forceRefresh = false) => {
+    const currentFetchId = ++fetchIdRef.current;
     try {
       setError(null);
 
@@ -144,6 +150,9 @@ export function SitesProvider({ children }: { children: ReactNode }) {
           ? getAuthState().then((a) => (a.token ? getDataFromGitHub(a.token) : null))
           : Promise.resolve(null),
       ]);
+
+      // 如果已有更新的 fetch 在运行，放弃本次结果
+      if (currentFetchId !== fetchIdRef.current) return;
 
       // 处理认证结果
       const authState = auth.status === "fulfilled" ? auth.value : { token: null, user: null };
@@ -187,6 +196,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
           // 访客模式：从 GitHub 拉取示例数据
           try {
             const yourData = await getYourDataFromGitHub();
+            // 再次检查竞态
+            if (currentFetchId !== fetchIdRef.current) return;
             if (yourData?.categories && yourData.categories.length > 0) {
               saveSitesToLocalStorage(yourData.categories);
               setSites(yourData.categories);
@@ -206,6 +217,8 @@ export function SitesProvider({ children }: { children: ReactNode }) {
           // 已登录但本地无数据：从 GitHub 拉取
           try {
             const githubData = await getDataFromGitHub(currentToken);
+            // 再次检查竞态
+            if (currentFetchId !== fetchIdRef.current) return;
             if (githubData?.categories && githubData.categories.length > 0) {
               saveSitesToLocalStorage(githubData.categories);
               setSites(githubData.categories);
@@ -218,13 +231,18 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // 最后：确保有默认分类 + 关闭 loading
-      if (sites.length === 0) {
-        setSites([defaultCategory]);
-        saveSitesToLocalStorage([defaultCategory]);
-      }
+      // 最后：只有当 sites 为空时才设置默认分类（避免覆盖已加载的有效数据）
+      if (currentFetchId !== fetchIdRef.current) return;
+      setSites((prev) => {
+        if (prev.length === 0) {
+          saveSitesToLocalStorage([defaultCategory]);
+          return [defaultCategory];
+        }
+        return prev;
+      });
       setLoading(false);
     } catch (err) {
+      if (currentFetchId !== fetchIdRef.current) return;
       setError(err instanceof Error ? err.message : "加载失败");
       // 尝试从本地加载作为 fallback
       const localData = getSitesFromLocalStorage();
@@ -236,7 +254,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       }
       setLoading(false);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // 组件挂载时加载数据
   useEffect(() => {
