@@ -29,7 +29,9 @@ vi.mock("@/components/ui/alert-dialog", () => ({
     <button {...props}>{children}</button>
   ),
   AlertDialogContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  AlertDialogDescription: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  AlertDialogDescription: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   AlertDialogHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   AlertDialogTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
@@ -45,7 +47,7 @@ describe("SiteCard", () => {
     } as ReturnType<typeof useSites>);
   });
 
-  it("右键站点卡片时显示自定义菜单", () => {
+  it("点击三点菜单按钮显示编辑和删除选项", () => {
     render(
       <SiteCard
         id="site-1"
@@ -57,17 +59,39 @@ describe("SiteCard", () => {
       />
     );
 
-    const card = screen.getByLabelText(/示例站点 - 点击打开链接/);
-    const contextMenuEvent = new MouseEvent("contextmenu", {
-      bubbles: true,
-      cancelable: true,
-      button: 2,
-    });
-    fireEvent(card, contextMenuEvent);
+    // 点击三点菜单按钮
+    const menuButton = screen.getByLabelText("更多操作");
+    fireEvent.click(menuButton);
 
-    expect(contextMenuEvent.defaultPrevented).toBe(true);
+    // 验证菜单出现
     expect(screen.getByRole("menu", { name: "站点操作菜单" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "编辑 示例站点" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "删除 示例站点" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "编辑" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "删除" })).toBeInTheDocument();
+  });
+
+  it("点击卡片打开链接", () => {
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+
+    const { container } = render(
+      <SiteCard
+        id="site-1"
+        title="示例站点"
+        url="https://example.com"
+        favicon=""
+        categoryId="default"
+        view="grid"
+      />
+    );
+
+    // 点击卡片容器（通过 class 找到）
+    const card = container.querySelector(".site-card")!;
+    fireEvent.click(card);
+
+    expect(openSpy).toHaveBeenCalledWith(
+      "https://example.com",
+      "_blank",
+      "noopener,noreferrer"
+    );
+    openSpy.mockRestore();
   });
 });

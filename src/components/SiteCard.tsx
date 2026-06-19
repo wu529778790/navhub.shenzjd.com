@@ -1,7 +1,7 @@
 /**
- * 站点卡片组件 - 现代化设计
- * - 正常点击：打开链接
- * - 右键/长按：显示编辑菜单
+ * 站点卡片组件
+ * - 点击：打开链接
+ * - 三点菜单按钮：编辑/删除（悬停显示）
  */
 
 "use client";
@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, Globe } from "lucide-react";
+import { Pencil, Trash2, Globe, MoreVertical } from "lucide-react";
 
 interface SiteCardProps {
   id: string;
@@ -39,74 +39,35 @@ export const SiteCard = memo(function SiteCard({
   categoryId,
   view = "grid",
 }: SiteCardProps) {
-  const { updateSite, deleteSite, isGuestMode } = useSites();
+  const { updateSite, deleteSite } = useSites();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
-  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const contextMenuRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [menuPosition, setMenuPosition] = useState<"auto" | "flip-up" | "flip-left">("auto");
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
-  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuPosition, setMenuPosition] = useState<"auto" | "flip-up">("auto");
 
+  // 点击外部关闭菜单
   useEffect(() => {
-    if (!isContextMenuOpen) return;
-
+    if (!isMenuOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
-      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
-        setIsContextMenuOpen(false);
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsMenuOpen(false);
       }
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isMenuOpen]);
 
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [isContextMenuOpen]);
-
+  // 计算菜单位置（防止超出视口）
   useEffect(() => {
-    if (!isContextMenuOpen || !contextMenuRef.current || !cardRef.current) {
-      setMenuPosition("auto");
-      return;
-    }
-    const menuEl = contextMenuRef.current;
-    const cardRect = cardRef.current.getBoundingClientRect();
-    const menuRect = menuEl.getBoundingClientRect();
-    const vw = window.innerWidth;
+    if (!isMenuOpen || !menuRef.current) return;
+    const menuRect = menuRef.current.getBoundingClientRect();
     const vh = window.innerHeight;
-
-    let pos: "auto" | "flip-up" | "flip-left" = "auto";
-    if (view === "grid") {
-      if (cardRect.bottom + menuRect.height > vh && cardRect.top > menuRect.height) {
-        pos = "flip-up";
-      }
-      if (cardRect.left + menuRect.width > vw) {
-        pos = "flip-left";
-      }
+    if (menuRect.bottom > vh && menuRect.height < vh) {
+      setMenuPosition("flip-up");
     }
-    setMenuPosition(pos);
-  }, [isContextMenuOpen, view]);
-
-  useEffect(() => {
-    return () => {
-      if (longPressTimer.current) clearTimeout(longPressTimer.current);
-    };
-  }, []);
-
-  // 右键菜单：用原生监听器统一处理（阻止浏览器默认菜单 + 打开自定义菜单）
-  // 不用 React onContextMenuCapture，避免 React 19 事件委托冲突
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const handleContextMenu = (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsContextMenuOpen(true);
-    };
-    el.addEventListener("contextmenu", handleContextMenu);
-    return () => el.removeEventListener("contextmenu", handleContextMenu);
-  }, []);
+  }, [isMenuOpen]);
 
   const domain = useMemo(() => {
     try {
@@ -131,228 +92,109 @@ export const SiteCard = memo(function SiteCard({
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
+    // 如果点击的是菜单按钮或菜单内容，不打开链接
+    if ((e.target as HTMLElement).closest("[data-menu-trigger]")) return;
     e.preventDefault();
-    e.stopPropagation();
-    if (isContextMenuOpen) {
-      setIsContextMenuOpen(false);
-      return;
-    }
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  const handleSecondaryPointerCapture = (e: React.MouseEvent | React.PointerEvent) => {
-    if (e.button !== 2) return;
+  const handleMenuToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (isGuestMode) return;
-    touchStartPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    longPressTimer.current = setTimeout(() => {
-      setIsContextMenuOpen(true);
-      if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
-      if (cardRef.current) {
-        cardRef.current.style.transform = "scale(0.98)";
-        setTimeout(() => {
-          if (cardRef.current) cardRef.current.style.transform = "";
-        }, 150);
-      }
-    }, 450);
-  };
-
-  const handleTouchEnd = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-    touchStartPos.current = null;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (longPressTimer.current && touchStartPos.current) {
-      const touch = e.touches[0];
-      const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
-      const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
-      if (deltaX > 10 || deltaY > 10) {
-        clearTimeout(longPressTimer.current);
-        longPressTimer.current = null;
-        touchStartPos.current = null;
-      }
-    }
+    setIsMenuOpen(!isMenuOpen);
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsEditDialogOpen(true);
-    setIsContextMenuOpen(false);
+    setIsMenuOpen(false);
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDeleteAlertOpen(true);
-    setIsContextMenuOpen(false);
+    setIsMenuOpen(false);
   };
 
-  const contextMenu = isContextMenuOpen && (
+  const dropdownMenu = isMenuOpen && (
     <div
-      ref={contextMenuRef}
+      ref={menuRef}
       role="menu"
       aria-label="站点操作菜单"
       className={cn(
-        "absolute z-[9999] w-auto",
-        view === "grid"
-          ? menuPosition === "flip-up"
-            ? "bottom-full mb-2 left-0"
-            : menuPosition === "flip-left"
-              ? "top-full mt-2 right-0"
-              : "top-full mt-2 left-0"
-          : "left-4 top-1/2 -translate-y-1/2",
-        "bg-[var(--background-secondary)]/95 backdrop-blur-xl",
-        "border border-[var(--border)] rounded-[var(--radius-xl)]",
-        "shadow-[0_16px_36px_-14px_rgba(8,41,50,0.35)]",
-        "p-1.5 animate-in fade-in zoom-in-95",
-        "overflow-hidden"
+        "absolute z-[9999] w-36",
+        menuPosition === "flip-up"
+          ? "bottom-full mb-1 right-0"
+          : "top-full mt-1 right-0",
+        "bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-lg)]",
+        "shadow-lg py-1"
       )}
     >
       <button
         role="menuitem"
         onClick={handleEditClick}
-        className={cn(
-          "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
-          "hover:bg-[var(--primary-50)] text-[var(--foreground-secondary)] hover:text-[var(--foreground)]",
-          "text-sm font-medium transition-all active:scale-95",
-          "group relative overflow-hidden whitespace-nowrap cursor-pointer"
-        )}
-        aria-label={`编辑 ${initialTitle}`}
+        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors cursor-pointer"
       >
-        <div
-          className={cn(
-            "w-6 h-6 rounded-md bg-[var(--primary-100)] flex items-center justify-center",
-            "group-hover:bg-[var(--primary-200)] transition-colors"
-          )}
-        >
-          <Pencil className="w-3.5 h-3.5 text-[var(--primary-600)] group-hover:scale-110 transition-transform" />
-        </div>
-        <span>编辑站点</span>
+        <Pencil className="w-4 h-4" />
+        <span>编辑</span>
       </button>
       <button
         role="menuitem"
         onClick={handleDeleteClick}
-        className={cn(
-          "w-full flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)]",
-          "hover:bg-[var(--error)]/10 text-[var(--error)]",
-          "text-sm font-medium transition-all active:scale-95 mt-0.5",
-          "group relative overflow-hidden whitespace-nowrap cursor-pointer"
-        )}
-        aria-label={`删除 ${initialTitle}`}
+        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--error)] hover:bg-[var(--error)]/10 transition-colors cursor-pointer"
       >
-        <div
-          className={cn(
-            "w-6 h-6 rounded-md bg-[var(--error)]/10 flex items-center justify-center",
-            "group-hover:bg-[var(--error)]/20 transition-colors"
-          )}
-        >
-          <Trash2 className="w-3.5 h-3.5 text-[var(--error)] group-hover:scale-110 transition-transform" />
-        </div>
-        <span>删除站点</span>
+        <Trash2 className="w-4 h-4" />
+        <span>删除</span>
       </button>
     </div>
   );
 
   const deleteDialog = (
     <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
-      <AlertDialogContent className="sm:max-w-md bg-[var(--background)]/95 backdrop-blur-2xl border border-[var(--border)] rounded-[var(--radius-2xl)] shadow-[0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6">
+      <AlertDialogContent className="sm:max-w-md">
         <AlertDialogHeader>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-full bg-[var(--error)]/10 flex items-center justify-center border border-[var(--error)]/20">
-              <Trash2 className="w-5 h-5 text-[var(--error)]" />
-            </div>
-            <AlertDialogTitle className="text-2xl font-bold text-[var(--foreground)]">
-              确认删除站点
-            </AlertDialogTitle>
-          </div>
-          <AlertDialogDescription className="text-[var(--foreground-secondary)] text-base leading-relaxed mt-2">
-            确定要删除 <strong className="text-[var(--error)] font-semibold">{initialTitle}</strong>{" "}
-            吗？
-            <br />
-            <span className="text-sm text-[var(--muted-foreground)] mt-1 inline-block">
-              此操作无法撤销，数据将从本地和 GitHub 同步删除。
-            </span>
+          <AlertDialogTitle>确认删除站点</AlertDialogTitle>
+          <AlertDialogDescription>
+            确定要删除 <strong>{initialTitle}</strong> 吗？此操作无法撤销。
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex gap-3 pt-4 mt-4 border-t border-[var(--border)] w-full">
-          <AlertDialogCancel
-            className={cn(
-              "flex-1 h-12 rounded-[var(--radius-xl)] text-base font-medium",
-              "bg-[var(--background)] border border-[var(--border)]",
-              "hover:bg-[var(--background-secondary)] hover:border-[var(--border-strong)]",
-              "transition-all duration-200 active:scale-95"
-            )}
-          >
-            取消
-          </AlertDialogCancel>
+        <div className="flex gap-2 pt-2">
+          <AlertDialogCancel className="flex-1">取消</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isLoading}
-            className={cn(
-              "flex-1 h-12 rounded-[var(--radius-xl)] text-base font-medium",
-              "bg-gradient-to-r from-[var(--error)] to-red-600 text-white",
-              "hover:from-red-600 hover:to-red-700",
-              "text-white font-medium shadow-lg shadow-red-500/30",
-              "transition-all duration-200 active:scale-95",
-              "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
-            )}
+            className="flex-1 bg-[var(--error)] text-white hover:bg-[var(--error)]/90"
           >
-            {isLoading ? (
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>删除中...</span>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center gap-2">
-                <Trash2 className="w-4 h-4" />
-                <span>确认删除</span>
-              </div>
-            )}
+            {isLoading ? "删除中..." : "确认删除"}
           </AlertDialogAction>
         </div>
       </AlertDialogContent>
     </AlertDialog>
   );
 
-  const cardEvents = {
-    onClick: handleCardClick,
-    onPointerDownCapture: handleSecondaryPointerCapture,
-    onMouseDownCapture: handleSecondaryPointerCapture,
-    onTouchStart: handleTouchStart,
-    onTouchEnd: handleTouchEnd,
-    onTouchMove: handleTouchMove,
-  };
-
+  // 网格视图
   if (view === "grid") {
     return (
       <>
         <div
-          ref={cardRef}
-          key={id}
           role="button"
           tabIndex={0}
-          aria-label={`${initialTitle} - 点击打开链接，右键或长按显示菜单`}
-          aria-haspopup
-          aria-expanded={isContextMenuOpen}
-          {...cardEvents}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              setIsContextMenuOpen(!isContextMenuOpen);
-            }
-          }}
-          className={cn(
-            "site-card group cursor-pointer bg-[var(--background-secondary)]/85",
-            isContextMenuOpen && "z-[9999]"
-          )}
-          title="点击打开链接，右键或长按显示菜单"
+          onClick={handleCardClick}
+          className="site-card group cursor-pointer bg-[var(--background-secondary)]/85"
+          title="点击打开链接"
         >
+          {/* 三点菜单按钮 — 悬停显示 */}
+          <div className="absolute top-1 right-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              data-menu-trigger
+              onClick={handleMenuToggle}
+              className="p-1 rounded-full hover:bg-[var(--muted)] transition-colors cursor-pointer"
+              aria-label="更多操作"
+            >
+              <MoreVertical className="w-4 h-4 text-[var(--foreground-secondary)]" />
+            </button>
+            {dropdownMenu}
+          </div>
+
           <div className="site-icon-wrapper">
             <FaviconImage
               key={`grid-${id}-${favicon || "none"}`}
@@ -367,7 +209,6 @@ export const SiteCard = memo(function SiteCard({
           <span className="site-title transition-colors group-hover:text-[var(--primary-700)]">
             {initialTitle}
           </span>
-          {contextMenu}
         </div>
         {isEditDialogOpen && (
           <EditSiteDialog
@@ -384,17 +225,13 @@ export const SiteCard = memo(function SiteCard({
     );
   }
 
+  // 列表视图
   return (
     <>
       <div
-        ref={cardRef}
-        key={id}
-        {...cardEvents}
-        className={cn(
-          "relative flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)]/90 transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] hover:translate-x-1 cursor-pointer",
-          isContextMenuOpen && "z-[9999]"
-        )}
-        title={isGuestMode ? "点击打开链接" : "点击打开链接，右键或长按显示菜单"}
+        onClick={handleCardClick}
+        className="relative flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)]/90 transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] cursor-pointer group"
+        title="点击打开链接"
       >
         <div className="site-icon-wrapper w-10 h-10 flex-shrink-0">
           <FaviconImage
@@ -414,7 +251,19 @@ export const SiteCard = memo(function SiteCard({
             {domain}
           </div>
         </div>
-        {contextMenu}
+
+        {/* 三点菜单按钮 — 悬停显示 */}
+        <div className="relative opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <button
+            data-menu-trigger
+            onClick={handleMenuToggle}
+            className="p-1.5 rounded-[var(--radius-sm)] hover:bg-[var(--muted)] transition-colors cursor-pointer"
+            aria-label="更多操作"
+          >
+            <MoreVertical className="w-4 h-4 text-[var(--foreground-secondary)]" />
+          </button>
+          {dropdownMenu}
+        </div>
       </div>
       {isEditDialogOpen && (
         <EditSiteDialog
