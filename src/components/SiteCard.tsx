@@ -123,8 +123,8 @@ export const SiteCard = memo(function SiteCard({
       className={cn(
         "absolute z-[9999] w-36",
         menuPosition === "flip-up"
-          ? "bottom-full mb-1 right-0"
-          : "top-full mt-1 right-0",
+          ? "bottom-full mb-1 left-0"
+          : "top-full mt-1 left-0",
         "bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-lg)]",
         "shadow-lg py-1"
       )}
