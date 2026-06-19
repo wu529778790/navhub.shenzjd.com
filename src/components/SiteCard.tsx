@@ -98,7 +98,7 @@ export const SiteCard = memo(function SiteCard({
   // 不用 React onContextMenuCapture，避免 React 19 事件委托冲突
   useEffect(() => {
     const el = cardRef.current;
-    if (!el || isGuestMode) return;
+    if (!el) return;
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
@@ -106,7 +106,7 @@ export const SiteCard = memo(function SiteCard({
     };
     el.addEventListener("contextmenu", handleContextMenu);
     return () => el.removeEventListener("contextmenu", handleContextMenu);
-  }, [isGuestMode]);
+  }, []);
 
   const domain = useMemo(() => {
     try {
@@ -193,7 +193,7 @@ export const SiteCard = memo(function SiteCard({
     setIsContextMenuOpen(false);
   };
 
-  const contextMenu = !isGuestMode && isContextMenuOpen && (
+  const contextMenu = isContextMenuOpen && (
     <div
       ref={contextMenuRef}
       role="menu"
@@ -337,12 +337,12 @@ export const SiteCard = memo(function SiteCard({
           key={id}
           role="button"
           tabIndex={0}
-          aria-label={`${initialTitle} - 点击打开链接${!isGuestMode ? "，按 Enter 或 Space 显示菜单" : ""}`}
-          aria-haspopup={!isGuestMode}
+          aria-label={`${initialTitle} - 点击打开链接，右键或长按显示菜单`}
+          aria-haspopup
           aria-expanded={isContextMenuOpen}
           {...cardEvents}
           onKeyDown={(e) => {
-            if ((e.key === "Enter" || e.key === " ") && !isGuestMode) {
+            if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
               setIsContextMenuOpen(!isContextMenuOpen);
             }
@@ -351,7 +351,7 @@ export const SiteCard = memo(function SiteCard({
             "site-card group cursor-pointer bg-[var(--background-secondary)]/85",
             isContextMenuOpen && "z-[9999]"
           )}
-          title={isGuestMode ? "点击打开链接" : "点击打开链接，按 Enter 显示菜单"}
+          title="点击打开链接，右键或长按显示菜单"
         >
           <div className="site-icon-wrapper">
             <FaviconImage
