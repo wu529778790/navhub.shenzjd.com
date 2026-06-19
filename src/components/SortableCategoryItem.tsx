@@ -66,7 +66,7 @@ export const SortableCategoryItem = memo(function SortableCategoryItem({
           </div>
           <div className="flex-1">
             <h3
-              className="font-semibold text-lg text-[var(--foreground)] flex items-center gap-2 cursor-pointer"
+              className="font-semibold text-lg tracking-tight text-[var(--foreground)] flex items-center gap-2 cursor-pointer"
               onClick={handleCategoryClick}
               title="点击跳转到此分类"
             >
@@ -77,7 +77,7 @@ export const SortableCategoryItem = memo(function SortableCategoryItem({
         </div>
 
         {!isGuestMode && (
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="flex items-center gap-1 opacity-60 transition-opacity duration-200 group-hover:opacity-100">
             <Button
               variant="ghost"
               size="sm"
@@ -113,11 +113,7 @@ export const SortableCategoryItem = memo(function SortableCategoryItem({
           </div>
         }
       >
-        <SortableSites
-          category={category}
-          allCategories={allCategories}
-          view={viewMode}
-        />
+        <SortableSites category={category} allCategories={allCategories} view={viewMode} />
       </Suspense>
     </div>
   );

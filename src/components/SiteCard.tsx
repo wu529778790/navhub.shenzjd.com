@@ -44,7 +44,6 @@ export const SiteCard = memo(function SiteCard({
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuPosition, setMenuPosition] = useState<"auto" | "flip-up">("auto");
 
@@ -122,12 +121,10 @@ export const SiteCard = memo(function SiteCard({
       role="menu"
       aria-label="站点操作菜单"
       className={cn(
-        "absolute z-[9999] w-36",
-        menuPosition === "flip-up"
-          ? "bottom-full mb-1 left-0"
-          : "top-full mt-1 left-0",
-        "bg-[var(--background)] border border-[var(--border)] rounded-[var(--radius-lg)]",
-        "shadow-lg py-1"
+        "absolute z-[9999] w-36 overflow-hidden",
+        menuPosition === "flip-up" ? "bottom-full mb-1 left-0" : "top-full mt-1 left-0",
+        "border border-[var(--border)] rounded-[var(--radius-md)] bg-[var(--background-secondary)]",
+        "shadow-[var(--shadow-lg)] py-1"
       )}
     >
       <button
@@ -180,21 +177,20 @@ export const SiteCard = memo(function SiteCard({
           role="button"
           tabIndex={0}
           onClick={handleCardClick}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className={cn(
-            "site-card group cursor-pointer bg-[var(--background-secondary)]/85",
-            isMenuOpen && "z-[9999] relative"
-          )}
+          className={cn("site-card group/card cursor-pointer", isMenuOpen && "z-[9999] relative")}
           title="点击打开链接"
         >
           {/* 三点菜单按钮 — 仅 hover 当前卡片时显示 */}
-          <div className="absolute top-1 right-1 z-10" style={{ opacity: isHovered || isMenuOpen ? 1 : 0, transition: 'opacity 150ms' }}>
+          <div
+            className={cn(
+              "absolute top-1 right-1 z-10 transition-opacity duration-150",
+              isMenuOpen ? "opacity-100" : "opacity-0 group-hover/card:opacity-100"
+            )}
+          >
             <button
               data-menu-trigger
               onClick={handleMenuToggle}
-              onMouseEnter={() => setIsHovered(true)}
-              className="p-1 rounded-full bg-[var(--background-secondary)]/80 hover:bg-[var(--muted)] transition-colors cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-[var(--muted)] cursor-pointer"
               aria-label="更多操作"
             >
               <MoreVertical className="w-4 h-4 text-[var(--foreground-secondary)]" />
@@ -213,7 +209,7 @@ export const SiteCard = memo(function SiteCard({
               iconClassName="w-4 h-4"
             />
           </div>
-          <span className="site-title transition-colors group-hover:text-[var(--primary-700)]">
+          <span className="site-title transition-colors group-hover/card:text-[var(--primary-700)]">
             {initialTitle}
           </span>
         </div>
@@ -237,10 +233,8 @@ export const SiteCard = memo(function SiteCard({
     <>
       <div
         onClick={handleCardClick}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          "relative flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)]/90 transition-all duration-200 hover:shadow-md hover:border-[var(--primary-300)] cursor-pointer group",
+          "relative flex items-center gap-3 p-3 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--background-secondary)] transition-all duration-200 hover:border-[var(--primary-300)] hover:shadow-[var(--shadow-md)] cursor-pointer group/card",
           isMenuOpen && "z-[9999]"
         )}
         title="点击打开链接"
@@ -265,12 +259,17 @@ export const SiteCard = memo(function SiteCard({
         </div>
 
         {/* 三点菜单按钮 — 仅 hover 当前卡片时显示 */}
-        <div className="relative flex-shrink-0" style={{ opacity: isHovered || isMenuOpen ? 1 : 0, transition: 'opacity 150ms' }}>
+        <div
+          className={cn(
+            "relative flex-shrink-0 transition-opacity duration-150",
+            isMenuOpen ? "opacity-100" : "opacity-0 group-hover/card:opacity-100"
+          )}
+        >
           <button
             data-menu-trigger
             onClick={handleMenuToggle}
             onMouseEnter={() => setIsHovered(true)}
-            className="p-1.5 rounded-[var(--radius-sm)] hover:bg-[var(--muted)] transition-colors cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] transition-colors hover:bg-[var(--muted)] cursor-pointer"
             aria-label="更多操作"
           >
             <MoreVertical className="w-4 h-4 text-[var(--foreground-secondary)]" />

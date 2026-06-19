@@ -4,19 +4,30 @@
 
 "use client";
 
-import { useState, useEffect, useMemo, Suspense, lazy } from "react";
+import { useState, useEffect, useMemo, useRef, Suspense, lazy } from "react";
 import { useSites } from "@/contexts/SitesContext";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Keyboard, X } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Keyboard,
+  X,
+  MoreVertical,
+  LayoutGrid,
+  List,
+  Check,
+  ArrowDownUp,
+} from "lucide-react";
 import { IconSearch, IconBook } from "@/components/icons";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { SearchBar, SearchStatus, ViewToggle } from "@/components/SearchBar";
+import { SearchBar, SearchStatus } from "@/components/SearchBar";
+import { CategoryTabBar } from "@/components/CategoryTabBar";
+import { ImportExportDialog } from "@/components/ImportExportDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { SortableCategoryItem } from "@/components/SortableCategoryItem";
-import { CategorySidebar } from "@/components/CategorySidebar";
 import type { Category } from "@/lib/storage/local-storage";
 
 import {
@@ -55,6 +66,9 @@ export default function Home() {
   const [deletingCategory, setDeletingCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showImportExport, setShowImportExport] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -71,11 +85,23 @@ export default function Home() {
         setShowAddCategoryDialog(false);
         setEditingCategory(null);
         setDeletingCategory(null);
+        setMoreMenuOpen(false);
       }
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isGuestMode]);
+
+  useEffect(() => {
+    if (!moreMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [moreMenuOpen]);
 
   const filteredCategories = useMemo(() => {
     let result = categories as Category[];
@@ -163,35 +189,100 @@ export default function Home() {
     );
   };
 
+  const moreButtonClass =
+    "flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)] text-[var(--foreground-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--foreground)] cursor-pointer";
+  const menuItemClass =
+    "flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] cursor-pointer";
+
   return (
     <AppLayout>
       <PageContainer>
-        <div className="flex gap-6 w-full">
-          {/* 左侧分类导航 */}
-          <CategorySidebar categories={categories} />
+        {/* 分类 tab 栏(WeTab 风格,桌面+移动端统一) */}
+        <div className="mb-4">
+          <CategoryTabBar categories={categories} />
+        </div>
 
-          {/* 主内容区 */}
-          <div className="flex-1 min-w-0">
-        <div className="flex flex-col gap-4 mb-6 w-full">
-          <div className="flex gap-3 items-center w-full flex-wrap">
-            <div className="flex-1 min-w-0 flex-grow">
-              <SearchBar onSearch={setSearchQuery} placeholder="搜索站点名称、URL..." />
+        {/* 操作栏:sticky 吸顶 */}
+        <div className="sticky top-16 z-30 mb-5">
+          <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--background-secondary)] p-2 shadow-[var(--shadow-sm)]">
+            <div className="flex items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <SearchBar onSearch={setSearchQuery} placeholder="搜索站点名称、URL..." />
+              </div>
+              {!isGuestMode && (
+                <Button
+                  size="sm"
+                  onClick={() => setShowAddCategoryDialog(true)}
+                  className="h-11 flex-shrink-0 gap-1"
+                  title="新建分类 (Ctrl/Cmd+Alt+N)"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="hidden sm:inline">新建</span>
+                </Button>
+              )}
+
+              <div className="relative flex-shrink-0" ref={moreRef}>
+                <button
+                  onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+                  className={moreButtonClass}
+                  aria-label="更多操作"
+                  aria-expanded={moreMenuOpen}
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </button>
+                {moreMenuOpen && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full z-50 mt-1 w-44 overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)] py-1 shadow-[var(--shadow-lg)]"
+                  >
+                    <button
+                      role="menuitem"
+                      onClick={() => {
+                        setViewMode("grid");
+                        setMoreMenuOpen(false);
+                      }}
+                      className={menuItemClass}
+                    >
+                      <LayoutGrid className="h-4 w-4" />
+                      <span className="flex-1">网格视图</span>
+                      {viewMode === "grid" && (
+                        <Check className="h-4 w-4 text-[var(--primary-600)]" />
+                      )}
+                    </button>
+                    <button
+                      role="menuitem"
+                      onClick={() => {
+                        setViewMode("list");
+                        setMoreMenuOpen(false);
+                      }}
+                      className={menuItemClass}
+                    >
+                      <List className="h-4 w-4" />
+                      <span className="flex-1">列表视图</span>
+                      {viewMode === "list" && (
+                        <Check className="h-4 w-4 text-[var(--primary-600)]" />
+                      )}
+                    </button>
+                    <div className="my-1 border-t border-[var(--border)]" />
+                    <button
+                      role="menuitem"
+                      onClick={() => {
+                        setShowImportExport(true);
+                        setMoreMenuOpen(false);
+                      }}
+                      className={menuItemClass}
+                    >
+                      <ArrowDownUp className="h-4 w-4" />
+                      <span>导入 / 导出</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-            <ViewToggle view={viewMode} onViewChange={setViewMode} />
-            {!isGuestMode && (
-              <Button
-                size="sm"
-                onClick={() => setShowAddCategoryDialog(true)}
-                className="gap-1 shadow-md hover:shadow-lg transition-all flex-shrink-0"
-              >
-                <Plus className="w-4 h-4" />
-                新建
-                <span className="hidden sm:inline text-xs opacity-75 ml-1">(Ctrl/Cmd+Alt+N)</span>
-              </Button>
-            )}
           </div>
+
           {searchQuery && (
-            <div className="flex items-center justify-between gap-3 flex-wrap w-full">
+            <div className="mt-2">
               <SearchStatus query={searchQuery} resultsCount={searchResultsCount} />
             </div>
           )}
@@ -282,8 +373,6 @@ export default function Home() {
             </div>
           </div>
         )}
-          </div>
-        </div>
       </PageContainer>
 
       {showAddCategoryDialog && (
@@ -329,12 +418,7 @@ export default function Home() {
                   }}
                   placeholder="输入分类名称"
                   autoFocus
-                  className={cn(
-                    "h-12 rounded-[var(--radius-lg)]",
-                    "bg-[var(--background)]/80 backdrop-blur-sm",
-                    "border-[var(--border)] hover:border-[var(--primary-400)]",
-                    "focus:border-[var(--primary-500)] focus:ring-2 focus:ring-[var(--primary-500)]/20"
-                  )}
+                  className="h-12 rounded-[var(--radius-lg)]"
                 />
               </div>
             </div>
@@ -345,7 +429,7 @@ export default function Home() {
                 className={cn(
                   "flex-1 h-11 rounded-[var(--radius-lg)]",
                   "border-[var(--border)] hover:border-[var(--border-strong)]",
-                  "hover:bg-[var(--background-secondary)]",
+                  "hover:bg-[var(--muted)]",
                   "transition-all duration-200 active:scale-95"
                 )}
               >
@@ -353,13 +437,7 @@ export default function Home() {
               </Button>
               <Button
                 onClick={handleEditCategory}
-                className={cn(
-                  "flex-1 h-11 rounded-[var(--radius-lg)]",
-                  "bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-500)]",
-                  "hover:from-[var(--primary-700)] hover:to-[var(--primary-600)]",
-                  "text-white font-medium shadow-lg shadow-[var(--primary-500)]/20",
-                  "transition-all duration-200 active:scale-95"
-                )}
+                className="flex-1 h-11 rounded-[var(--radius-lg)] font-medium transition-all duration-200 active:scale-95"
               >
                 保存
               </Button>
@@ -394,7 +472,7 @@ export default function Home() {
                 className={cn(
                   "flex-1 h-11 rounded-[var(--radius-lg)]",
                   "border-[var(--border)] hover:border-[var(--border-strong)]",
-                  "hover:bg-[var(--background-secondary)]",
+                  "hover:bg-[var(--muted)]",
                   "transition-all duration-200 active:scale-95"
                 )}
               >
@@ -403,13 +481,7 @@ export default function Home() {
               <Button
                 variant="destructive"
                 onClick={() => handleDeleteCategory(deletingCategory)}
-                className={cn(
-                  "flex-1 h-11 rounded-[var(--radius-lg)]",
-                  "bg-gradient-to-r from-[var(--error)] to-red-600",
-                  "hover:from-red-600 hover:to-red-700",
-                  "text-white font-medium shadow-lg shadow-red-500/30",
-                  "transition-all duration-200 active:scale-95"
-                )}
+                className="flex-1 h-11 rounded-[var(--radius-lg)] font-medium transition-all duration-200 active:scale-95"
               >
                 删除
               </Button>
@@ -417,6 +489,8 @@ export default function Home() {
           </DialogContent>
         </Dialog>
       )}
+
+      <ImportExportDialog open={showImportExport} onOpenChange={setShowImportExport} />
     </AppLayout>
   );
 }
