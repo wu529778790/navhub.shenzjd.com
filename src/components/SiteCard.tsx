@@ -94,6 +94,17 @@ export const SiteCard = memo(function SiteCard({
     };
   }, []);
 
+  // 阻止浏览器默认右键菜单（仅阻止浏览器菜单，自定义菜单由 onContextMenuCapture 处理）
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el || isGuestMode) return;
+    const handleNativeContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+    el.addEventListener("contextmenu", handleNativeContextMenu);
+    return () => el.removeEventListener("contextmenu", handleNativeContextMenu);
+  }, [isGuestMode]);
+
   const domain = useMemo(() => {
     try {
       return new URL(url).hostname;
