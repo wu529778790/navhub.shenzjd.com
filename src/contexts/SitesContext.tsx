@@ -80,8 +80,7 @@ export { useData } from "./DataContext";
 import { useData as _useData } from "./DataContext";
 
 // 兼容旧代码的统一 Hook（从各子 Context 聚合）
-import { useContext } from "react";
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- 保留供未来扩展使用
 function createUseSites(syncState: SyncStateHook) {
   return function useSites() {
     const auth = useAuth();

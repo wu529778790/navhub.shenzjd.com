@@ -16,7 +16,6 @@ import {
   useRef,
   ReactNode,
 } from "react";
-import { useToast } from "@/components/ui/toast";
 import {
   loadFromLocalStorage,
   saveSitesToLocalStorage,
@@ -69,7 +68,6 @@ export function DataProvider({
   const [sites, setSites] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { showToast } = useToast();
 
   // 用于竞态控制：只允许最新的 fetch 更新状态
   const fetchIdRef = useRef(0);
@@ -164,7 +162,7 @@ export function DataProvider({
 
   // 组件挂载时加载数据
   useEffect(() => {
-    void fetchSites();
+    fetchSites();
   }, [fetchSites]);
 
   // 监听认证变化自动刷新

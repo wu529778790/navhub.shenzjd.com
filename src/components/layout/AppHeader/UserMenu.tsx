@@ -21,7 +21,7 @@ interface UserMenuProps {
   runtimeConfig: RuntimePublicConfig | null;
 }
 
-export function UserMenu({ authUser, onOpenSettings, onLogout, runtimeConfig }: UserMenuProps) {
+export function UserMenu({ authUser, onOpenSettings, onLogout }: UserMenuProps) {
   const [showMenu, setShowMenu] = useState(false);
 
   // 点击外部关闭菜单

@@ -25,7 +25,6 @@ function sanitizeErrorMessage(error: unknown): { message: string; status: number
   return { message: "操作失败，请稍后重试", status: 500 };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
   try {
     // 为 GET 路由添加基本的 rate limiting（防止 CSRF 攻击消耗 API 配额）

@@ -5,7 +5,6 @@
  */
 
 import {
-  assertSafeExternalUrl,
   readResponseTextWithLimit,
   safeFetchExternalUrl,
 } from "@/lib/server/safe-external-fetch";

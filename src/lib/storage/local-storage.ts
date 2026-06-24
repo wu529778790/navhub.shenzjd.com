@@ -4,7 +4,7 @@
  */
 
 import { STORAGE_CONFIG } from "@/lib/config";
-import type { Site, Category, NavData } from "@/types";
+import type { Category, NavData } from "@/types";
 
 const STORAGE_KEY = "nav_data";
 const LAST_SYNC_KEY = "nav_last_sync";

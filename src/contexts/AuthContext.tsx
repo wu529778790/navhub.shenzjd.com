@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
 
   /**
-   * 刷新认证状态
+   * 刷新认证状态 — 供外部调用(如 auth-update 事件回调、手动刷新)
    * @param forceRefresh 是否强制刷新缓存
    */
   const refreshAuth = useCallback(async (forceRefresh = false) => {
@@ -59,7 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // 组件挂载时初始化
   useEffect(() => {
-    void refreshAuth();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 组件挂载时必须从外部源获取初始认证状态
+    refreshAuth();
   }, [refreshAuth]);
 
   // 监听认证变化事件
