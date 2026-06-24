@@ -1,28 +1,15 @@
 /**
- * 可排序站点列表组件 - 使用 @dnd-kit
+ * 站点列表展示组件 - 纯展示，拖拽由外层统一 DndContext 管理
  */
 
 "use client";
 
 import { memo } from "react";
 import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  rectSortingStrategy,
-  verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useAuth, useData } from "@/contexts/SitesContext";
+import { useAuth } from "@/contexts/SitesContext";
 import { SiteCard } from "@/components/SiteCard";
 import { AddSiteCard } from "@/components/AddSiteCard";
 import type { Category } from "@/lib/storage/local-storage";
@@ -41,14 +28,12 @@ interface SortableSitesProps {
       sort?: number;
     }>;
   };
-  allCategories: Category[];
   view?: "grid" | "list";
 }
 
+/** 可排序的站点项包装器 */
 function SortableItem({ id, children }: { id: string; children: React.ReactNode }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id,
-  });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -65,116 +50,57 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
 
 export const SortableSites = memo(function SortableSites({
   category,
-  allCategories,
   view = "grid",
 }: SortableSitesProps) {
-  const { updateSites } = useData();
   const { isGuestMode } = useAuth();
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) {
-      return;
-    }
-
-    const oldIndex = category.sites.findIndex((site) => site.id === active.id);
-    const newIndex = category.sites.findIndex((site) => site.id === over.id);
-
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    // 重新排序站点
-    const newSites = [...category.sites];
-    const [removed] = newSites.splice(oldIndex, 1);
-    newSites.splice(newIndex, 0, removed);
-
-    // 更新排序索引
-    const sortedSites = newSites.map((site, index) => ({ ...site, sort: index }));
-
-    // 更新分类数据
-    const newCategories = allCategories.map((c) =>
-      c.id === category.id ? { ...c, sites: sortedSites } : c
-    );
-
-    await updateSites(newCategories);
-  };
 
   // 网格视图布局
   if (view === "grid") {
     return (
-      <div>
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext
-            items={category.sites.map((site) => site.id)}
-            strategy={rectSortingStrategy}
-          >
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full">
-              {category.sites.map((site) => (
-                <SortableItem key={site.id} id={site.id}>
-                  <SiteCard
-                    id={site.id}
-                    title={site.title}
-                    url={site.url}
-                    favicon={site.favicon}
-                    categoryId={category.id}
-                    view="grid"
-                  />
-                </SortableItem>
-              ))}
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full">
+        {category.sites.map((site) => (
+          <SortableItem key={site.id} id={site.id}>
+            <SiteCard
+              id={site.id}
+              title={site.title}
+              url={site.url}
+              favicon={site.favicon}
+              categoryId={category.id}
+              view="grid"
+            />
+          </SortableItem>
+        ))}
 
-              {/* 添加站点卡片（登录态始终可见） */}
-              {!isGuestMode && (
-                <div className="w-[100px] h-[100px] flex-shrink-0">
-                  <AddSiteCard activeCategory={category.id} view="grid" />
-                </div>
-              )}
-            </div>
-          </SortableContext>
-        </DndContext>
+        {/* 添加站点卡片（登录态始终可见） */}
+        {!isGuestMode && (
+          <div className="w-[100px] h-[100px] flex-shrink-0">
+            <AddSiteCard activeCategory={category.id} view="grid" />
+          </div>
+        )}
       </div>
     );
   }
 
   // 列表视图布局
   return (
-    <div>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext
-          items={category.sites.map((site) => site.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="flex flex-col gap-2 mt-2">
-            {category.sites.map((site) => (
-              <SortableItem key={site.id} id={site.id}>
-                <SiteCard
-                  id={site.id}
-                  title={site.title}
-                  url={site.url}
-                  favicon={site.favicon}
-                  categoryId={category.id}
-                  view="list"
-                />
-              </SortableItem>
-            ))}
+    <div className="flex flex-col gap-2 mt-2">
+      {category.sites.map((site) => (
+        <SortableItem key={site.id} id={site.id}>
+          <SiteCard
+            id={site.id}
+            title={site.title}
+            url={site.url}
+            favicon={site.favicon}
+            categoryId={category.id}
+            view="list"
+          />
+        </SortableItem>
+      ))}
 
-            {/* 添加站点卡片（登录态始终可见） */}
-            {!isGuestMode && (
-              <AddSiteCard activeCategory={category.id} view="list" />
-            )}
-          </div>
-        </SortableContext>
-      </DndContext>
+      {/* 添加站点卡片（登录态始终可见） */}
+      {!isGuestMode && (
+        <AddSiteCard activeCategory={category.id} view="list" />
+      )}
     </div>
   );
 });

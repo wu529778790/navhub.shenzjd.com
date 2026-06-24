@@ -43,6 +43,7 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
+  rectSortingStrategy,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
@@ -155,12 +156,90 @@ export default function Home() {
     setDeletingCategory(null);
   };
 
+  /** 构建所有站点的扁平 ID 列表 + 站点ID→分类 映射 */
+  const { allSiteIds, siteIdToCategoryId } = useMemo(() => {
+    const idToCat: Record<string, string> = {};
+    const ids: string[] = [];
+    for (const cat of filteredCategories) {
+      for (const site of cat.sites) {
+        ids.push(site.id);
+        idToCat[site.id] = cat.id;
+      }
+    }
+    return { allSiteIds: ids, siteIdToCategoryId: idToCat };
+  }, [filteredCategories]);
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = categories.findIndex((c) => c.id === active.id);
-    const newIndex = categories.findIndex((c) => c.id === over.id);
-    updateSites(arrayMove(categories, oldIndex, newIndex));
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    // --- 情况1：拖拽的是分类 ---
+    const catIndex = categories.findIndex((c) => c.id === activeId);
+    if (catIndex !== -1) {
+      const overCatIndex = categories.findIndex((c) => c.id === overId);
+      if (overCatIndex !== -1) {
+        updateSites(arrayMove(categories, catIndex, overCatIndex));
+      }
+      return;
+    }
+
+    // --- 情况2：拖拽的是站点（支持跨分类） ---
+    // 找到被拖拽站点所在的分类和位置
+    let sourceCategory: Category | null = null;
+    let sourceSiteIndex = -1;
+
+    for (const cat of categories) {
+      const idx = cat.sites.findIndex((s) => s.id === activeId);
+      if (idx !== -1) {
+        sourceCategory = cat;
+        sourceSiteIndex = idx;
+        break;
+      }
+    }
+    if (!sourceCategory || sourceSiteIndex === -1) return;
+
+    // 找到目标分类：目标可能是一个站点，也可能是一个分类
+    let targetCategoryId = sourceCategory.id; // 默认同分类内移动
+    let targetSiteIndex = -1;
+
+    // 目标是站点
+    const overCatId = siteIdToCategoryId[overId];
+    if (overCatId) {
+      targetCategoryId = overCatId;
+      const targetCat = categories.find((c) => c.id === overCatId);
+      if (targetCat) {
+        targetSiteIndex = targetCat.sites.findIndex((s) => s.id === overId);
+      }
+    } else {
+      // 目标是分类 → 移动到该分类末尾
+      targetCategoryId = overId;
+      targetSiteIndex = -1; // -1 表示 append 到末尾
+    }
+
+    // 构建新的 categories 数据
+    const newCategories = categories.map((cat) => ({ ...cat, sites: [...cat.sites] }));
+
+    // 从源分类移除站点
+    const sourceCat = newCategories.find((c) => c.id === sourceCategory.id)!;
+    const [movedSite] = sourceCat.sites.splice(sourceSiteIndex, 1);
+
+    // 插入到目标分类
+    const targetCat = newCategories.find((c) => c.id === targetCategoryId)!;
+    if (targetSiteIndex >= 0) {
+      targetCat.sites.splice(targetSiteIndex, 0, movedSite);
+    } else {
+      targetCat.sites.push(movedSite);
+    }
+
+    // 更新 sort 字段
+    for (const cat of newCategories) {
+      cat.sites = cat.sites.map((site, index) => ({ ...site, sort: index }));
+    }
+
+    updateSites(newCategories);
   };
 
   const renderEmptyState = () => {
@@ -328,8 +407,11 @@ export default function Home() {
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={filteredCategories.map((c) => c.id)}
-              strategy={verticalListSortingStrategy}
+              items={[
+                ...filteredCategories.map((c) => c.id),
+                ...allSiteIds,
+              ]}
+              strategy={viewMode === "grid" ? rectSortingStrategy : verticalListSortingStrategy}
             >
               <div className="space-y-4">
                 {filteredCategories.map((category) => (
