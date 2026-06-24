@@ -36,22 +36,18 @@ export function OverviewBar({ categories }: OverviewBarProps) {
   const catCount = categories.length;
 
   return (
-    <section className="mb-6">
-      <div className="flex flex-col gap-4 rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--background-secondary)] p-5 shadow-[var(--shadow-sm)] sm:flex-row sm:items-center sm:justify-between">
+    <section className="mb-4">
+      <div className="flex items-center justify-between">
         <div className="min-w-0">
-          <h2 className="text-xl font-bold tracking-tight text-[var(--foreground)] sm:text-2xl">
+          <h2 className="text-lg font-semibold tracking-tight text-[var(--foreground)]">
             {greeting || "你好"}
             {isGuestMode ? ",访客" : ""}
           </h2>
-          <p className="mt-1 text-sm text-[var(--foreground-secondary)]">
-            {isGuestMode
-              ? "正在浏览示例导航,登录 GitHub 后即可管理你的专属书签"
-              : "管理你的专属导航,数据自动双向同步至 GitHub"}
-          </p>
         </div>
-        <div className="flex flex-shrink-0 gap-3">
-          <Stat label="分类" value={catCount} />
-          <Stat label="站点" value={siteCount} />
+        <div className="flex flex-shrink-0 gap-2 text-xs text-[var(--muted-foreground)] tabular-nums">
+          <span>{catCount} 分类</span>
+          <span>·</span>
+          <span>{siteCount} 站点</span>
         </div>
       </div>
     </section>
