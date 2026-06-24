@@ -43,62 +43,61 @@ export const SortableCategoryItem = memo(function SortableCategoryItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="category-card group p-5"
+      className="category-card group"
       id={`category-${category.id}`}
     >
+      {/* 分类标题行 */}
       <div
-        className="flex items-center justify-between mb-4 cursor-move p-2 -mx-2 -mt-2 rounded-lg"
+        className="flex items-center gap-3 mb-3 cursor-move px-1 py-2 -mx-1 rounded-[var(--radius-md)] hover:bg-[var(--muted)]/50 transition-colors"
         {...attributes}
         {...listeners}
       >
-        <div className="flex items-center gap-3 flex-1">
-          <div className="p-1.5 bg-[var(--primary-100)] rounded-[var(--radius-sm)] text-[var(--primary-700)]">
-            <GripVertical className="w-4 h-4" />
-          </div>
-          <div className="flex-1">
-            <h3
-              className="font-semibold text-lg tracking-tight text-[var(--foreground)] flex items-center gap-2"
-            >
-              <IconFolder className="w-5 h-5 text-[var(--primary-600)]" />
-              <span>{category.name}</span>
-            </h3>
-          </div>
+        <div className="text-[var(--muted-foreground)] p-0.5 rounded hover:text-[var(--foreground-secondary)] transition-colors">
+          <GripVertical className="w-4 h-4" />
         </div>
+        <h3 className="font-semibold text-[15px] tracking-tight text-[var(--foreground)] flex items-center gap-2 flex-1 min-w-0">
+          <IconFolder className="w-4 h-4 text-[var(--primary-600)] flex-shrink-0" />
+          <span className="truncate">{category.name}</span>
+          <span className="text-xs font-normal text-[var(--muted-foreground)] tabular-nums flex-shrink-0">
+            {category.sites.length}
+          </span>
+        </h3>
 
         {!isGuestMode && (
-          <div className="flex items-center gap-1 opacity-60 transition-opacity duration-200 group-hover:opacity-100">
-            <Button
-              variant="ghost"
-              size="sm"
+          <div className="flex items-center gap-0.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit(category);
               }}
-              className="px-2 hover:bg-[var(--muted)]"
+              className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] transition-colors hover:bg-[var(--muted)] cursor-pointer"
               title="编辑分类"
             >
-              <Edit2 className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
+              <Edit2 className="w-3.5 h-3.5 text-[var(--foreground-secondary)]" />
+            </button>
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(category.id);
               }}
-              className="px-2 text-[var(--error)] hover:bg-[var(--error)]/10"
+              className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] transition-colors hover:bg-[var(--error)]/10 cursor-pointer"
               title="删除分类"
             >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+              <Trash2 className="w-3.5 h-3.5 text-[var(--foreground-secondary)] hover:text-[var(--error)]" />
+            </button>
           </div>
         )}
       </div>
 
       <Suspense
         fallback={
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2">
-            <div className="w-[100px] h-[100px] bg-[var(--muted)] rounded-[var(--radius-md)] animate-pulse" />
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2">
+            {[...Array(4)].map((_, j) => (
+              <div
+                key={j}
+                className="w-[100px] h-[100px] bg-[var(--muted)] rounded-[var(--radius-md)] animate-pulse"
+              />
+            ))}
           </div>
         }
       >

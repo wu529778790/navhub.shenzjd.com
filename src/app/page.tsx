@@ -197,16 +197,18 @@ export default function Home() {
   return (
     <AppLayout>
       <PageContainer>
-        {/* 顶栏:sticky 吸顶,左侧分类 tab + 右侧搜索和操作按钮 */}
-        <div className="sticky top-16 z-[40] -mx-4 mb-4 flex items-center gap-3 border-b border-[var(--border)] bg-[var(--background)] px-4 py-2.5">
-          {/* 分类导航 */}
+        {/* 顶栏:sticky 吸顶,两行布局 — 上方分类 tab,下方搜索+操作 */}
+        <div className="sticky top-16 z-[40] -mx-4 mb-4 border-b border-[var(--border)] bg-[var(--background)] px-4 pt-3 pb-2.5 space-y-2.5">
+          {/* 第一行: 分类导航 */}
           <CategoryTabBar categories={categories} />
 
-          {/* 右侧操作区 */}
-          <div className="flex flex-shrink-0 items-center gap-2 ml-auto">
-            {/* 搜索框 */}
-            <div className="relative w-48 sm:w-64">
-              <SearchBar onSearch={setSearchQuery} placeholder="搜索..." />
+          {/* 第二行: 搜索 + 操作按钮 */}
+          <div className="flex items-center gap-2">
+            {/* 搜索框 — 带背景容器 */}
+            <div className="relative flex-1 max-w-sm">
+              <div className="rounded-[var(--radius-lg)] border border-[var(--input-border)] bg-[var(--background-secondary)] px-2.5 shadow-[var(--shadow-xs)] focus-within:border-[var(--primary-400)] focus-within:shadow-[var(--shadow-sm)] transition-all">
+                <SearchBar onSearch={setSearchQuery} placeholder="搜索站点..." />
+              </div>
             </div>
 
             {!isGuestMode && (
@@ -224,11 +226,11 @@ export default function Home() {
             <div className="relative flex-shrink-0" ref={moreRef}>
               <button
                 onClick={() => setMoreMenuOpen(!moreMenuOpen)}
-                className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] transition-colors hover:bg-[var(--muted)] cursor-pointer"
+                className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background-secondary)] text-[var(--foreground-secondary)] transition-colors hover:bg-[var(--muted)] hover:border-[var(--border-strong)] cursor-pointer"
                 aria-label="更多操作"
                 aria-expanded={moreMenuOpen}
               >
-                <MoreVertical className="h-4 w-4 text-[var(--foreground-secondary)]" />
+                <MoreVertical className="h-4 w-4" />
               </button>
                 {moreMenuOpen && (
                   <div

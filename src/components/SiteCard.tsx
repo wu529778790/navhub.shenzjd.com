@@ -186,17 +186,17 @@ export const SiteCard = memo(function SiteCard({
           {!isGuestMode && (
           <div
             className={cn(
-              "absolute top-1 right-1 z-10 transition-opacity duration-150",
+              "absolute top-1.5 right-1.5 z-10 transition-opacity duration-150",
               isMenuOpen ? "opacity-100" : "opacity-0 group-hover/card:opacity-100"
             )}
           >
             <button
               data-menu-trigger
               onClick={handleMenuToggle}
-              className="flex h-7 w-7 items-center justify-center transition-colors hover:bg-[var(--muted)] cursor-pointer"
+              className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--background)]/80 backdrop-blur-sm border border-[var(--border)] transition-colors hover:bg-[var(--background-secondary)] hover:border-[var(--border-strong)] cursor-pointer shadow-[var(--shadow-xs)]"
               aria-label="更多操作"
             >
-              <MoreVertical className="w-4 h-4 text-[var(--foreground-secondary)]" />
+              <MoreVertical className="w-3.5 h-3.5 text-[var(--foreground-secondary)]" />
             </button>
             {dropdownMenu}
           </div>
@@ -281,10 +281,10 @@ export const SiteCard = memo(function SiteCard({
           <button
             data-menu-trigger
             onClick={handleMenuToggle}
-            className="flex h-7 w-7 items-center justify-center transition-colors hover:bg-[var(--muted)] cursor-pointer"
+            className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--background-secondary)] transition-colors hover:bg-[var(--muted)] hover:border-[var(--border-strong)] cursor-pointer"
             aria-label="更多操作"
           >
-            <MoreVertical className="w-4 h-4 text-[var(--foreground-secondary)]" />
+            <MoreVertical className="w-3.5 h-3.5 text-[var(--foreground-secondary)]" />
           </button>
           {dropdownMenu}
         </div>
