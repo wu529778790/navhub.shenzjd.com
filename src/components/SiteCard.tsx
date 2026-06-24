@@ -193,7 +193,7 @@ export const SiteCard = memo(function SiteCard({
             <button
               data-menu-trigger
               onClick={handleMenuToggle}
-              className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-[var(--muted)] cursor-pointer"
+              className="flex h-7 w-7 items-center justify-center transition-colors hover:bg-[var(--muted)] cursor-pointer"
               aria-label="更多操作"
             >
               <MoreVertical className="w-4 h-4 text-[var(--foreground-secondary)]" />
@@ -281,7 +281,7 @@ export const SiteCard = memo(function SiteCard({
           <button
             data-menu-trigger
             onClick={handleMenuToggle}
-            className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] transition-colors hover:bg-[var(--muted)] cursor-pointer"
+            className="flex h-7 w-7 items-center justify-center transition-colors hover:bg-[var(--muted)] cursor-pointer"
             aria-label="更多操作"
           >
             <MoreVertical className="w-4 h-4 text-[var(--foreground-secondary)]" />
