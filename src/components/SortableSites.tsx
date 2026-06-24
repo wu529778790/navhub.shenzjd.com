@@ -31,7 +31,7 @@ interface SortableSitesProps {
   view?: "grid" | "list";
 }
 
-/** 可排序的站点项包装器 — 拖拽手柄覆盖整个卡片区域 */
+/** 可排序的站点项包装器 */
 function SortableItem({ id, children }: { id: string; children: React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
@@ -39,22 +39,13 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.8 : 1,
+    // 拖拽中提升层级，避免被其他元素遮挡
+    zIndex: isDragging ? 9999 : undefined,
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className="relative"
-    >
-      {/* 内部子元素禁用指针事件，防止图片/按钮抢走拖拽事件 */}
-      <div className="pointer-events-none">
-        {children}
-      </div>
-      {/* 恢复交互层 — 让点击/菜单等操作正常工作 */}
-      <div className="absolute inset-0 pointer-events-auto" />
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
     </div>
   );
 }
