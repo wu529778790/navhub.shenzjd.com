@@ -65,10 +65,10 @@ export const SortableSites = memo(function SortableSites({
 }: SortableSitesProps) {
   const { isGuestMode } = useAuth();
 
-  // 网格视图布局
+  // 网格视图布局 — 用 CSS Grid 固定列宽，避免拖拽时的挤压/跳动
   if (view === "grid") {
     return (
-      <div className="flex flex-wrap gap-2 mt-2 w-full">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full contain-layout">
         {category.sites.map((site) => (
           <SortableItem key={site.id} id={site.id}>
             <SiteCard

@@ -293,6 +293,13 @@
       box-shadow 0.18s ease,
       border-color 0.18s ease,
       background-color 0.18s ease;
+    /* 拖拽时禁用 hover 动效，避免视觉干扰 */
+  }
+
+  /* 网格容器：contain 隔离布局重算，拖拽时不影响其他分类 */
+  .site-grid,
+  [class*="grid-cols"][class*="auto-fill"] {
+    contain: layout;
   }
 
   .site-card:hover {
