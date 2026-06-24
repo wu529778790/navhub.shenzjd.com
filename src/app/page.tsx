@@ -198,7 +198,7 @@ export default function Home() {
     <AppLayout>
       <PageContainer>
         {/* 顶栏:sticky 吸顶,左侧分类 tab + 右侧搜索和操作按钮 */}
-        <div className="sticky top-16 z-[40] mb-4 flex items-center gap-3">
+        <div className="sticky top-16 z-[40] -mx-4 mb-4 flex items-center gap-3 border-b border-[var(--border)] bg-[var(--background)] px-4 py-2.5">
           {/* 分类导航 */}
           <CategoryTabBar categories={categories} />
 
