@@ -67,12 +67,14 @@ export const SiteCard = memo(function SiteCard({
   useEffect(() => {
     if (!isMenuOpen || !menuRef.current || !menuBtnRef.current) return;
     const btnRect = menuBtnRef.current.getBoundingClientRect();
-    setMenuPos({ x: btnRect.right - 140, y: btnRect.bottom + 4 });
-    const menuRect = menuRef.current.getBoundingClientRect();
+    const menuWidth = 144; // w-36
+    setMenuPos({ x: btnRect.right - menuWidth, y: btnRect.bottom + 4 });
     const vh = window.innerHeight;
-    if (menuRect.bottom > vh && menuRect.height < vh) {
+    if (btnRect.bottom + 8 + 120 > vh) {
       setMenuPosition("flip-up");
-      setMenuPos({ x: btnRect.right - 140, y: btnRect.top - 4 });
+      setMenuPos({ x: btnRect.right - menuWidth, y: btnRect.top - 4 });
+    } else {
+      setMenuPosition("auto");
     }
   }, [isMenuOpen]);
 
