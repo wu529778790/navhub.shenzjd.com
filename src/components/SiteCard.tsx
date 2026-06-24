@@ -195,7 +195,7 @@ export const SiteCard = memo(function SiteCard({
           {!isGuestMode && (
           <div
             className={cn(
-              "absolute -top-1.5 -right-1.5 z-10 transition-opacity duration-150",
+              "absolute top-1.5 right-1.5 z-10 transition-opacity duration-150",
               isMenuOpen ? "opacity-100" : "opacity-0 group-hover/card:opacity-100"
             )}
           >
@@ -203,7 +203,7 @@ export const SiteCard = memo(function SiteCard({
               data-menu-trigger
               ref={menuBtnRef}
               onClick={handleMenuToggle}
-              className="flex h-6 w-6 items-center justify-center rounded-full transition-colors cursor-pointer text-[var(--muted-foreground)] hover:bg-[var(--background)] hover:text-[var(--foreground)] shadow-sm"
+              className="flex h-6 w-6 items-center justify-center transition-colors cursor-pointer text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               aria-label="更多操作"
             >
               <MoreVertical className="w-3.5 h-3.5" />
@@ -292,7 +292,7 @@ export const SiteCard = memo(function SiteCard({
             data-menu-trigger
             ref={menuBtnRef}
             onClick={handleMenuToggle}
-            className="flex h-6 w-6 items-center justify-center rounded-full transition-colors cursor-pointer text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+            className="flex h-6 w-6 items-center justify-center transition-colors cursor-pointer text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             aria-label="更多操作"
           >
             <MoreVertical className="w-3.5 h-3.5 text-[var(--foreground-secondary)]" />
