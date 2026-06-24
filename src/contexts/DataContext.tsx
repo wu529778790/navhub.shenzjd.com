@@ -177,7 +177,7 @@ export function DataProvider({
   const addSite = useCallback(
     async (categoryId: string, site: Site) => {
       if (isGuestMode) {
-        setError("访客模式，无法添加站点（请登录后操作）");
+        window.location.href = "/api/auth/github/login";
         return;
       }
 
@@ -198,7 +198,7 @@ export function DataProvider({
   const updateSite = useCallback(
     async (categoryId: string, siteId: string, site: Site) => {
       if (isGuestMode) {
-        setError("访客模式，无法编辑站点（请登录后操作）");
+        window.location.href = "/api/auth/github/login";
         return;
       }
 
@@ -222,7 +222,7 @@ export function DataProvider({
   const deleteSite = useCallback(
     async (categoryId: string, siteId: string) => {
       if (isGuestMode) {
-        setError("访客模式，无法删除站点（请登录后操作）");
+        window.location.href = "/api/auth/github/login";
         return;
       }
 
@@ -243,7 +243,7 @@ export function DataProvider({
   const addCategory = useCallback(
     async (category: Category) => {
       if (isGuestMode) {
-        setError("访客模式，无法添加分类（请登录后操作）");
+        window.location.href = "/api/auth/github/login";
         return;
       }
 
@@ -260,7 +260,7 @@ export function DataProvider({
   const updateCategory = useCallback(
     async (categoryId: string, category: Category) => {
       if (isGuestMode) {
-        setError("访客模式，无法编辑分类（请登录后操作）");
+        window.location.href = "/api/auth/github/login";
         return;
       }
 
@@ -277,7 +277,7 @@ export function DataProvider({
   const deleteCategory = useCallback(
     async (categoryId: string) => {
       if (isGuestMode) {
-        setError("访客模式，无法删除分类（请登录后操作）");
+        window.location.href = "/api/auth/github/login";
         return;
       }
 
@@ -294,7 +294,7 @@ export function DataProvider({
   const updateSites = useCallback(
     async (newSites: Category[]) => {
       if (isGuestMode) {
-        setError("访客模式，无法修改数据（请登录后操作）");
+        window.location.href = "/api/auth/github/login";
         return;
       }
 

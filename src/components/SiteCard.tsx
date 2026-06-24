@@ -8,6 +8,7 @@
 
 import { useState, useRef, useEffect, useMemo, memo } from "react";
 import { useData } from "@/contexts/SitesContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { FaviconImage } from "@/components/FaviconImage";
 import { EditSiteDialog } from "@/components/EditSiteDialog";
@@ -40,6 +41,7 @@ export const SiteCard = memo(function SiteCard({
   view = "grid",
 }: SiteCardProps) {
   const { updateSite, deleteSite } = useData();
+  const { isGuestMode } = useAuth();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -180,7 +182,8 @@ export const SiteCard = memo(function SiteCard({
           className={cn("site-card group/card cursor-pointer", isMenuOpen && "z-[60] relative")}
           title="点击打开链接"
         >
-          {/* 三点菜单按钮 — 仅 hover 当前卡片时显示 */}
+          {/* 三点菜单按钮 — 仅 hover 当前卡片时显示，访客模式下隐藏 */}
+          {!isGuestMode && (
           <div
             className={cn(
               "absolute top-1 right-1 z-10 transition-opacity duration-150",
@@ -197,6 +200,7 @@ export const SiteCard = memo(function SiteCard({
             </button>
             {dropdownMenu}
           </div>
+          )}
 
           <div className="site-icon-wrapper">
             <FaviconImage
@@ -266,7 +270,8 @@ export const SiteCard = memo(function SiteCard({
           </div>
         </div>
 
-        {/* 三点菜单按钮 — 仅 hover 当前卡片时显示 */}
+        {/* 三点菜单按钮 — 仅 hover 当前卡片时显示，访客模式下隐藏 */}
+        {!isGuestMode && (
         <div
           className={cn(
             "relative flex-shrink-0 transition-opacity duration-150",
@@ -283,6 +288,7 @@ export const SiteCard = memo(function SiteCard({
           </button>
           {dropdownMenu}
         </div>
+        )}
       </div>
       {isEditDialogOpen && (
         <EditSiteDialog

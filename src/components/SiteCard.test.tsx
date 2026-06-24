@@ -2,9 +2,14 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { SiteCard } from "./SiteCard";
 import { useData } from "@/contexts/SitesContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 vi.mock("@/contexts/SitesContext", () => ({
   useData: vi.fn(),
+}));
+
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: vi.fn(),
 }));
 
 vi.mock("@/components/FaviconImage", () => ({
@@ -37,6 +42,7 @@ vi.mock("@/components/ui/alert-dialog", () => ({
 }));
 
 const mockUseData = vi.mocked(useData);
+const mockUseAuth = vi.mocked(useAuth);
 
 describe("SiteCard", () => {
   beforeEach(() => {
@@ -55,6 +61,10 @@ describe("SiteCard", () => {
       updateCategory: vi.fn(),
       updateSite: vi.fn(),
     } as ReturnType<typeof useData>);
+
+    mockUseAuth.mockReturnValue({
+      isGuestMode: false,
+    } as ReturnType<typeof useAuth>);
   });
 
   it("点击三点菜单按钮显示编辑和删除选项", () => {
