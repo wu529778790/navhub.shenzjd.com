@@ -1,11 +1,11 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { SiteCard } from "./SiteCard";
-import { useData } from "@/contexts/SitesContext";
+import { useSiteOperations } from "@/contexts/DataContext";
 import { useAuth } from "@/contexts/AuthContext";
 
-vi.mock("@/contexts/SitesContext", () => ({
-  useData: vi.fn(),
+vi.mock("@/contexts/DataContext", () => ({
+  useSiteOperations: vi.fn(),
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
@@ -41,26 +41,16 @@ vi.mock("@/components/ui/alert-dialog", () => ({
   AlertDialogTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
-const mockUseData = vi.mocked(useData);
+const mockUseSiteOperations = vi.mocked(useSiteOperations);
 const mockUseAuth = vi.mocked(useAuth);
 
 describe("SiteCard", () => {
   beforeEach(() => {
-    mockUseData.mockReturnValue({
+    mockUseSiteOperations.mockReturnValue({
       updateSite: vi.fn(),
       deleteSite: vi.fn(),
-      sites: [],
-      loading: false,
-      error: null,
-      clearError: vi.fn(),
       addSite: vi.fn(),
-      addCategory: vi.fn(),
-      updateSites: vi.fn(),
-      refreshSites: vi.fn(),
-      deleteCategory: vi.fn(),
-      updateCategory: vi.fn(),
-      updateSite: vi.fn(),
-    } as ReturnType<typeof useData>);
+    });
 
     mockUseAuth.mockReturnValue({
       isGuestMode: false,
