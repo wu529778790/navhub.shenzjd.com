@@ -1,79 +1,39 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { SiteCard } from "./SiteCard";
-import { useSiteOperations } from "@/contexts/DataContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { DataProvider } from "@/contexts/DataContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
-vi.mock("@/contexts/DataContext", () => ({
-  useSiteOperations: vi.fn(),
-}));
-
-vi.mock("@/contexts/AuthContext", () => ({
-  useAuth: vi.fn(),
-}));
-
-vi.mock("@/components/FaviconImage", () => ({
-  FaviconImage: ({ alt }: { alt: string }) => <div aria-label={alt} />,
-}));
-
-vi.mock("@/components/ui/dialog", () => ({
-  Dialog: ({ open, children }: { open?: boolean; children: React.ReactNode }) =>
-    open ? <div>{children}</div> : null,
-  DialogContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  DialogHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  DialogTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
-
-vi.mock("@/components/ui/alert-dialog", () => ({
-  AlertDialog: ({ open, children }: { open?: boolean; children: React.ReactNode }) =>
-    open ? <div>{children}</div> : null,
-  AlertDialogAction: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-    <button {...props}>{children}</button>
-  ),
-  AlertDialogCancel: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-    <button {...props}>{children}</button>
-  ),
-  AlertDialogContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  AlertDialogDescription: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  AlertDialogHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  AlertDialogTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
-
-const mockUseSiteOperations = vi.mocked(useSiteOperations);
-const mockUseAuth = vi.mocked(useAuth);
-
+/**
+ * 真实集成测试 - 不使用 Mock
+ * 测试 SiteCard 在真实 Context 环境下的行为
+ */
 describe("SiteCard", () => {
-  beforeEach(() => {
-    mockUseSiteOperations.mockReturnValue({
-      updateSite: vi.fn(),
-      deleteSite: vi.fn(),
-      addSite: vi.fn(),
-    });
-
-    mockUseAuth.mockReturnValue({
-      isGuestMode: false,
-    } as ReturnType<typeof useAuth>);
-  });
+  const renderWithProviders = (props: Parameters<typeof SiteCard>[0]) => {
+    return render(
+      <AuthProvider>
+        <DataProvider>
+          <SiteCard {...props} />
+        </DataProvider>
+      </AuthProvider>
+    );
+  };
 
   it("点击三点菜单按钮显示编辑和删除选项", () => {
-    render(
-      <SiteCard
-        id="site-1"
-        title="示例站点"
-        url="https://example.com"
-        favicon=""
-        categoryId="default"
-        view="grid"
-      />
-    );
+    renderWithProviders({
+      id: "site-1",
+      title: "示例站点",
+      url: "https://example.com",
+      favicon: "",
+      categoryId: "default",
+      view: "grid"
+    });
 
     // 点击三点菜单按钮
     const menuButton = screen.getByLabelText("更多操作");
     fireEvent.click(menuButton);
 
-    // 验证菜单出现
+    // 验证菜单出现（使用 Portal 渲染到 body）
     expect(screen.getByRole("menu", { name: "站点操作菜单" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "编辑" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "删除" })).toBeInTheDocument();
@@ -82,18 +42,16 @@ describe("SiteCard", () => {
   it("点击卡片打开链接", () => {
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
 
-    const { container } = render(
-      <SiteCard
-        id="site-1"
-        title="示例站点"
-        url="https://example.com"
-        favicon=""
-        categoryId="default"
-        view="grid"
-      />
-    );
+    const { container } = renderWithProviders({
+      id: "site-1",
+      title: "示例站点",
+      url: "https://example.com",
+      favicon: "",
+      categoryId: "default",
+      view: "grid"
+    });
 
-    // 点击卡片容器（通过 class 找到）
+    // 点击卡片容器
     const card = container.querySelector(".site-card")!;
     fireEvent.click(card);
 
