@@ -382,23 +382,7 @@ export default function Home() {
           </div>
         )}
 
-        {loading ? (
-          <div className="space-y-4">
-            {[...Array(Math.max(2, categories.length || 2))].map((_, i) => (
-              <div key={i} className="category-card p-5 animate-pulse">
-                <div className="h-6 bg-[var(--muted)] rounded-[var(--radius-sm)] mb-4 w-1/3"></div>
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2 w-full">
-                  {[...Array(4)].map((_, j) => (
-                    <div
-                      key={j}
-                      className="w-[100px] h-[100px] bg-[var(--muted)] rounded-[var(--radius-md)] flex-shrink-0"
-                    ></div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : filteredCategories.length === 0 ? (
+        {filteredCategories.length === 0 ? (
           renderEmptyState()
         ) : (
           <DndContext
