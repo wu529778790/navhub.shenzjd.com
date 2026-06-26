@@ -22,9 +22,10 @@ import {
   loadFromLocalStorage,
   saveSitesToLocalStorage,
   getSitesFromLocalStorage,
+  isLocalDataValid,
 } from "@/lib/storage/local-storage";
 import { getDataFromGitHub, getYourDataFromGitHub } from "@/lib/storage/github-storage";
-import type { Category, Site, AuthUser } from "@/types";
+import type { Category, Site, AuthUser, NavData } from "@/types";
 
 interface DataContextType {
   sites: Category[];
@@ -71,7 +72,14 @@ export function DataProvider({
   const fetchIdRef = useRef(0);
 
   /**
-   * 初始化：从本地或 GitHub 加载数据
+   * 初始化：Stale-While-Revalidate
+   *
+   * 1. 本地有效 → 立即秒开（loading=false）
+   * 2. 后台异步 revalidate：
+   *    - 已登录 + forceRefresh → 拉自己的 GitHub 数据
+   *    - 访客 → 拉示例数据（每次都拉，保证新鲜）
+   * 3. 远程有内容 → 静默替换；远程失败 → 保持本地不动
+   * 4. 本地也无效 → 仅内存设默认分类（不持久化，避免卡死）
    */
   const fetchSites = useCallback(
     async (_forceRefresh = false) => {
@@ -79,71 +87,60 @@ export function DataProvider({
       try {
         setError(null);
 
-        // 第一步：立即检查本地数据
+        // 第一步：本地秒开（Stale）
         const localData = loadFromLocalStorage();
-        if (localData?.categories && localData.categories.length > 0) {
-          const isDefault =
-            localData.categories.length === 1 &&
-            localData.categories[0].id === "default" &&
-            localData.categories[0].sites.length === 0 &&
-            localData.lastModified === 0;
-
-          if (!isDefault) {
-            setSites(localData.categories);
-            setLoading(false);
-          }
+        const localValid = isLocalDataValid(localData);
+        if (localValid) {
+          setSites(localData!.categories);
+          setLoading(false);
         }
 
-        // 第二步：根据认证状态获取远程数据
-        if (_forceRefresh && isAuthenticated) {
-          const githubData = await getDataFromGitHub(
-            authUser ? "token-from-context" : ""
-          );
+        // 第二步：后台 Revalidate（决定要不要拉远程）
+        const shouldRevalidate = !localValid || (isAuthenticated && _forceRefresh);
+
+        if (shouldRevalidate) {
+          // 本地无效时，未登录/访客必须等远程结果再关闭 loading
+          if (!localValid) setLoading(true);
+
+          let remoteData: NavData | null = null;
+
+          if (isAuthenticated && _forceRefresh) {
+            // 已登录强制刷新：拉自己的数据
+            try {
+              remoteData = await getDataFromGitHub(
+                authUser ? "token-from-context" : ""
+              );
+            } catch (e) {
+              console.error("读取 GitHub 数据失败:", e);
+            }
+          } else if (!isAuthenticated || isGuestMode) {
+            // 访客：拉示例数据（getYourDataFromGitHub 内部已 catch，不会抛）
+            remoteData = await getYourDataFromGitHub();
+          }
+
           if (currentFetchId !== fetchIdRef.current) return;
 
-          if (githubData?.categories && githubData.categories.length > 0) {
-            saveSitesToLocalStorage(githubData.categories);
-            setSites(githubData.categories);
+          // 远程有有效内容 → 静默替换本地（SWR 核心）
+          if (remoteData?.categories && remoteData.categories.length > 0) {
+            saveSitesToLocalStorage(remoteData.categories);
+            setSites(remoteData.categories);
             setLoading(false);
             return;
           }
-        }
 
-        // 第三步：如果本地没有有效数据
-        if (!localData?.categories || localData.categories.length === 0) {
-          if (!isAuthenticated || isGuestMode) {
-            // 访客模式：从 GitHub 拉取示例数据
-            try {
-              const yourData = await getYourDataFromGitHub();
-              if (currentFetchId !== fetchIdRef.current) return;
-              if (yourData?.categories && yourData.categories.length > 0) {
-                saveSitesToLocalStorage(yourData.categories);
-                setSites(yourData.categories);
-                setLoading(false);
-                return;
-              }
-            } catch (guestError) {
-              console.error("读取示例数据失败:", guestError);
-              if (
-                guestError instanceof Error &&
-                guestError.message.includes("运行时配置加载失败")
-              ) {
-                throw guestError;
-              }
+          // 远程为空/失败：本地有效则保持本地，否则只设内存默认分类（不持久化）
+          if (currentFetchId !== fetchIdRef.current) return;
+          setSites((prev) => {
+            if (prev.length === 0) {
+              return [defaultCategory];
             }
-          }
+            return prev;
+          });
+          setLoading(false);
+          return;
         }
 
-        // 最后：设置默认分类
-        if (currentFetchId !== fetchIdRef.current) return;
-        setSites((prev) => {
-          if (prev.length === 0) {
-            saveSitesToLocalStorage([defaultCategory]);
-            return [defaultCategory];
-          }
-          return prev;
-        });
-        setLoading(false);
+        // 本地有效且无需 revalidate：loading 已在第一步关闭
       } catch (err) {
         if (currentFetchId !== fetchIdRef.current) return;
         setError(err instanceof Error ? err.message : "加载失败");
@@ -162,6 +159,7 @@ export function DataProvider({
 
   // 组件挂载时加载数据
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 组件挂载时必须从外部源获取初始数据
     fetchSites();
   }, [fetchSites]);
 

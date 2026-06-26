@@ -64,7 +64,26 @@ export function clearLocalStorage(): void {
 }
 
 /**
- * 获取用于冲突检测的数据指纹。忽略 lastModified，只比较实际导航内容。
+ * 判断本地数据是否「有效」（值得用来做首屏秒开）。
+ *
+ * 兜底写入的「空的默认分类」被视为无效：它没有真实站点，
+ * 如果当作有效数据用，就会让访客再也无法触发远程拉取示例数据
+ * （历史上导致「打开永远显示空」的死循环）。
+ */
+export function isLocalDataValid(data: NavData | null): boolean {
+  if (!data?.categories || data.categories.length === 0) return false;
+
+  // 仅有一个空的默认分类（初始化兜底产物）→ 视为无效，触发远程拉取
+  const only = data.categories[0];
+  const isDefaultEmpty =
+    data.categories.length === 1 &&
+    only.id === "default" &&
+    only.sites.length === 0;
+  return !isDefaultEmpty;
+}
+
+/**
+ * 获取数据指纹。忽略 lastModified，只比较实际导航内容。
  */
 export function getDataFingerprint(data: NavData | null): string | null {
   if (!data) return null;
