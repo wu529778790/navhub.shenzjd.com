@@ -20,7 +20,6 @@ import { getRuntimePublicConfig, type RuntimePublicConfig } from "@/lib/runtime-
 import { SyncProgressBar } from "./AppHeader/SyncProgressBar";
 import { OfflineBanner } from "./AppHeader/OfflineBanner";
 import { UserMenu } from "./AppHeader/UserMenu";
-import { ForkConfirmDialog } from "./AppHeader/ForkConfirmDialog";
 import { SettingsDialog } from "./AppHeader/SettingsDialog";
 
 export function AppHeader() {
@@ -49,7 +48,6 @@ export function AppHeader() {
   }, []);
 
   // 状态管理
-  const [showForkModal, setShowForkModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [githubClientId, setGithubClientId] = useState("");
@@ -129,7 +127,8 @@ export function AppHeader() {
       return;
     }
 
-    setShowForkModal(true);
+    // 直接跳转 GitHub OAuth，不做前置确认弹窗
+    window.location.href = "/api/auth/github/login";
   };
 
   // 退出登录处理
@@ -277,17 +276,6 @@ export function AppHeader() {
           </div>
         </div>
       </header>
-
-      {/* Fork 确认弹窗 */}
-      <ForkConfirmDialog
-        open={showForkModal}
-        onClose={() => setShowForkModal(false)}
-        onConfirm={() => {
-          setShowForkModal(false);
-          window.location.href = "/api/auth/github/login";
-        }}
-        runtimeConfig={runtimeConfig}
-      />
 
       {/* 设置对话框 */}
       <SettingsDialog
