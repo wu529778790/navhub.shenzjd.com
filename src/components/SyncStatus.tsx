@@ -63,9 +63,7 @@ export function SyncStatus() {
     }
   }, []);
 
-  if (!mounted || isGuestMode) {
-    return null;
-  }
+  if (!mounted) return null;
 
   const isLoggedIn = !isGuestMode;
 

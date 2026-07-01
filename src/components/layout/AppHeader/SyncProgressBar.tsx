@@ -11,12 +11,10 @@ import type { SyncStepInfo } from "@/types";
 interface SyncProgressBarProps {
   /** 同步步骤信息 */
   step: SyncStepInfo | null;
-  /** 是否已挂载（避免 SSR hydration 问题） */
-  mounted: boolean;
 }
 
-export function SyncProgressBar({ step, mounted }: SyncProgressBarProps) {
-  if (!mounted || !step) return null;
+export function SyncProgressBar({ step }: SyncProgressBarProps) {
+  if (!step) return null;
 
   return (
     <div className="fixed left-0 right-0 top-0 z-50 border-b border-[var(--border)] bg-[var(--background-secondary)]/95 px-4 py-3 backdrop-blur-md">

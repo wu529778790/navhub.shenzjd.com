@@ -56,20 +56,37 @@ export function DataProvider({
   isAuthenticated,
   isGuestMode,
   onSyncRequest,
+  initialSites = [],
 }: {
   children: ReactNode;
   isAuthenticated: boolean;
   isGuestMode: boolean;
   onSyncRequest?: (immediateSync: boolean) => void;
+  /** SSR 注入的种子数据；作为初始值避免首屏内容跳变（1条种子→N条本地数据） */
+  initialSites?: Category[];
 }) {
-  const [sites, setSites] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  // 首屏直接读 localStorage 同步初始化 —— 与 SSR 种子同来源时无缝衔接，
+  // 有本地缓存即关闭 loading，避免"种子→loading→数据"三段跳变。
+  const [sites, setSites] = useState<Category[]>(() => {
+    const local = getSitesFromLocalStorage();
+    if (local.length > 0) return local;
+    // 无本地缓存时回退到 SSR 种子（首次访客：首屏有内容可看）
+    if (initialSites.length > 0) return initialSites;
+    return [];
+  });
+  // 有本地缓存或 SSR 种子时，首屏不显示 skeleton（加载中）
+  const [loading, setLoading] = useState(() => {
+    const local = loadFromLocalStorage();
+    return !isLocalDataValid(local) && initialSites.length === 0;
+  });
   const [error, setError] = useState<string | null>(null);
 
   // 用于竞态控制：只允许最新的 fetch 更新状态
   const fetchIdRef = useRef(0);
   // 用于检测认证状态从未登录→已登录的变化，确保切换后强制拉取用户数据
   const prevAuthRef = useRef(isAuthenticated);
+  // 用 ref 追踪当前 sites，避免 fetchSites 依赖 sites.length 导致无限刷新
+  const sitesRef = useRef<Category[]>([]);
 
   /**
    * 初始化：Stale-While-Revalidate
@@ -106,8 +123,10 @@ export function DataProvider({
         const shouldRevalidate = !localValid || authJustCompleted || (isAuthenticated && _forceRefresh);
 
         if (shouldRevalidate) {
-          // 本地无效时，未登录/访客必须等远程结果再关闭 loading
-          if (!localValid) setLoading(true);
+          // 本地无效且没有首屏数据时，才显示 loading
+          // 有首屏数据（SSR seed 或同步 localStorage）时静默更新，不闪现 skeleton
+          const hasInitialData = sitesRef.current.length > 0;
+          if (!localValid && !hasInitialData) setLoading(true);
 
           let remoteData: NavData | null = null;
 
@@ -162,6 +181,11 @@ export function DataProvider({
     },
     [isAuthenticated, isGuestMode]
   );
+
+  // 同步 sites → ref，供 fetchSites 内读取而不放入依赖
+  useEffect(() => {
+    sitesRef.current = sites;
+  }, [sites]);
 
   // 组件挂载时加载数据
   useEffect(() => {

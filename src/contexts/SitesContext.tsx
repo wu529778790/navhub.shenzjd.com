@@ -14,6 +14,7 @@
 import { ReactNode } from "react";
 import { AuthProvider, useAuth } from "./AuthContext";
 import { DataProvider } from "./DataContext";
+import type { Category } from "@/types";
 
 /** 同步状态 Hook 类型（由外部 Sync Provider 提供） */
 export interface SyncStateHook {
@@ -41,18 +42,21 @@ interface SitesProviderProps {
   children: ReactNode;
   /** 同步状态 hook 实例（可选，用于组合） */
   syncState?: SyncStateHook;
+  /** SSR 注入的种子数据，透传至 DataProvider 避免首屏跳变 */
+  initialSites?: Category[];
 }
 
 /**
  * SitesProvider - 组合三个独立的 Context
  */
-export function SitesProvider({ children }: SitesProviderProps) {
+export function SitesProvider({ children, initialSites = [] }: SitesProviderProps) {
   const { isAuthenticated, isGuestMode } = useAuth();
 
   return (
     <DataProvider
       isAuthenticated={isAuthenticated}
       isGuestMode={isGuestMode}
+      initialSites={initialSites}
       onSyncRequest={() => {
         // 触发同步的逻辑由调用者决定，此处仅作为桥接
       }}
@@ -63,10 +67,10 @@ export function SitesProvider({ children }: SitesProviderProps) {
 }
 
 // 导出组合 Provider（包含 AuthProvider）
-export function AppProviders({ children }: SitesProviderProps) {
+export function AppProviders({ children, initialSites = [] }: SitesProviderProps) {
   return (
     <AuthProvider>
-      <SitesProvider>{children}</SitesProvider>
+      <SitesProvider initialSites={initialSites}>{children}</SitesProvider>
     </AuthProvider>
   );
 }

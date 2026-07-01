@@ -3,7 +3,7 @@
  *
  * 服务端 page.tsx 通过 props 注入种子数据 (initialSites)，首屏 SSR HTML
  * 即可渲染出种子站点的 <a>（SEO 可见、爬虫可索引）。
- * 当 DataContext 拉到用户真实数据后，会自动无缝替换种子内容。
+ * DataContext 同步初始化自 localStorage + SSR seed，无需 content fallback。
  */
 
 "use client";
@@ -23,7 +23,6 @@ import { SearchStatus } from "@/components/SearchBar";
 import { CategoryTabBar } from "@/components/CategoryTabBar";
 import { ImportExportDialog } from "@/components/ImportExportDialog";
 import { SortableCategoryItem } from "@/components/SortableCategoryItem";
-import type { Category } from "@/types";
 
 // 导入拆分后的子组件和 Hooks
 import {
@@ -43,7 +42,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
-export default function HomeClient({ initialSites }: { initialSites: Category[] }) {
+export default function HomeClient() {
   // ✨ 优化：精准订阅，减少不必要的重渲染
   const contextSites = useSitesData();
   const loading = useLoadingState();
@@ -52,9 +51,9 @@ export default function HomeClient({ initialSites }: { initialSites: Category[] 
   const { updateSites } = useSitesWithUpdate();
   const { isGuestMode } = useAuth();
 
-  // 首屏先用服务端注入的种子数据渲染（SEO 友好、秒开）；
-  // DataContext 拉到真实数据后 contextSites 非空，自动切换为真实数据。
-  const categories = contextSites.length > 0 ? contextSites : initialSites;
+  // DataContext 已通过同步 useState 初始化（localStorage 优先，SSR seed 兜底），
+  // 直接使用 contextSites 即可，无需 fallback 避免重渲染跳变。
+  const categories = contextSites;
 
   // 视图模式状态
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -134,14 +133,7 @@ export default function HomeClient({ initialSites }: { initialSites: Category[] 
         {error && <ErrorBanner error={error} onDismiss={clearError} />}
 
         {/* ========== 主内容区 ========== */}
-        {filteredCategories.length === 0 ? (
-          <EmptyState
-            searchQuery={searchQuery}
-            isGuestMode={isGuestMode}
-            onClearSearch={() => setSearchQuery("")}
-            loading={loading}
-          />
-        ) : (
+        {filteredCategories.length > 0 ? (
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -182,6 +174,21 @@ export default function HomeClient({ initialSites }: { initialSites: Category[] 
               </div>
             </SortableContext>
           </DndContext>
+        ) : loading ? (
+          /* 无数据且正在网络请求 → 显示 skeleton */
+          <EmptyState
+            searchQuery={searchQuery}
+            isGuestMode={isGuestMode}
+            onClearSearch={() => setSearchQuery("")}
+            loading
+          />
+        ) : (
+          /* 无数据且非 loading → 搜索无结果 或 真正的空状态 */
+          <EmptyState
+            searchQuery={searchQuery}
+            isGuestMode={isGuestMode}
+            onClearSearch={() => setSearchQuery("")}
+          />
         )}
 
         {/* ========== 快捷键提示 ========== */}

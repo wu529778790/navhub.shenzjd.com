@@ -7,12 +7,10 @@
 interface OfflineBannerProps {
   /** 是否在线 */
   isOnline: boolean;
-  /** 是否已挂载（避免 SSR hydration 问题） */
-  mounted: boolean;
 }
 
-export function OfflineBanner({ isOnline, mounted }: OfflineBannerProps) {
-  if (!mounted || isOnline) return null;
+export function OfflineBanner({ isOnline }: OfflineBannerProps) {
+  if (isOnline) return null;
 
   return (
     <div className="border-b border-warning/35 bg-warning/12 px-4 py-2 text-center text-sm text-[var(--foreground-secondary)]">

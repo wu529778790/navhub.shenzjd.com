@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, lazy, Suspense, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import {
@@ -17,6 +17,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/lib/storage/local-storage";
+
+// 标准 React.lazy + Suspense 模式，模块级加载（仅加载一次）
+const AddCategoryDialog = lazy(() =>
+  import("@/components/AddCategoryDialog").then((m) => ({ default: m.AddCategoryDialog }))
+);
 
 interface CategoryManagerProps {
   categories: Category[];
@@ -32,6 +37,7 @@ export function CategoryManager({
   isGuestMode,
 }: CategoryManagerProps) {
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [, startTransition] = useTransition();
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<string | null>(null);
 
@@ -58,7 +64,7 @@ export function CategoryManager({
       {!isGuestMode && (
         <Button
           size="sm"
-          onClick={() => setShowAddDialog(true)}
+          onClick={() => startTransition(() => setShowAddDialog(true))}
           className="h-8 flex-shrink-0 gap-1"
           title="新建分类 (Ctrl/Cmd+Alt+N)"
         >
@@ -184,6 +190,28 @@ export function CategoryManager({
   );
 }
 
+/** 延迟显示 spinner，避免快加载时闪烁（<150ms 不显示任何内容） */
+function DelayedSpinner({ delay = 150 }: { delay?: number }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setVisible(true), delay);
+    return () => clearTimeout(id);
+  }, [delay]);
+  if (!visible) return null;
+  return (
+    <div className="w-8 h-8 border-4 border-[var(--foreground)] border-t-transparent rounded-full animate-spin fade-in" />
+  );
+}
+
+function CategoryDialogSuspenseFallback() {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm fade-in"
+         style={{ background: 'var(--scrim)' }}>
+      <DelayedSpinner />
+    </div>
+  );
+}
+
 /**
  * 懒加载新增分类弹窗的包装器
  */
@@ -194,25 +222,11 @@ function AddCategoryDialogWrapper({
   onClose: () => void;
   onConfirm: (name: string) => void;
 }) {
-  const [AddCategoryDialog, setAddCategoryDialog] =
-    useState<typeof import("@/components/AddCategoryDialog").AddCategoryDialog | null>(null);
-
-  // 懒加载组件
-  useState(() => {
-    import("@/components/AddCategoryDialog").then((module) => {
-      setAddCategoryDialog(() => module.AddCategoryDialog);
-    });
-  });
-
-  if (!AddCategoryDialog) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ background: 'var(--scrim)' }}>
-        <div className="w-8 h-8 border-4 border-[var(--foreground)] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  return <AddCategoryDialog onClose={onClose} onConfirm={onConfirm} />;
+  return (
+    <Suspense fallback={<CategoryDialogSuspenseFallback />}>
+      <AddCategoryDialog onClose={onClose} onConfirm={onConfirm} />
+    </Suspense>
+  );
 }
 
 /**

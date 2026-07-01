@@ -26,7 +26,6 @@ import { SettingsDialog } from "./AppHeader/SettingsDialog";
 export function AppHeader() {
   const { authUser, isGuestMode } = useAuth();
   const [syncStep] = useState<import("@/types").SyncStepInfo | null>(null);
-  const [isOnline] = useState(true);
   const { showToast } = useToast();
 
   // 搜索框状态
@@ -179,10 +178,10 @@ export function AppHeader() {
   return (
     <>
       {/* 同步进度条 */}
-      <SyncProgressBar step={syncStep} mounted={mounted} />
+      <SyncProgressBar step={syncStep} />
 
-      {/* 离线提示 */}
-      <OfflineBanner isOnline={isOnline} mounted={mounted} />
+      {/* 离线提示（仅客户端挂载后检测网络状态，避免 SSR/CSR 不一致） */}
+      {mounted && <OfflineBanner isOnline={navigator.onLine} />}
 
       {/* 主导航栏 */}
       <header
@@ -295,7 +294,7 @@ export function AppHeader() {
         open={showSettingsModal}
         onOpenChange={setShowSettingsModal}
         authUser={authUser}
-        isOnline={isOnline}
+        isOnline={mounted ? navigator.onLine : true}
         isSyncing={isSyncing}
         onManualSync={handleManualSync}
         onLogout={handleGitHubLogout}
