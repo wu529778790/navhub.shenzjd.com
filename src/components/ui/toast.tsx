@@ -70,13 +70,13 @@ export function ToastProvider({ children }: ToastProviderProps) {
   const getBgColor = (type: ToastType) => {
     switch (type) {
       case "success":
-        return "bg-white dark:bg-neutral-900 border-success/20";
+        return "bg-[var(--background-secondary)] border-success/30";
       case "error":
-        return "bg-white dark:bg-neutral-900 border-error/20";
+        return "bg-[var(--background-secondary)] border-error/30";
       case "warning":
-        return "bg-white dark:bg-neutral-900 border-warning/20";
+        return "bg-[var(--background-secondary)] border-warning/30";
       case "info":
-        return "bg-white dark:bg-neutral-900 border-primary-500/20";
+        return "bg-[var(--background-secondary)] border-[var(--primary-500)]/30";
     }
   };
 
@@ -100,7 +100,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
                 e.stopPropagation();
                 removeToast(toast.id);
               }}
-              className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer"
+              className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer"
               title="关闭"
             >
               <X className="w-4 h-4" />

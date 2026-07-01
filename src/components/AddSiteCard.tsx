@@ -40,8 +40,8 @@ export function AddSiteCard({ activeCategory, onSuccess, view = "grid" }: AddSit
 
         <Suspense
           fallback={
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-              <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ background: 'var(--scrim)' }}>
+              <div className="w-8 h-8 border-4 border-[var(--foreground)] border-t-transparent rounded-full animate-spin" />
             </div>
           }
         >
@@ -75,8 +75,8 @@ export function AddSiteCard({ activeCategory, onSuccess, view = "grid" }: AddSit
 
       <Suspense
         fallback={
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+          <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ background: 'var(--scrim)' }}>
+            <div className="w-8 h-8 border-4 border-[var(--foreground)] border-t-transparent rounded-full animate-spin" />
           </div>
         }
       >

@@ -28,10 +28,10 @@ export function ForkConfirmDialog({ open, onClose, onConfirm, runtimeConfig }: F
   const dataFilePath = runtimeConfig?.dataFilePath || "data/sites.json";
 
   return (
-    <div className="fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4">
-      <div className="card scale-in w-full max-w-md p-6" role="dialog" aria-modal="true" aria-labelledby="fork-dialog-title">
+    <div className="fade-in fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ background: 'var(--scrim)' }}>
+      <div className="scale-in w-full max-w-md rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--background-secondary)] p-6 shadow-[var(--shadow-lg)]" role="dialog" aria-modal="true" aria-labelledby="fork-dialog-title">
         <div className="mb-4 flex items-center gap-3">
-          <Github className="h-6 w-6 text-[var(--primary-700)]" />
+          <Github className="h-6 w-6 text-[var(--primary-500)]" />
           <h3 id="fork-dialog-title" className="text-lg font-bold">登录确认</h3>
         </div>
         <div className="mb-6 space-y-3 text-sm text-[var(--foreground-secondary)]">

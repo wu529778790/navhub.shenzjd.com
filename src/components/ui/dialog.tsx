@@ -15,19 +15,11 @@ const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
+    style={{ background: 'var(--scrim)' }}
     className={cn(
-      // 现代化遮罩 - 玻璃拟态增强
-      "fixed inset-0 z-[100]",
-      "bg-[var(--neutral-900)]/60 backdrop-blur-md",
-      "backdrop-saturate-150 backdrop-hue-rotate-15",
-
-      // 高性能动画
+      "fixed inset-0 z-[100] backdrop-blur-sm",
       "data-[state=open]:animate-in data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-
-      // 深色模式优化
-      "dark:bg-[var(--neutral-900)]/70",
-
       className
     )}
     {...props}

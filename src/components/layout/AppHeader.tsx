@@ -213,7 +213,7 @@ export function AppHeader() {
               <div className={cn(
                 "flex items-center w-full rounded-[var(--radius-md)] border px-2.5 transition-all duration-200",
                 isSearchFocused
-                  ? "border-[var(--primary-400)] bg-white shadow-[var(--shadow-sm)]"
+                  ? "border-[var(--primary-400)] bg-[var(--background-elevated)] shadow-[var(--shadow-sm)]"
                   : "border-[var(--border)] bg-[var(--background-secondary)] hover:border-[var(--border-strong)]"
               )}>
                 <Search className="h-3.5 w-3.5 text-[var(--muted-foreground)] flex-shrink-0" />

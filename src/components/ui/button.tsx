@@ -5,16 +5,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-md)] text-sm font-semibold transition-all duration-200 ease-out active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-500)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-md)] text-sm font-semibold transition-all duration-200 ease-out active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-500)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-[var(--primary-600)] text-white shadow-[var(--shadow-sm)] hover:bg-[var(--primary-700)]",
+          "bg-[var(--primary-600)] text-white shadow-[var(--shadow-sm)] hover:bg-[var(--primary-700)] hover:shadow-[var(--shadow-md)]",
         destructive:
-          "bg-[var(--error)] text-white shadow-[var(--shadow-sm)] hover:bg-[var(--error)]/90",
+          "bg-[var(--error)] text-white shadow-[var(--shadow-sm)] hover:bg-[var(--error)]/90 hover:shadow-[var(--shadow-md)]",
         outline:
-          "border border-[var(--primary-300)] bg-[var(--background-secondary)] text-[var(--primary-700)] hover:bg-[var(--primary-50)]",
+          "border border-[var(--primary-300)] bg-[var(--background-secondary)] text-[var(--primary-700)] hover:bg-[var(--primary-50)] hover:border-[var(--primary-400)]",
         secondary: "bg-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--neutral-200)]",
         ghost:
           "text-[var(--foreground-secondary)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]",

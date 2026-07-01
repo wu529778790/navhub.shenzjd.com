@@ -16,7 +16,7 @@ export function UpdateBanner() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 z-50 animate-in slide-in-from-bottom">
-      <div className="bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-700)] text-white rounded-lg shadow-xl p-4">
+      <div className="bg-gradient-to-r from-[var(--primary-500)] to-[var(--primary-600)] text-white rounded-lg shadow-[var(--shadow-lg)] p-4">
         <div className="flex items-start gap-3">
           <div className="flex-1">
             <h3 className="font-semibold text-sm mb-1">发现新版本</h3>
@@ -24,7 +24,7 @@ export function UpdateBanner() {
           </div>
           <button
             onClick={applyUpdate}
-            className="px-3 py-1.5 bg-white text-[var(--primary-700)] rounded-md text-sm font-medium hover:bg-white/90 transition-colors"
+            className="px-3 py-1.5 bg-white text-[var(--primary-700)] rounded-md text-sm font-semibold hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
           >
             立即更新
           </button>
