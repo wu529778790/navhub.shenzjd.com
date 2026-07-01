@@ -174,16 +174,7 @@ export default function HomeClient() {
               </div>
             </SortableContext>
           </DndContext>
-        ) : loading ? (
-          /* 无数据且正在网络请求 → 显示 skeleton */
-          <EmptyState
-            searchQuery={searchQuery}
-            isGuestMode={isGuestMode}
-            onClearSearch={() => setSearchQuery("")}
-            loading
-          />
         ) : (
-          /* 无数据且非 loading → 搜索无结果 或 真正的空状态 */
           <EmptyState
             searchQuery={searchQuery}
             isGuestMode={isGuestMode}

@@ -12,15 +12,12 @@ interface EmptyStateProps {
   searchQuery: string;
   isGuestMode: boolean;
   onClearSearch: () => void;
-  /** 是否仍在加载（加载中显示骨架，而非"暂无分类"，避免新用户误以为产品是空的） */
-  loading?: boolean;
 }
 
 export function EmptyState({
   searchQuery,
   isGuestMode,
   onClearSearch,
-  loading = false,
 }: EmptyStateProps) {
   // 搜索结果为空
   if (searchQuery) {
@@ -42,11 +39,6 @@ export function EmptyState({
     );
   }
 
-  // 加载中：显示骨架，不显示"暂无分类"
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
-
   // 无数据状态
   return (
     <div className="empty-state card p-12">
@@ -65,29 +57,6 @@ export function EmptyState({
           + <span className="kbd">N</span> 快速新建
         </div>
       )}
-    </div>
-  );
-}
-
-/**
- * 首屏加载骨架（复用项目既有的 animate-pulse 风格）
- */
-function LoadingSkeleton() {
-  return (
-    <div className="space-y-4" aria-busy="true" aria-label="加载中">
-      <div className="card p-4">
-        {/* 分类标题占位 */}
-        <div className="h-5 w-28 rounded-[var(--radius-md)] bg-[var(--muted)] animate-pulse mb-4" />
-        {/* 站点网格占位 */}
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-3">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="aspect-square w-full rounded-[var(--radius-md)] bg-[var(--muted)] animate-pulse"
-            />
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
