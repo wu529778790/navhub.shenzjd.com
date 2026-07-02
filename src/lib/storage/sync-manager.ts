@@ -23,6 +23,26 @@ import { SyncStatus } from "@/types";
 const VERSION_KEY = "nav_data_version";
 
 /**
+ * 解析 SyncOptions 中「可能是 getter 的 token」为实际的 string | undefined。
+ *
+ * 支持两种形态：
+ * - string: 静态值（degraded 模式，向后兼容）
+ * - () => string | undefined: getter，每次调用都重新求值（推荐，token 可能随 OAuth 更新）
+ */
+function resolveToken(token: SyncOptions["token"]): string | undefined {
+  if (typeof token === "function") {
+    const v = token();
+    return v == null ? undefined : v;
+  }
+  return token;
+}
+
+function resolveIsAuthenticated(auth: SyncOptions["isAuthenticated"]): boolean {
+  if (typeof auth === "function") return auth();
+  return !!auth;
+}
+
+/**
  * 获取当前数据版本号（递增整数）
  * 每次数据变更时递增，用于精确的冲突检测
  */
@@ -293,7 +313,19 @@ export async function resolveSyncDirection(
 }
 
 interface SyncOptions {
-  token?: string;
+  /**
+   * GitHub access token；或一个返回 token 的 getter（推荐）。
+   *
+   * 为什么是 getter：SyncManager 的生命周期通常比 token 长（整个会话），
+   * 但 token 可能在 OAuth 回调后 302 重刷时被更新。用 getter 让每次触发同步时
+   * 都能拿到"当前最新"的 token，而不是 constructor 时捕获的一个可能已失效的值。
+   *
+   * 哨兵值 "cookie" 表示 token 由 HttpOnly Cookie 携带（前端无法读取），
+   * getter 返回此值时守卫通过，真实的 token 由 fetch credentials: same-origin 自动带。
+   */
+  token?: string | (() => string | undefined | null);
+  /** authenticity 标志。推荐用 getter，避免启/停同步时获取到过期状态。 */
+  isAuthenticated?: boolean | (() => boolean);
   onSuccess?: () => void;
   onError?: (error: Error) => void;
   onStatusChange?: (status: SyncStatus) => void;
@@ -380,7 +412,7 @@ export class SyncManager {
    * 这是用户手动点击"同步"按钮时调用的方法
    */
   async bidirectionalSync(): Promise<SyncResult> {
-    if (!this.options.token) {
+    if (!resolveToken(this.options.token)) {
       return { success: false, direction: "none", error: "未登录" };
     }
 
@@ -402,7 +434,7 @@ export class SyncManager {
       const localData = loadFromLocalStorage();
 
       // 3. 获取 GitHub 数据
-      const githubData = await getDataFromGitHub(this.options.token!);
+      const githubData = await getDataFromGitHub(resolveToken(this.options.token)!);
       this.updateStep("fetching", 50);
 
       // 4. 比较数据
@@ -465,7 +497,7 @@ export class SyncManager {
     const result = await resolveSyncDirection(
       localData,
       githubData,
-      this.options.token!,
+      resolveToken(this.options.token)!,
       `[skip ci] Sync`
     );
 
@@ -508,8 +540,9 @@ export class SyncManager {
       return;
     }
 
-    // 检查 token
-    if (!this.options.token) {
+    // 检查 token（每次调用都实时求值，支持 getter 形式）
+    const liveToken = resolveToken(this.options.token);
+    if (!liveToken) {
       this.updateStatus(SyncStatus.IDLE);
       return;
     }
@@ -518,7 +551,7 @@ export class SyncManager {
     this.updateStatus(SyncStatus.SYNCING);
 
     try {
-      const githubData = await getDataFromGitHub(this.options.token);
+      const githubData = await getDataFromGitHub(liveToken);
       const conflictError = getSyncConflictError(data, githubData);
       if (conflictError) {
         throw new SyncConflictError(conflictError);
@@ -526,7 +559,7 @@ export class SyncManager {
 
       // 尝试同步到 GitHub
       await saveDataToGitHub(
-        this.options.token,
+        liveToken,
         data,
         `[skip ci] Auto sync ${new Date().toISOString()}`
       );

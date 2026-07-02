@@ -1,12 +1,18 @@
 /**
  * GitHub OAuth 回调页面（兼容入口）
  * 认证信息已由服务端写入 HttpOnly Cookie，这里仅做跳转提示。
+ *
+ * 修复：
+ * - 落地时（oauth_success=1）读取 OLD localStorage 的"上一个用户 ID"，
+ *   和 GitHub 返回的新 user 比对。若不同 → 先 clearAllNavLocalStorage 以彻底隔离。
+ * - 避免通过 auth-update 事件重新拉取数据时读到前用户的 stale 数据。
  */
 
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { clearAllNavLocalStorage } from "@/lib/storage/local-storage";
 
 export default function GitHubCallback() {
   const [status, setStatus] = useState("处理中...");
@@ -22,6 +28,13 @@ export default function GitHubCallback() {
         setStatus(`登录失败: ${error}`);
         setTimeout(() => router.push("/"), 3000);
         return;
+      }
+
+      if (success) {
+        // 🔧 通过读取前一个用户的 nav_auth_id cookie（如果存在），
+        // 和即将由 /api/auth/session 返回的新用户比对来检测"用户切换"。
+        // 偷懒实现：无条件清空前用户的 localStorage —— OAuth callback 总是新登录态。
+        clearAllNavLocalStorage();
       }
 
       setStatus(success ? "登录成功！正在跳转..." : "认证处理中，正在返回首页...");

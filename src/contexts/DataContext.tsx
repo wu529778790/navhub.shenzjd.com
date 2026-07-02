@@ -25,6 +25,7 @@ import {
   isLocalDataValid,
 } from "@/lib/storage/local-storage";
 import { getDataFromGitHub, getYourDataFromGitHub } from "@/lib/storage/github-storage";
+import { scheduleSync } from "@/lib/storage/nav-sync";
 import type { Category, Site, NavData } from "@/types";
 
 interface DataContextType {
@@ -55,13 +56,11 @@ export function DataProvider({
   children,
   isAuthenticated,
   isGuestMode,
-  onSyncRequest,
   initialSites = [],
 }: {
   children: ReactNode;
   isAuthenticated: boolean;
   isGuestMode: boolean;
-  onSyncRequest?: (immediateSync: boolean) => void;
   /** SSR 注入的种子数据；作为初始值避免首屏内容跳变（1条种子→N条本地数据） */
   initialSites?: Category[];
 }) {
@@ -221,9 +220,11 @@ export function DataProvider({
         return newSites;
       });
 
-      onSyncRequest?.(false);
+      // 防抖 3s 后自动 sync 到 GitHub（之前这里是空函数导致 fork 从未被创建）
+      const data = loadFromLocalStorage();
+      if (data) scheduleSync(data, false);
     },
-    [isGuestMode, onSyncRequest]
+    [isGuestMode]
   );
 
   const updateSite = useCallback(
@@ -247,9 +248,11 @@ export function DataProvider({
         return newSites;
       });
 
-      onSyncRequest?.(true);
+      // 立即同步（之前这里是空函数导致 fork 从未被创建）
+      const data = loadFromLocalStorage();
+      if (data) scheduleSync(data, true);
     },
-    [isGuestMode, onSyncRequest]
+    [isGuestMode]
   );
 
   const deleteSite = useCallback(
@@ -270,9 +273,11 @@ export function DataProvider({
         return newSites;
       });
 
-      onSyncRequest?.(true);
+      // 立即同步（之前这里是空函数导致 fork 从未被创建）
+      const data = loadFromLocalStorage();
+      if (data) scheduleSync(data, true);
     },
-    [isGuestMode, onSyncRequest]
+    [isGuestMode]
   );
 
   const addCategory = useCallback(
@@ -289,9 +294,11 @@ export function DataProvider({
         return newSites;
       });
 
-      onSyncRequest?.(false);
+      // 防抖 3s 后自动 sync 到 GitHub（之前这里是空函数导致 fork 从未被创建）
+      const data = loadFromLocalStorage();
+      if (data) scheduleSync(data, false);
     },
-    [isGuestMode, onSyncRequest]
+    [isGuestMode]
   );
 
   const updateCategory = useCallback(
@@ -310,9 +317,11 @@ export function DataProvider({
         return newSites;
       });
 
-      onSyncRequest?.(true);
+      // 立即同步（之前这里是空函数导致 fork 从未被创建）
+      const data = loadFromLocalStorage();
+      if (data) scheduleSync(data, true);
     },
-    [isGuestMode, onSyncRequest]
+    [isGuestMode]
   );
 
   const deleteCategory = useCallback(
@@ -329,9 +338,11 @@ export function DataProvider({
         return newSites;
       });
 
-      onSyncRequest?.(true);
+      // 立即同步（之前这里是空函数导致 fork 从未被创建）
+      const data = loadFromLocalStorage();
+      if (data) scheduleSync(data, true);
     },
-    [isGuestMode, onSyncRequest]
+    [isGuestMode]
   );
 
   const updateSites = useCallback(
@@ -343,9 +354,11 @@ export function DataProvider({
 
       setSites(newSites);
       saveSitesToLocalStorage(newSites);
-      onSyncRequest?.(true);
+      // 立即同步（之前这里是空函数导致 fork 从未被创建）
+      const data = loadFromLocalStorage();
+      if (data) scheduleSync(data, true);
     },
-    [isGuestMode, onSyncRequest]
+    [isGuestMode]
   );
 
   const clearError = useCallback(() => setError(null), []);

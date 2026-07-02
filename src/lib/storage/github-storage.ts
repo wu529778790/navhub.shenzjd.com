@@ -21,7 +21,19 @@ export async function getDataFromGitHub(_token?: string): Promise<NavData | null
     throw new Error("读取 GitHub 数据失败");
   }
 
-  const payload = (await response.json()) as { data: NavData | null };
+  const payload = (await response.json()) as {
+    data: NavData | null;
+    forkExists?: boolean;
+    message?: string;
+  };
+  // 服务端明确告知 fork 仓库不存在 → 区分空数据和 fork 未创建
+  if (payload.forkExists === false || payload.message === "fork-not-created") {
+    // 抛错让 SyncManager 识别「fork 尚未创建」这个状态（而非"成功但数据为空"）
+    const err = new Error("fork-not-created") as Error & { status?: number };
+    err.status = 404;
+    err.name = "ForkNotCreatedError";
+    throw err;
+  }
   return payload.data;
 }
 

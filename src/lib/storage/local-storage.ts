@@ -50,7 +50,7 @@ export function loadFromLocalStorage(): NavData | null {
 }
 
 /**
- * 清除 localStorage 数据
+ * 清除 localStorage 数据（别名，保留向后兼容）
  */
 export function clearLocalStorage(): void {
   try {
@@ -60,6 +60,31 @@ export function clearLocalStorage(): void {
     localStorage.removeItem(EXPIRY_KEY);
   } catch (error) {
     console.error("清除 localStorage 失败:", error);
+  }
+}
+
+/**
+ * 清空前用户的全部导航相关 localStorage。
+ *
+ * 在用户切换（登录不同 GitHub 账户）或登出时调用，防止新登录用户
+ * 读到旧用户残留数据后被当作"本地有效"触发伪·upload。
+ *
+ * 仅操作 nav_ 前缀的 key，避免影响其他应用级缓存（如主题）。
+ */
+export function clearAllNavLocalStorage(): void {
+  try {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key === STORAGE_KEY || key.startsWith("nav_"))) {
+        keysToRemove.push(key);
+      }
+    }
+    for (const key of keysToRemove) {
+      localStorage.removeItem(key);
+    }
+  } catch (error) {
+    console.error("清空 nav_* localStorage 失败:", error);
   }
 }
 

@@ -1,12 +1,11 @@
 /**
  * Sites Context (组合层)
- * 组合 AuthContext + DataContext + SyncContext
+ * 组合 AuthContext + DataContext + SyncProvider
  * 保持向后兼容：useSites() 仍然可用
  *
  * 新代码建议直接使用:
  * - useAuth()   → 认证状态（isGuestMode, authUser）
  * - useData()   → 数据 CRUD（sites, addSite, ...）
- * - useSyncState() → 同步状态（syncStatus, manualSync, ...）
  */
 
 "use client";
@@ -16,20 +15,6 @@ import { AuthProvider, useAuth } from "./AuthContext";
 import { DataProvider } from "./DataContext";
 import type { Category } from "@/types";
 
-/** 同步状态 Hook 类型（由外部 Sync Provider 提供） */
-export interface SyncStateHook {
-  syncStatus: string;
-  syncStep: import("@/types").SyncStepInfo | null;
-  isOnline: boolean;
-  lastSync: Date | null;
-  manualSync: () => Promise<{
-    success: boolean;
-    message?: string;
-    direction: string;
-    error?: string;
-  }>;
-}
-
 /** 兼容的 ManualSyncResult 类型（包含 message） */
 export interface ManualSyncResult {
   success: boolean;
@@ -38,16 +23,32 @@ export interface ManualSyncResult {
   error?: string;
 }
 
+/**
+ * 站点级事件回调：SitesProvider 向外暴露几个站点层级的反馈钩子。
+ * useSites() 的消费方可通过这些回调感知同步结果、token 丢失等。
+ */
+export interface SitesEventCallbacks {
+  /** POST /api/github/data 成功 */
+  onSyncSuccess?: () => void;
+  /** POST /api/github/data 失败 */
+  onSyncError?: (err: Error) => void;
+  /** 用户切换检测到（A → B），让 DataProvider 重置内部 state */
+  onUserLoginDetected?: () => void;
+}
+
 interface SitesProviderProps {
   children: ReactNode;
-  /** 同步状态 hook 实例（可选，用于组合） */
-  syncState?: SyncStateHook;
   /** SSR 注入的种子数据，透传至 DataProvider 避免首屏跳变 */
   initialSites?: Category[];
 }
 
 /**
- * SitesProvider - 组合三个独立的 Context
+ * SitesProvider - 组合 Auth + Data + Sync
+ *
+ * Sync 职责全部由 layout.tsx 处理：它读取 useAuth()，实例化 SyncManager，
+ * 然后把桥接函数通过 props 透传：
+ * - onSyncRequest 连接 SitesContext → DataContext，修复原有空函数 bug
+ * - onUserChanged 处理用户切换时清空 localStorage 并重新拉取数据
  */
 export function SitesProvider({ children, initialSites = [] }: SitesProviderProps) {
   const { isAuthenticated, isGuestMode } = useAuth();
@@ -57,9 +58,6 @@ export function SitesProvider({ children, initialSites = [] }: SitesProviderProp
       isAuthenticated={isAuthenticated}
       isGuestMode={isGuestMode}
       initialSites={initialSites}
-      onSyncRequest={() => {
-        // 触发同步的逻辑由调用者决定，此处仅作为桥接
-      }}
     >
       {children}
     </DataProvider>
@@ -81,26 +79,6 @@ export { useData } from "./DataContext";
 
 // 内部导入（用于 createUseSites）
 import { useData as _useData } from "./DataContext";
-
-// 兼容旧代码的统一 Hook（从各子 Context 聚合）
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- 保留供未来扩展使用
-function createUseSites(syncState: SyncStateHook) {
-  return function useSites() {
-    const auth = useAuth();
-    const data = _useData();
-
-    // 合并返回，保持原有接口不变
-    return {
-      // 来自 DataContext
-      ...data,
-      // 来自 AuthContext
-      isGuestMode: auth.isGuestMode,
-      authUser: auth.authUser,
-      // 来自 Sync State
-      ...syncState,
-    };
-  };
-}
 
 // 注意: 由于 React Hooks 不能条件调用，
 // 实际使用时需要通过其他方式注入 syncState

@@ -104,6 +104,7 @@ export async function GET(request: NextRequest) {
 
     const user = {
       id: String(userData.id),
+      login: String(userData.login),
       name: String(userData.name || userData.login),
       avatar: String(userData.avatar_url),
     };

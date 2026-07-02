@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDataFromGitHubByCookie, saveDataToGitHubByCookie } from "@/lib/server/github";
+import {
+  getDataFromGitHubByCookie,
+  saveDataToGitHubByCookie,
+  ForkNotCreatedError,
+} from "@/lib/server/github";
 import { validateOrigin, checkRateLimit, getClientIP } from "@/lib/security";
 import { categorySchema } from "@/lib/validation";
 import type { NavData } from "@/lib/storage/local-storage";
@@ -38,13 +42,21 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const data = await getDataFromGitHubByCookie<NavData>();
-    return NextResponse.json({ data }, { headers: { "Cache-Control": "no-store" } });
+    try {
+      const data = await getDataFromGitHubByCookie<NavData>();
+      return NextResponse.json({ data, forkExists: true }, { headers: { "Cache-Control": "no-store" } });
+    } catch (error) {
+      if (error instanceof ForkNotCreatedError) {
+        // 404 fork 仓库不存在 → 明确告诉前端
+        return NextResponse.json(
+          { data: null, forkExists: false, message: "fork-not-created" },
+          { headers: { "Cache-Control": "no-store" } }
+        );
+      }
+      throw error;
+    }
   } catch (error) {
     const { message, status } = sanitizeErrorMessage(error);
-    if (status === 404) {
-      return NextResponse.json({ data: null });
-    }
     return NextResponse.json({ error: message }, { status });
   }
 }

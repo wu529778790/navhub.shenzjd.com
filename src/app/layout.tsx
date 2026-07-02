@@ -6,6 +6,7 @@ import { ToastProvider } from "@/components/ui/toast";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { UpdateBanner } from "@/components/UpdateBanner";
+import { NavLogoutCleanup } from "@/components/NavLogoutCleanup";
 
 export const metadata: Metadata = {
   title: {
@@ -50,6 +51,7 @@ export default function RootLayout({
           <ToastProvider>
             <AuthProvider>
             <SitesProvider>
+              <NavLogoutCleanup />
               <ServiceWorkerRegister />
               <UpdateBanner />
               {children}
