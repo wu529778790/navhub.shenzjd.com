@@ -36,7 +36,9 @@ export const STORAGE_CONFIG = {
 export const SYNC_CONFIG = {
   MAX_RETRIES: 3,
   RETRY_DELAY_MS: 5000, // 5秒
-  FORK_WAIT_MS: 2000, // Fork 等待时间
+  FORK_POLL_INITIAL_DELAY_MS: 1000, // fork 轮询初始延迟
+  FORK_POLL_MAX_ATTEMPTS: 5, // fork 轮询最大次数
+  FORK_POLL_BACKOFF_FACTOR: 1.8, // fork 轮询退避系数（初始 1s × 5 次 ≈ 12s 总等待）
 } as const;
 
 // 安全配置

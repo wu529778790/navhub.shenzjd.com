@@ -1,6 +1,14 @@
 import { Octokit } from "@octokit/rest";
 import { cookies } from "next/headers";
-import { GITHUB_CONFIG, SYNC_CONFIG } from "@/lib/config";
+import { GITHUB_CONFIG } from "@/lib/config";
+
+// fork 轮询 poll 参数——与 @/lib/config SYNC_CONFIG 保持同源，
+// 直接内联避免循环依赖；修改时请两处同步维护。
+const FORK_POLL_MAX_ATTEMPTS = 5;
+const FORK_POLL_INITIAL_DELAY_MS = 1000;
+const FORK_POLL_BACKOFF_FACTOR = 1.8;
+
+//（SYNC_CONFIG.FORK_* 在 @/lib/config 同名维护）
 
 const ORIGINAL_OWNER = GITHUB_CONFIG.ORIGINAL_OWNER;
 const ORIGINAL_REPO = GITHUB_CONFIG.ORIGINAL_REPO;
@@ -98,6 +106,50 @@ export async function getAuthenticatedLoginFromCookie(): Promise<string> {
   return data.login;
 }
 
+/**
+ * 带指数退避的 fork 存在性轮询。
+ *
+ * 返回 true 表示仓库可访问，false 表示超出重试次数（理论上不应发生，
+ * GitHub 通常 <10s 内即可完成 fork）。
+ */
+async function pollForkReady(
+  octokit: Octokit,
+  login: string,
+  maxAttempts: number = FORK_POLL_MAX_ATTEMPTS,
+): Promise<boolean> {
+  let delay = FORK_POLL_INITIAL_DELAY_MS;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    delay = Math.ceil(delay * FORK_POLL_BACKOFF_FACTOR);
+    try {
+      await octokit.repos.get({
+        owner: login,
+        repo: ORIGINAL_REPO,
+      });
+      return true;
+    } catch (error) {
+      const status = (error as { status?: number }).status;
+      // 404 = 还在 fork 中/尚未可见；其他错误（403/500/网络）也继续重试
+      if (status !== 404 && status !== undefined) {
+        // 非 404 的错误（如 401/403/502）记录下来方便诊断
+        console.info(
+          `[fork] poll attempt ${attempt}/${maxAttempts}: status=${status}, retrying...`,
+        );
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * 确保当前认证用户已 fork 原仓库。
+ *
+ * 流程：
+ * 1. 检查 fork 是否存在（GET /repos/{login}/{repo}）
+ * 2. 已存在 → 立即返回
+ * 3. 不存在 → POST createFork → 轮询等待 fork 真正可用（指数退避）
+ * 4. createFork 失败（如 422 fork 已拥有但 getStatus 异常、403 限流）→ 抛带语义的错误
+ */
 export async function ensureForkedFromCookie(): Promise<void> {
   const octokit = await getOctokitFromCookie();
   const login = await getAuthenticatedLoginFromCookie();
@@ -107,13 +159,44 @@ export async function ensureForkedFromCookie(): Promise<void> {
       owner: login,
       repo: ORIGINAL_REPO,
     });
-    return;
+    return; // fork 已存在
   } catch {
+    // 不存在 → 创建 fork
+  }
+
+  try {
     await octokit.repos.createFork({
       owner: ORIGINAL_OWNER,
       repo: ORIGINAL_REPO,
+      // organization: — 个人场景不需要，留作未来组织账号扩展点
     });
-    await new Promise((resolve) => setTimeout(resolve, SYNC_CONFIG.FORK_WAIT_MS));
+  } catch (error) {
+    const status = (error as { status?: number }).status;
+    // 422 = 已经 fork 过（并发重入或最近刚创建）→ 继续轮询，不抛错
+    if (status === 422) {
+      console.info("[fork] createFork returned 422 (fork likely exists), continuing to poll");
+    } else {
+      const message =
+        status === 403
+          ? "GitHub 权限不足，无法创建 fork（可能触发速率限制或无权访问原仓库）"
+          : status === 404
+            ? "原仓库不存在，请确认 GITHUB 配置正确"
+            : `创建 fork 失败 (status=${status ?? "unknown"})`;
+      const wrapped = new Error(message) as Error & { status?: number };
+      wrapped.status = status;
+      wrapped.name = "ForkCreateError";
+      throw wrapped;
+    }
+  }
+
+  // fork 创建成功（或 422 重复创建）→ 轮询等待仓库可用
+  const ready = await pollForkReady(octokit, login);
+  if (!ready) {
+    const msg = `fork 已提交但约 12s 内仍未就绪，请稍后在设置页点击"手动同步"重试`;
+    const err = new Error(msg) as Error & { status?: number };
+    err.status = 504;
+    err.name = "ForkNotReadyError";
+    throw err;
   }
 }
 

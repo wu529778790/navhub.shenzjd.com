@@ -26,6 +26,11 @@ function sanitizeErrorMessage(error: unknown): { message: string; status: number
     return { message: knownMessage, status: 401 };
   }
 
+  // 透传已知 fork 相关的语义化错误——禁止吞掉，否则用户看不到 fork 失败原因
+  if (error.name === "ForkCreateError" || error.name === "ForkNotReadyError") {
+    return { message: error.message, status: (error as { status?: number }).status ?? 500 };
+  }
+
   return { message: "操作失败，请稍后重试", status: 500 };
 }
 

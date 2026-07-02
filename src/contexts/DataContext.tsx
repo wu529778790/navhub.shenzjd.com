@@ -27,6 +27,7 @@ import {
 import { getDataFromGitHub, getYourDataFromGitHub } from "@/lib/storage/github-storage";
 import { scheduleSync } from "@/lib/storage/nav-sync";
 import type { Category, Site, NavData } from "@/types";
+import { useToast } from "@/components/ui/toast";
 
 interface DataContextType {
   sites: Category[];
@@ -79,6 +80,9 @@ export function DataProvider({
     return !isLocalDataValid(local) && initialSites.length === 0;
   });
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
+  // 防抖标记：一次登录会话内不重复触发自动 fork
+  const autoForkTriggeredRef = useRef(false);
 
   // 用于竞态控制：只允许最新的 fetch 更新状态
   const fetchIdRef = useRef(0);
@@ -135,7 +139,25 @@ export function DataProvider({
             try {
               remoteData = await getDataFromGitHub("token-from-context");
             } catch (e) {
-              console.error("读取 GitHub 数据失败:", e);
+              // fork 仓库不存在 → 主动触发一次写操作，后端会同步创建 fork
+              const err = e as Error & { name?: string; status?: number };
+              const isForkNotCreated =
+                err?.name === "ForkNotCreatedError" ||
+                err?.message === "fork-not-created" ||
+                err?.status === 404;
+
+              if (isForkNotCreated && !autoForkTriggeredRef.current) {
+                autoForkTriggeredRef.current = true;
+                console.info("[DataContext] fork 不存在，自动触发首次同步以创建 fork");
+                showToast("正在为您初始化仓库...", "info");
+                const local = loadFromLocalStorage();
+                if (local) {
+                  // immediate=true 绕过防抖，后端确保写入前 fork 已就绪
+                  scheduleSync(local, true);
+                }
+              } else if (!isForkNotCreated) {
+                console.error("读取 GitHub 数据失败:", e);
+              }
             }
           } else if (!isAuthenticated || isGuestMode) {
             // 访客：拉示例数据（getYourDataFromGitHub 内部已 catch，不会抛）
@@ -178,7 +200,7 @@ export function DataProvider({
         setLoading(false);
       }
     },
-    [isAuthenticated, isGuestMode]
+    [isAuthenticated, isGuestMode, showToast]
   );
 
   // 同步 sites → ref，供 fetchSites 内读取而不放入依赖
