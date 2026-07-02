@@ -1,6 +1,9 @@
 import { Octokit } from "@octokit/rest";
 import { cookies } from "next/headers";
-import { GITHUB_CONFIG } from "@/lib/config";
+import { GITHUB_CONFIG, APP_CONFIG } from "@/lib/config";
+
+/** GitHub commit message 末尾附加的网站宣传后缀 */
+const COMMIT_MESSAGE_SUFFIX = ` · by ${APP_CONFIG.SITE_URL}`;
 
 // fork 轮询 poll 参数——与 @/lib/config SYNC_CONFIG 保持同源，
 // 直接内联避免循环依赖；修改时请两处同步维护。
@@ -276,11 +279,18 @@ export async function saveDataToGitHubByCookie<T>(data: T, message?: string): Pr
     // file not found, create new
   }
 
+  // 拼接网站宣传前缀：
+  // - 默认场景（初始 fork / 兜底）→ `[skip ci] Update data/sites.json`
+  // - 用户主动操作 → sync-manager 传入 `[skip ci] Manual sync {iso}` 等
+  // 末尾统一加 ` · by https://navhub.shenzjd.com` 作为宣传
+  const baseMessage = message || `[skip ci] Update ${DATA_FILE_PATH}`;
+  const finalMessage = `${baseMessage}${COMMIT_MESSAGE_SUFFIX}`;
+
   await octokit.repos.createOrUpdateFileContents({
     owner: login,
     repo: ORIGINAL_REPO,
     path: DATA_FILE_PATH,
-    message: message || `[skip ci] Update ${DATA_FILE_PATH}`,
+    message: finalMessage,
     content: Buffer.from(JSON.stringify(data, null, 2)).toString("base64"),
     sha,
   });

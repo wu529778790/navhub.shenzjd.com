@@ -23,6 +23,8 @@ export const APP_CONFIG = {
   NAME: "NavHub",
   VERSION: "1.0.0",
   DESCRIPTION: "个人导航网站，支持本地存储和 GitHub 同步",
+  /** 部署站点 URL，用于写 GitHub 时附加的 commit message 宣传后缀 */
+  SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "https://navhub.shenzjd.com",
 } as const;
 
 // 存储配置
