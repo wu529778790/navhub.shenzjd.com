@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { SiteCard } from "./SiteCard";
 import { DataProvider } from "@/contexts/DataContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ToastProvider } from "@/components/ui/toast";
 
 /**
  * 真实集成测试 - 不使用 Mock
@@ -11,11 +12,13 @@ import { AuthProvider } from "@/contexts/AuthContext";
 describe("SiteCard", () => {
   const renderWithProviders = (props: Parameters<typeof SiteCard>[0]) => {
     return render(
-      <AuthProvider>
-        <DataProvider>
-          <SiteCard {...props} />
-        </DataProvider>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <DataProvider>
+            <SiteCard {...props} />
+          </DataProvider>
+        </AuthProvider>
+      </ToastProvider>
     );
   };
 
