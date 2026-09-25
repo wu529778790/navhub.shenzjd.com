@@ -16,6 +16,12 @@ const ALLOWED_IMAGE_ORIGINS = [
   "https://t3.gstatic.com",
   // DuckDuckGo Favicon 服务
   "https://icons.duckduckgo.com",
+  // site-navbar 头像图片（@wu529778790/user-avatar Web Component）
+  "https://img.shenzjd.com",
+  // wx-auth-sdk 头像接口（/api/avatar/mp?...）
+  "https://wx-auth.shenzjd.com",
+  // site-navbar 内的静态图（jsdmirror CDN）
+  "https://cdn.jsdmirror.com",
 ] as const;
 
 /**
@@ -28,7 +34,12 @@ export function buildContentSecurityPolicy(): string {
   return [
     "default-src 'self'",
     // 移除 unsafe-eval：如果 Cloudflare Insights 需要 eval，应迁移到 nonce-based script loading
-    [`script-src 'self' 'unsafe-inline'`, CLOUDFLARE_INSIGHTS_ORIGIN].join(" "),
+    // unpkg：site-navbar 全站导航 Web Component（内部还会自动加载 wx-auth-sdk，同为 unpkg）
+    [
+      `script-src 'self' 'unsafe-inline'`,
+      CLOUDFLARE_INSIGHTS_ORIGIN,
+      "https://unpkg.com",
+    ].join(" "),
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     // 使用明确的域名白名单替代 https: 通配符
@@ -40,6 +51,8 @@ export function buildContentSecurityPolicy(): string {
       CLOUDFLARE_INSIGHTS_ORIGIN.replace("https://", "https://"),
       "https://fonts.googleapis.com",
       "https://icons.duckduckgo.com",
+      // site-navbar 内部 wx-auth-sdk 的登录态/用户信息接口（被 CSP 拦截时 fetch 会抛 "Failed to fetch"）
+      "https://wx-auth.shenzjd.com",
     ].join(" "),
     "frame-ancestors 'none'",
   ].join("; ");

@@ -375,7 +375,7 @@ export function Sidebar({
   return (
     <>
       {/* 左列：桌面 w-96 与右侧主区并排 / 移动端 w-full 全屏 tree（无右侧区，叶子内联站点）2026-08-22 用户拍板 */}
-      <aside className="sticky top-16 z-30 h-[calc(100vh-4rem)] w-full flex-shrink-0 overflow-y-auto border-r border-[var(--border)] bg-[var(--background-secondary)] md:w-96">
+      <aside className="sticky top-0 z-30 h-screen w-full flex-shrink-0 overflow-y-auto border-r border-[var(--border)] bg-[var(--background-secondary)] md:w-96">
         <div className="relative flex h-full flex-col">
           <div className="flex items-center justify-between px-3 py-3 md:px-4">
             <h2 className="text-[13px] font-semibold text-[var(--foreground)]">全部分类</h2>

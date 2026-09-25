@@ -17,7 +17,6 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { AppHeader } from "@/components/layout/AppHeader";
 import { Sidebar } from "@/components/HomePage/Sidebar";
 import { StaticBoard } from "@/components/HomePage/StaticBoard";
 import { BentoSubCategoryGrid } from "@/components/HomePage/BentoGrid";
@@ -257,15 +256,6 @@ export default function HomeClient({
     window.scrollTo(0, 0);
   };
 
-  // 点击 logo：跳转到第一个顶级分类（2026-08-22 用户拍板）
-  const handleLogoClick = () => {
-    const first = categories[0]?.id;
-    setSearchQuery("");
-    setActiveCategoryId(first ?? null);
-    window.history.pushState({ nav: true }, "", first ? `/c/${first}` : "/");
-    window.scrollTo(0, 0);
-  };
-
   // ============ 快捷键 ============
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -308,12 +298,6 @@ export default function HomeClient({
 
   return (
     <AppLayout>
-      <AppHeader
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
-        onLogoClick={handleLogoClick}
-      />
-
       <div className="mx-auto flex w-full max-w-[1440px] flex-1 items-stretch">
         {/* ========== 左侧树导航（移动端全屏，无右侧主区） ========== */}
         <Sidebar
@@ -326,9 +310,9 @@ export default function HomeClient({
         {/* ========== 右侧主区（仅桌面端显示；移动端整体就是 tree） ========== */}
         {!isMobile && (
           <main className="min-w-0 flex-1">
-            <div className="mx-auto max-w-[1100px] px-4 py-6 md:px-8">
+            <div className="mx-auto max-w-[1100px] px-4 pb-6 pt-2 md:px-8">
               {/* 顶部操作栏（sticky）：面包屑 / 搜索状态 */}
-              <div className="sticky top-16 z-[40] -mx-4 mb-6 flex flex-wrap items-center gap-3 border-b border-[var(--border)] bg-[var(--background)]/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
+              <div className="sticky top-0 z-[40] -mx-4 mb-6 flex flex-wrap items-center gap-3 border-b border-[var(--border)] bg-[var(--background)]/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
                 {globalSearchResults ? (
                   <div className="flex items-center gap-2 text-sm">
                     <span>
@@ -364,9 +348,42 @@ export default function HomeClient({
                   <Breadcrumb path={activePath} topIndexMap={topIndexMap} onNavigate={navigateToCategory} />
                 )}
 
-                <span className="ml-auto text-xs tabular-nums text-[var(--muted-foreground)]">
+                <span className="text-xs tabular-nums text-[var(--muted-foreground)]">
                   {totalSites} 个网站
                 </span>
+
+                {/* 全局搜索框（原页头迁移至此，⌘K 聚焦） */}
+                <div className="ml-auto flex h-9 w-44 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--muted)] px-3 transition-colors focus-within:border-[var(--neutral-900)] sm:w-64 md:w-80">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="flex-shrink-0 text-[var(--muted-foreground)]"
+                    aria-hidden
+                  >
+                    <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+                    <path
+                      d="M16.5 16.5L21 21"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="搜索分类或网站…"
+                    aria-label="全局搜索"
+                    className="min-w-0 flex-1 bg-transparent text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
+                  />
+                  <kbd className="hidden flex-shrink-0 items-center justify-center rounded-[var(--radius-xs)] border border-[var(--border)] bg-[var(--background-secondary)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--muted-foreground)] sm:flex">
+                    ⌘K
+                  </kbd>
+                </div>
               </div>
 
               {/* ========== 主内容区 ========== */}

@@ -129,6 +129,13 @@
 }
 
 @layer base {
+  /* site-navbar（body 直下的 Web Component）链接 nowrap 且自身无 overflow 处理，
+     窄屏会撑出页面横向滚动条——在宿主元素上裁掉（clip 不产生滚动容器） */
+  site-navbar {
+    display: block;
+    overflow-x: clip;
+  }
+
   * {
     @apply border-[var(--border)];
   }

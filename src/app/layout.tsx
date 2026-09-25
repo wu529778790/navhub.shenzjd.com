@@ -73,17 +73,24 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className={plusJakarta.variable} suppressHydrationWarning>
       <head>
-        {/* 防闪烁：hydration 前应用主题（localStorage 优先，缺省跟随系统）。
-            放在 <head> 内保证在 body 解析前执行，且让 Next.js 知道 script 顺序；
+        {/* 主题：完全自动，仅跟随系统 prefers-color-scheme（2026-09-25 手动切换随页头一起移除）。
+            放在 <head> 内保证在 body 解析前执行；
             <html suppressHydrationWarning> 抑制 data-theme 在 SSR（无）与 hydration 前
             （script 已设置）之间的已知差异，这是 Next.js 官方 dark-mode 方案。 */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme="light";}})();`,
+            __html: `(function(){try{var m=window.matchMedia("(prefers-color-scheme: dark)");var f=function(){document.documentElement.dataset.theme=m.matches?"dark":"light";};f();m.addEventListener?m.addEventListener("change",f):m.addListener(f);}catch(e){document.documentElement.dataset.theme="light";}})();`,
           }}
+        />
+        {/* 全站导航（Web Component）：内部自动加载 wx-auth-sdk 并静默 init，无需手动初始化。
+            普通文档流块级元素（非 fixed），置于 body 顶部即天然吸顶。 */}
+        <script
+          async
+          src="https://unpkg.com/@wu529778790/site-navbar@latest/dist/site-navbar.wc.js"
         />
       </head>
       <body className="antialiased">
+        <site-navbar />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
