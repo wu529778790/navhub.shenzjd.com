@@ -17,17 +17,25 @@ export const runtime = "nodejs";
 
 const ANON_COOKIE = "anon_id";
 
+// 显式 no-store：per-cookie 个性化数据，防 CDN（EdgeOne 遵循源站模式）误缓存导致串数据。
+function jsonNoStore(data: unknown, status = 200) {
+  return NextResponse.json(data, {
+    status,
+    headers: { "Cache-Control": "no-store" },
+  });
+}
+
 export async function GET() {
   const store = await cookies();
   const anonId = store.get(ANON_COOKIE)?.value;
   if (!anonId) {
-    return NextResponse.json({ likedSiteIds: [] });
+    return jsonNoStore({ likedSiteIds: [] });
   }
   try {
     const ids = await getLikedSiteIds(anonId);
-    return NextResponse.json({ likedSiteIds: ids });
+    return jsonNoStore({ likedSiteIds: ids });
   } catch (error) {
     console.error("读取点赞状态失败:", error);
-    return NextResponse.json({ likedSiteIds: [] }, { status: 500 });
+    return jsonNoStore({ likedSiteIds: [] }, 500);
   }
 }
