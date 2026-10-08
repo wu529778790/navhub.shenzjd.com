@@ -1,12 +1,15 @@
 /**
- * sitemap.xml — 引导搜索引擎发现站点收录的外链 + 分类页（2026-08-24 升级）
+ * sitemap.xml — 首页 + 分类页（2026-10-08 修正）
  *
  * 数据源：Turso 全量（readNavData 走进程内缓存，零额外 DB 压力），
  * 读取失败时降级 seed 数据（src/data/sites.json），保证 sitemap 始终可用。
  * 条目：
  * - 站点本体（首页）
- * - 全部 381 个分类页 /c/[id]（递归全树）——让爬虫发现每个独立分类页
- * - 全部收录站点外链（导航站 SEO 命脉：顺着 sitemap 抓取导航站收录的外链）
+ * - 全部分类页 /c/[id]（递归全树）——让爬虫发现每个独立分类页
+ *
+ * 注意：sitemap 协议要求所有 URL 与 sitemap 同域，收录的第三方站点外链
+ * 不能放进 sitemap（Google 报"不允许的网址"）；外链由页面正常 <a> 链接
+ * 供爬虫发现，无需收录站收录。
  */
 
 import type { MetadataRoute } from "next";
@@ -57,18 +60,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   };
   walkCategories(categories);
-
-  // 收录站点外链（更新频率不高）
-  for (const category of categories) {
-    for (const site of category.sites ?? []) {
-      if (site._deleted) continue;
-      entries.push({
-        url: site.url,
-        changeFrequency: "monthly",
-        priority: 0.6,
-      });
-    }
-  }
 
   return entries;
 }
