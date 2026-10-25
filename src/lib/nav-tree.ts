@@ -42,7 +42,10 @@ export function countDescendantSites(node: Category): number {
 
 /**
  * 渲染前过滤墓碑条目（数据里可能有 _deleted 标记）。
- * 仅过滤当前层：顶层分类 + 其直接挂载的站点（与首页历史行为一致）。
+ * 必须整棵递归：readNavData 组树时不过滤（墓碑行留在库里供同步侧迁移赞踩），
+ * 只滤顶层会让子层级的软删分类原样渲染——源站改编号产生的旧分类墓碑会以
+ * 幽灵分类混进树里（2026-10-25：「07.AI 知识库」「09.AI 图片」等软删行与
+ * 存活的 11.AI 知识库 / 06.AI 图片 同屏，编号成对重复、计数虚高）。
  */
 export function visibleCategories(categories: Category[]): Category[] {
   return categories
@@ -50,5 +53,6 @@ export function visibleCategories(categories: Category[]): Category[] {
     .map((c) => ({
       ...c,
       sites: c.sites.filter((s: Site) => !s._deleted),
+      children: c.children ? visibleCategories(c.children) : c.children,
     }));
 }
