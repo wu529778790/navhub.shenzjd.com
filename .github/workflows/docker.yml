@@ -81,6 +81,27 @@ jobs:
           password: ${{ secrets.DEPLOY_PASSWORD }}
           script: |
             IMAGE="ghcr.io/${{ github.repository }}:latest"
+            # 站点目录定位（2026-10-27）：1Panel 升级后 OpenResty 站点根从
+            #   /opt/1panel/apps/openresty/openresty/www/sites
+            # 迁到 /opt/1panel/www/sites。原脚本把 --env-file 路径写死，且顺序是
+            # 「先 stop/rm 旧容器 → 再 run」，路径失效时 docker run 直接报文件不存在、
+            # 而脚本最后一条 prune 返回 0 —— CI 绿、站点却已经停在那儿。
+            # 现在定位与校验前置到停容器之前，起容器后再验一次「确实在跑」。
+            SITE_DIR=""
+            for candidate in \
+              /opt/1panel/www/sites/navhub.shenzjd.com/index \
+              /opt/1panel/apps/openresty/openresty/www/sites/navhub.shenzjd.com/index; do
+              if [ -d "$candidate" ]; then SITE_DIR="$candidate"; break; fi
+            done
+            if [ -z "$SITE_DIR" ]; then
+              echo "FATAL: 找不到站点目录（1Panel 站点根可能又变了），拒绝部署，旧容器未动" >&2
+              exit 1
+            fi
+            ENV_FILE="$SITE_DIR/.env"
+            if [ ! -f "$ENV_FILE" ]; then
+              echo "FATAL: $ENV_FILE 不存在（站点目录: $SITE_DIR），拒绝部署，旧容器未动" >&2
+              exit 1
+            fi
             sudo docker pull --quiet "$IMAGE"
             sudo docker stop navhub.shenzjd.com || true
             sudo docker rm navhub.shenzjd.com || true
@@ -89,8 +110,14 @@ jobs:
               --restart unless-stopped \
               -e NODE_ENV=production \
               -e HOSTNAME=0.0.0.0 \
-              --env-file /opt/1panel/apps/openresty/openresty/www/sites/navhub.shenzjd.com/index/.env \
+              --env-file "$ENV_FILE" \
               -p 5271:3000 \
               -v navhub_data:/app/data \
               "$IMAGE"
+            # 「run 失败但 CI 绿」的兜底：容器必须真的在 running，否则打日志并失败
+            if ! sudo docker ps --filter "name=navhub.shenzjd.com" --format '{{.Names}}' | grep -q 'navhub'; then
+              echo "FATAL: navhub 容器未在运行，日志如下：" >&2
+              sudo docker logs --tail 40 navhub.shenzjd.com >&2 || true
+              exit 1
+            fi
             sudo docker image prune -f
