@@ -102,6 +102,14 @@ jobs:
               echo "FATAL: $ENV_FILE 不存在（站点目录: $SITE_DIR），拒绝部署，旧容器未动" >&2
               exit 1
             fi
+            # 幂等补齐 REVALIDATE_KEY：navagent 同步落库后调 /api/revalidate-nav
+            # 失效进程内导航缓存，未配置时该端点 503 关闭。密钥只在服务器上生成、
+            # 不回传日志；已存在则不覆盖（手动轮换直接改 .env 重启容器即可）。
+            if ! sudo grep -q '^REVALIDATE_KEY=' "$ENV_FILE"; then
+              REVAL_KEY=$(openssl rand -hex 32)
+              sudo sh -c "printf 'REVALIDATE_KEY=%s\n' '$REVAL_KEY' >> '$ENV_FILE'"
+              echo "[navhub] generated REVALIDATE_KEY into $ENV_FILE"
+            fi
             sudo docker pull --quiet "$IMAGE"
             sudo docker stop navhub.shenzjd.com || true
             sudo docker rm navhub.shenzjd.com || true

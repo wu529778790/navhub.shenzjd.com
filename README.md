@@ -41,13 +41,11 @@ cp .env.example .env
 
 ### 3. 导入数据（首次部署）
 
-数据由外部 `navdata` 工具链产出。将阿虚同学储物间数据灌入 Turso：
+数据由外部 **navagent** 项目（`~/github/navagent`）爬取、审核后直写 Turso（`agent/sync_turso.py`），本仓库不再有导入脚本。本仓库侧仅剩的运维命令：
 
 ```bash
 # 重建表结构（如需）
 node scripts/reset-tables.mjs
-# 导入（默认读取 ~/github/navdata/data/axutongxue.json）
-node scripts/import-axutongxue.mjs [--source <path>] [--dry-run]
 ```
 
 环境变量从仓库根 `.env` 读取。
@@ -112,7 +110,7 @@ src/
     server/turso.ts      # Turso 数据层（树形读取/写入）
     runtime-policies.ts  # CSP 头构造
     favicon-url.ts, utils.ts (cn)
-scripts/                 # import-axutongxue, reset-tables, sync-standalone-assets
+scripts/                 # reset-tables, sync-standalone-assets（数据由外部 navagent 项目直写 Turso）
 ```
 
 ## 开发
